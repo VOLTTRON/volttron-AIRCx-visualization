@@ -1,0 +1,6 @@
+{
+  "name": "nbf-footer",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MuiFooter.js"
+}

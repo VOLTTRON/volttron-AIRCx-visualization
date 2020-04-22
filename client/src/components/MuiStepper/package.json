@@ -1,0 +1,6 @@
+{
+  "name": "nbf-stepper",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MuiStepper.js"
+}

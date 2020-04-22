@@ -1,0 +1,6 @@
+{
+  "name": "nbf-loading",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MuiLoading.js"
+}
