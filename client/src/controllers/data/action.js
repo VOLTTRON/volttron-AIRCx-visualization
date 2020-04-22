@@ -80,3 +80,19 @@ export const [
   selectConfigPoll,
   selectConfigRequest,
 ] = generateSelectors(UPLOAD_CONFIG);
+
+// fetch sources
+export const FETCH_SOURCES = generateTypes(key, "sources");
+export const [
+  fetchSources,
+  fetchSourcesSuccess,
+  fetchSourcesError,
+  fetchSourcesBusy,
+] = generateActions(FETCH_SOURCES);
+export const [
+  selectSources,
+  selectSourcesError,
+  selectSourcesBusy,
+  ,
+  selectSourcesRequest,
+] = generateSelectors(FETCH_SOURCES);

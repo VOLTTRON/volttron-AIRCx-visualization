@@ -8,6 +8,10 @@ import {
   editConfigError,
   editConfigSuccess,
   EDIT_CONFIG,
+  fetchSourcesBusy,
+  fetchSourcesError,
+  fetchSourcesSuccess,
+  FETCH_SOURCES,
   selectCurrentConfig,
   selectTransmogrifyConfigRequest,
   setCurrentConfig,
@@ -25,7 +29,7 @@ import {
   UPLOAD_CONFIG,
   UPLOAD_SAMPLE,
 } from "./action";
-import { uploadConfig, uploadSample } from "./api";
+import { readSources, uploadConfig, uploadSample } from "./api";
 const { REQUEST } = ActionTypes;
 
 const transmogrifyConfigHelper = (config, filter, field, direction) => {
@@ -193,9 +197,23 @@ export function* uploadConfigSaga(action) {
   }
 }
 
+export function* readSourcesSaga() {
+  try {
+    yield put(fetchSourcesBusy(true));
+    yield put(fetchSourcesError());
+    const response = yield call(readSources);
+    yield put(fetchSourcesSuccess(response));
+  } catch (error) {
+    yield put(fetchSourcesError(error.message));
+  } finally {
+    yield put(fetchSourcesBusy(false));
+  }
+}
+
 export default function* dataSaga() {
   yield takeLatest(TRANSMOGRIFY_CONFIG[REQUEST], transmogrifyConfigSaga);
   yield takeLatest(EDIT_CONFIG[REQUEST], editConfigSaga);
   yield takeLatest(UPLOAD_SAMPLE[REQUEST], uploadSampleSaga);
   yield takeLatest(UPLOAD_CONFIG[REQUEST], uploadConfigSaga);
+  yield takeLatest(FETCH_SOURCES[REQUEST], readSourcesSaga);
 }

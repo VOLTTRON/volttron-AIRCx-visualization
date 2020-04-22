@@ -94,7 +94,7 @@
     "redux-saga-test-plan": "^4.0.0-rc.3",
     "redux-starter-kit": "^0.5.1"
   },
-  "proxy": "https://localhost:7898",
+  "proxy": "http://localhost:7898",
   "main": "index.js",
   "homepage": "/",
   "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>",
