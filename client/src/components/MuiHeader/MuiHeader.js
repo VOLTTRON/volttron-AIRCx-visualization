@@ -184,8 +184,8 @@ class MuiHeader extends React.Component {
         }}
       >
         <div className={classes.spacer} />
-        <MuiLink to={temp.path}>
-          <MuiIcon color="primary" />
+        <MuiLink style={{ textTransform: "none" }} to={temp.path}>
+          <MuiIcon style={{ marginRight: "7px" }} color="primary" />
           <Typography color="primary">
             <strong>{temp.label}</strong>
           </Typography>

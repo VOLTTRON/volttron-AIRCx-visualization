@@ -12,7 +12,7 @@ const route = {
   icon: DescriptionIcon,
   user: true,
   indent: true,
-  hidden: false,
+  hidden: true,
 };
 
 export default route;
