@@ -33,7 +33,7 @@ const MuiTextArea = (props) => {
         {..._.omit(props, ["classes", "className", "placeholder", "header"])}
         className={clsx(className, classes.textArea)}
         aria-label={ariaLabel ? ariaLabel : header ? header : placeholder}
-        size="small"
+        size="medium"
         variant="outlined"
         fullWidth
         multiline

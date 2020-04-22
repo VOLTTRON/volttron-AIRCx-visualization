@@ -73,8 +73,9 @@ const MuiSelect = (props) => {
       <FormControl
         className={clsx(fullWidth && classes.fullWidth)}
         variant="outlined"
-        size="small"
-        margin="dense"
+        size="medium"
+        margin="none"
+        fullWidth
       >
         <Select
           id={id}

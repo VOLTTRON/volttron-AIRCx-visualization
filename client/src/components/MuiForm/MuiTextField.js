@@ -39,7 +39,7 @@ const MuiTextField = (props) => {
         ])}
         className={clsx(className, classes.textField)}
         aria-label={ariaLabel ? ariaLabel : header ? header : placeholder}
-        size="small"
+        size="medium"
         variant="outlined"
         fullWidth
         placeholder={_.isEmpty(header) ? placeholder : undefined}

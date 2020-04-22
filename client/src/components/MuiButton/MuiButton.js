@@ -13,19 +13,19 @@ import styles from "./styles";
  * type - string [primary, submit, cancel]
  * @param {object} props
  */
-const MuiButton = props => {
+const MuiButton = (props) => {
   const { classes, className, disabled, tooltip, type, width } = props;
   const classNames = clsx([
     className,
     classes.default,
     classes[type],
     width,
-    disabled && "disabled"
+    disabled && "disabled",
   ]);
   return (
     <ConditionalWrapper
       condition={!(width === "xl" || !tooltip)}
-      wrapper={c => (
+      wrapper={(c) => (
         <Tooltip placement="bottom" title={tooltip}>
           {c}
         </Tooltip>
@@ -38,10 +38,9 @@ const MuiButton = props => {
           "header",
           "tooltip",
           "type",
-          "width"
+          "width",
         ])}
         className={classNames}
-        disableRipple
       />
     </ConditionalWrapper>
   );

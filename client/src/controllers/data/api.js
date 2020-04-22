@@ -75,5 +75,5 @@ export const uploadConfig = (file) => {
 
 export const readSources = () => {
   if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_SOURCES_READ);
-  return read(`${SERVICE_ENDPOINT_SOURCES}`, null, true);
+  return read(`${SERVICE_ENDPOINT_SOURCES}`, null, false);
 };

@@ -1,42 +1,45 @@
-import { lightest, primary, primaryTint } from "constants/palette";
+import { black, primaryShade, white } from "constants/palette";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    zIndex: theme.zIndex.drawer + 1
+    backgroundColor: white,
+    zIndex: theme.zIndex.drawer + 1,
   },
   image: {
-    height: "48px"
+    height: "48px",
   },
   title: {
     flexGrow: 0,
-    color: lightest
+    color: black,
   },
   page: {
     flexGrow: 0,
-    paddingLeft: "80px",
-    color: lightest
+    paddingLeft: "90px",
+    color: black,
   },
   mode: {
     flexGrow: 0,
     paddingLeft: "50px",
-    color: primaryTint
+    color: primaryShade,
   },
   modeIcon: {
-    color: primaryTint
+    color: primaryShade,
   },
   spacer: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   user: {
     flexGrow: 0,
     marginLeft: "1em",
     marginRight: "0em",
-    color: lightest
+    color: black,
   },
   toolbar: {
-    paddingLeft: "50px",
-    backgroundColor: primary
-  }
+    paddingLeft: "90px",
+    paddingRight: "90px",
+    color: black,
+    backgroundColor: white,
+  },
 });
 
 export default styles;

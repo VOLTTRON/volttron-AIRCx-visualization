@@ -1,4 +1,4 @@
-import { error, gray } from "constants/palette";
+import { error, gray, primary } from "constants/palette";
 
 const styles = {
   attribute: {
@@ -61,6 +61,9 @@ const styles = {
       lineHeight: "1.1875em",
       padding: "0.3125em",
       width: "100%",
+    },
+    "& svg": {
+      color: primary,
     },
   },
   value: {
