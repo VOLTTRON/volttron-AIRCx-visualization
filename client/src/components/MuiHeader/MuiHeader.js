@@ -3,9 +3,10 @@ import { withStyles } from "@material-ui/core/styles";
 import {
   AccountCircle as AccountCircleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
+  Today as TodayIcon,
 } from "@material-ui/icons";
 import clsx from "clsx";
-import { MuiButton, MuiIconButton, MuiSelect } from "components";
+import { MuiButton, MuiDatePicker, MuiIconButton, MuiSelect } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import { black } from "constants/palette";
@@ -23,6 +24,7 @@ import {
   selectUser,
 } from "controllers/user/action";
 import _ from "lodash";
+import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import { routes } from "routes";
@@ -35,10 +37,11 @@ class MuiHeader extends React.Component {
     building: "",
     device: "",
     diagnostic: "",
-    start: "",
-    end: "",
+    start: moment().format(),
+    end: moment()
+      .add(1, "day")
+      .format(),
     filter: "",
-    range: "",
   };
 
   componentDidMount() {
@@ -71,18 +74,29 @@ class MuiHeader extends React.Component {
     switch (key) {
       case "site":
         form.building = "";
-      // break omitted
-      // eslint-disable-next-line
+        form.device = "";
+        this.setState(form);
+        this.props.setDataForm(form);
+        break;
       case "building":
         form.device = "";
         this.setState(form);
-      // break omitted
-      // eslint-disable-next-line
+        this.props.setDataForm(form);
+        break;
       case "device":
       case "diagnostic":
-      case "start":
-      case "end":
       case "filter":
+      case "end":
+        this.props.setDataForm(form);
+        break;
+      case "start":
+        const { start } = _.get(this.props, ["form"], {});
+        if (start) {
+          form.end = moment(form.end)
+            .add(moment(form.start).diff(moment(start), "day", true), "day")
+            .format();
+          this.setState(form);
+        }
         this.props.setDataForm(form);
         break;
       default:
@@ -226,7 +240,15 @@ class MuiHeader extends React.Component {
 
   renderForm() {
     const { classes, page, sources } = this.props;
-    const { site, building, device, diagnostic, filter, range } = this.state;
+    const {
+      site,
+      building,
+      device,
+      diagnostic,
+      filter,
+      start,
+      end,
+    } = this.state;
     return (
       <div className={clsx(classes.row, classes.form)}>
         <div className={classes.site}>
@@ -286,12 +308,24 @@ class MuiHeader extends React.Component {
           </MuiSelect>
         </div>
         <div className={classes.range}>
-          <MuiSelect
-            id="range"
-            placeholder="Date Range"
-            value={range}
-            onChange={this.handleChange("range")}
-          ></MuiSelect>
+          <MuiDatePicker
+            id="start"
+            placeholder="From Date"
+            format="MM/DD/YYYY"
+            value={moment(start)}
+            onChange={(v) => this.handleChange("start")(null, v.format())}
+            keyboardIcon={<TodayIcon />}
+          />
+        </div>
+        <div className={classes.range}>
+          <MuiDatePicker
+            id="end"
+            placeholder="Until Date"
+            format="MM/DD/YYYY"
+            minDate={moment(start).day(moment(start).day() + 1)}
+            value={moment(end)}
+            onChange={(v) => this.handleChange("end")(null, v.format())}
+          />
         </div>
         {page.name === "Visualization" ? (
           <div className={classes.filter}>

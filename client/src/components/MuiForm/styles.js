@@ -86,6 +86,22 @@ const styles = {
       textOverflow: "ellipsis",
     },
   },
+  datePicker: {
+    padding: "0",
+    margin: "0",
+    "& input": {
+      fontSize: ".8rem",
+      height: "2em",
+      padding: "0.3125em",
+    },
+    "& > div": {
+      paddingLeft: "0.3125em",
+      paddingRight: "0px",
+    },
+    "& svg": {
+      color: primary,
+    },
+  },
 };
 
 export default styles;

@@ -3,6 +3,7 @@ export { default as MuiButton } from "./MuiButton";
 export { default as MuiDialog } from "./MuiDialog";
 export { default as MuiFooter } from "./MuiFooter";
 export { default as MuiCheckbox } from "./MuiForm/MuiCheckbox";
+export { default as MuiDatePicker } from "./MuiForm/MuiDatePicker";
 export { default as MuiSection } from "./MuiForm/MuiSection";
 export { default as MuiSelect } from "./MuiForm/MuiSelect";
 export { default as MuiTextArea } from "./MuiForm/MuiTextArea";

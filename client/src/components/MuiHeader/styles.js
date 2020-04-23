@@ -91,11 +91,13 @@ const styles = (theme) => ({
     border: `1px solid ${gray}`,
   },
   range: {
-    minWidth: "216px",
+    width: "136px",
+    minWidth: "136px",
     marginRight: "24px",
   },
   loadButton: {
     width: "136px",
+    minWidth: "136px",
   },
 });
 

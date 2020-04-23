@@ -5,7 +5,7 @@ import { CURRENT_CONFIG, DATA_FORM, key } from "./action";
 
 const initialState = (function() {
   const end = moment(getTimestamp().getTime()).startOf("day");
-  const start = moment(end).year(moment(end).year() - 1);
+  const start = moment(end).subtract(1, "year");
   return {
     data: {
       form: {
