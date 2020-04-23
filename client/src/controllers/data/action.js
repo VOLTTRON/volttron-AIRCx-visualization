@@ -14,6 +14,11 @@ export const CURRENT_CONFIG = generateType(key, "current");
 export const setCurrentConfig = generateAction(CURRENT_CONFIG);
 export const selectCurrentConfig = generateSelector(key, CURRENT_CONFIG);
 
+// form
+export const DATA_FORM = generateType(key, "form");
+export const setDataForm = generateAction(DATA_FORM);
+export const selectDataForm = generateSelector(key, DATA_FORM);
+
 // edit config
 export const EDIT_CONFIG = generateTypes(key, "edit");
 export const [

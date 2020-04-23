@@ -4,11 +4,18 @@ import {
   AccountCircle as AccountCircleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
 } from "@material-ui/icons";
+import clsx from "clsx";
 import { MuiButton, MuiIconButton, MuiSelect } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
-import { black, white } from "constants/palette";
+import filters from "constants/filters";
+import { black } from "constants/palette";
 import { selectMode, setMode } from "controllers/common/action";
-import { fetchSources, selectSources } from "controllers/data/action";
+import {
+  fetchSources,
+  selectDataForm,
+  selectSources,
+  setDataForm,
+} from "controllers/data/action";
 import {
   logoutUser,
   selectLoginUser,
@@ -22,20 +29,22 @@ import { routes } from "routes";
 import styles from "./styles";
 
 class MuiHeader extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      anchorEl: null,
-      site: "",
-      building: "",
-      device: "",
-      diagnostic: "",
-      range: "",
-    };
-  }
+  state = {
+    anchorEl: null,
+    site: "",
+    building: "",
+    device: "",
+    diagnostic: "",
+    start: "",
+    end: "",
+    filter: "",
+    range: "",
+  };
 
   componentDidMount() {
+    const { form } = this.props;
     this.props.fetchSources();
+    this.setState(form);
   }
 
   handleChange = (key) => (event, value) => {
@@ -50,13 +59,31 @@ class MuiHeader extends React.Component {
   };
 
   handleUpdate = (key) => () => {
+    const form = _.pick(this.state, [
+      "site",
+      "building",
+      "device",
+      "diagnostic",
+      "start",
+      "end",
+      "filter",
+    ]);
     switch (key) {
       case "site":
-        this.setState({ building: "" });
+        form.building = "";
       // break omitted
       // eslint-disable-next-line
       case "building":
-        this.setState({ device: "" });
+        form.device = "";
+        this.setState(form);
+      // break omitted
+      // eslint-disable-next-line
+      case "device":
+      case "diagnostic":
+      case "start":
+      case "end":
+      case "filter":
+        this.props.setDataForm(form);
         break;
       default:
       // no need to handle all cases
@@ -174,18 +201,10 @@ class MuiHeader extends React.Component {
       .find((route) => route.name !== page.name);
     const MuiIcon = temp.icon;
     return (
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          paddingLeft: "90px",
-          paddingRight: "90px",
-          background: white,
-        }}
-      >
+      <div className={classes.row}>
         <div className={classes.spacer} />
-        <MuiLink style={{ textTransform: "none" }} to={temp.path}>
-          <MuiIcon style={{ marginRight: "7px" }} color="primary" />
+        <MuiLink className={classes.link} to={temp.path}>
+          <MuiIcon className={classes.linkIcon} color="primary" />
           <Typography color="primary">
             <strong>{temp.label}</strong>
           </Typography>
@@ -197,15 +216,7 @@ class MuiHeader extends React.Component {
   renderTitle() {
     const { classes } = this.props;
     return (
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          paddingLeft: "90px",
-          paddingRight: "90px",
-          background: white,
-        }}
-      >
+      <div className={classes.row}>
         <Typography variant="h6" className={classes.title}>
           <strong>{`Fault Detection & Diagnostic Visualization`}</strong>
         </Typography>
@@ -214,21 +225,11 @@ class MuiHeader extends React.Component {
   }
 
   renderForm() {
-    const { classes, sources } = this.props;
-    const { site, building, device, diagnostic, range } = this.state;
+    const { classes, page, sources } = this.props;
+    const { site, building, device, diagnostic, filter, range } = this.state;
     return (
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          paddingLeft: "90px",
-          paddingRight: "90px",
-          background: white,
-          height: "136px",
-          paddingTop: "45px",
-        }}
-      >
-        <div style={{ width: "136px", marginRight: "24px" }}>
+      <div className={clsx(classes.row, classes.form)}>
+        <div className={classes.site}>
           <MuiSelect
             id="site"
             placeholder="Site"
@@ -242,7 +243,7 @@ class MuiHeader extends React.Component {
             ))}
           </MuiSelect>
         </div>
-        <div style={{ width: "136px", marginRight: "24px" }}>
+        <div className={classes.building}>
           <MuiSelect
             id="building"
             placeholder="Building"
@@ -256,7 +257,7 @@ class MuiHeader extends React.Component {
             ))}
           </MuiSelect>
         </div>
-        <div style={{ width: "136px", marginRight: "24px" }}>
+        <div className={classes.device}>
           <MuiSelect
             id="device"
             placeholder="Device"
@@ -270,7 +271,7 @@ class MuiHeader extends React.Component {
             ))}
           </MuiSelect>
         </div>
-        <div style={{ width: "166px", marginRight: "24px" }}>
+        <div className={classes.diagnostic}>
           <MuiSelect
             id="diagnostic"
             placeholder="Diagnostic"
@@ -284,7 +285,7 @@ class MuiHeader extends React.Component {
             ))}
           </MuiSelect>
         </div>
-        <div style={{ width: "216px", marginRight: "24px" }}>
+        <div className={classes.range}>
           <MuiSelect
             id="range"
             placeholder="Date Range"
@@ -292,8 +293,44 @@ class MuiHeader extends React.Component {
             onChange={this.handleChange("range")}
           ></MuiSelect>
         </div>
+        {page.name === "Visualization" ? (
+          <div className={classes.filter}>
+            <MuiSelect
+              id="filter"
+              placeholder="Filter"
+              value={filter}
+              onChange={this.handleChange("filter")}
+              renderValue={(v) => {
+                const value = filters.parse(v);
+                if (value) {
+                  return (
+                    <React.Fragment>
+                      <span
+                        className={classes.selectedBox}
+                        style={{
+                          background: value.color,
+                        }}
+                      />
+                      {value.label}
+                    </React.Fragment>
+                  );
+                }
+              }}
+            >
+              {filters.values.map((i) => (
+                <MenuItem key={`filter-${i.name}`} value={i.name}>
+                  <span
+                    className={classes.filterBox}
+                    style={{ background: i.color }}
+                  />
+                  {i.label}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </div>
+        ) : null}
         <div className={classes.spacer} />
-        <div style={{ width: "136px" }}>
+        <div className={classes.loadButton}>
           <MuiButton
             label="Load Data"
             type="primary"
@@ -327,12 +364,14 @@ const mapStateToProps = (state) => ({
   user: selectUser(state),
   mode: selectMode(state),
   sources: selectSources(state),
+  form: selectDataForm(state),
 });
 
 const mapActionToProps = {
   logoutUser,
   setMode,
   fetchSources,
+  setDataForm,
 };
 
 export default connect(
