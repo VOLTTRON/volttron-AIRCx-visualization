@@ -9,7 +9,7 @@ import {
 
 const typography = {
   useNextVariants: true,
-  fontFamily: ['"Roboto"', "sans-serif"].join(","),
+  fontFamily: "'Lato', sans-serif",
 };
 
 const overrides = {
@@ -20,7 +20,7 @@ const overrides = {
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right",
         backgroundAttachment: "fixed",
-        fontFamily: "'Roboto', sans-serif",
+        fontFamily: "'Lato', sans-serif",
         overflowY: "hidden",
       },
     },
