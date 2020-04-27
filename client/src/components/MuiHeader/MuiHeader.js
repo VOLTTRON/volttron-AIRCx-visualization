@@ -30,7 +30,41 @@ import { connect } from "react-redux";
 import { routes } from "routes";
 import styles from "./styles";
 
+const createFormUpdate = (state, sources) => {
+  const update = {};
+  if (_.get(sources, ["sites"], []).length === 1 && _.isEmpty(state.site)) {
+    update.site = _.get(sources, ["sites", "0"], "");
+  }
+  const site = _.get(_.merge({}, state, update), "site");
+  if (
+    site &&
+    _.get(sources, ["buildings", site], []).length === 1 &&
+    _.isEmpty(state.building)
+  ) {
+    update.building = _.get(sources, ["buildings", site, "0"], "");
+  }
+  const building = _.get(_.merge({}, state, update), "building");
+  if (
+    building &&
+    _.get(sources, ["devices", building], []).length === 1 &&
+    _.isEmpty(state.device)
+  ) {
+    update.device = _.get(sources, ["devices", building, "0"], "");
+  }
+  if (
+    _.get(sources, ["diagnostics"], []).length === 1 &&
+    _.isEmpty(state.diagnostic)
+  ) {
+    update.diagnostic = _.get(sources, ["diagnostics", "0"], "");
+  }
+  return update;
+};
+
 class MuiHeader extends React.Component {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return createFormUpdate(prevState, _.get(nextProps, ["sources"], {}));
+  }
+
   state = {
     anchorEl: null,
     site: "",
@@ -45,9 +79,9 @@ class MuiHeader extends React.Component {
   };
 
   componentDidMount() {
-    const { form } = this.props;
+    const { form, sources } = this.props;
     this.props.fetchSources();
-    this.setState(form);
+    this.setState(createFormUpdate(_.merge(this.state, form), sources));
   }
 
   handleChange = (key) => (event, value) => {
