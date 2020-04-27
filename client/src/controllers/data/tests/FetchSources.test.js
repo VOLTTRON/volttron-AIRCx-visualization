@@ -7,16 +7,13 @@ import {
   fetchSourcesSuccess,
   selectSourcesRequest,
 } from "controllers/data/action";
-import {
-  SERVICE_ENDPOINT_SOURCES,
-  SERVICE_ENDPOINT_SOURCES_READ,
-} from "controllers/data/api";
+import { SERVICE_ENDPOINT_SOURCES } from "controllers/data/api";
 import mock from "controllers/data/mock";
 import { readSourcesSaga } from "controllers/data/saga";
 import configureStore from "controllers/store";
 import { fetchMock } from "fetch-mock";
 import { expectSaga } from "redux-saga-test-plan";
-const data = mock[SERVICE_ENDPOINT_SOURCES_READ];
+const data = mock[SERVICE_ENDPOINT_SOURCES];
 
 const reduxStore = configureStore({});
 

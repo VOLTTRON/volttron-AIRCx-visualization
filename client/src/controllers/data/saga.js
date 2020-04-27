@@ -8,11 +8,16 @@ import {
   editConfigError,
   editConfigSuccess,
   EDIT_CONFIG,
+  fetchDiagnosticsBusy,
+  fetchDiagnosticsError,
+  fetchDiagnosticsSuccess,
   fetchSourcesBusy,
   fetchSourcesError,
   fetchSourcesSuccess,
+  FETCH_DIAGNOSTICS,
   FETCH_SOURCES,
   selectCurrentConfig,
+  selectDataForm,
   selectTransmogrifyConfigRequest,
   setCurrentConfig,
   transmogrifyConfig,
@@ -29,7 +34,12 @@ import {
   UPLOAD_CONFIG,
   UPLOAD_SAMPLE,
 } from "./action";
-import { readSources, uploadConfig, uploadSample } from "./api";
+import {
+  readDiagnostics,
+  readSources,
+  uploadConfig,
+  uploadSample,
+} from "./api";
 const { REQUEST } = ActionTypes;
 
 const transmogrifyConfigHelper = (config, filter, field, direction) => {
@@ -210,10 +220,26 @@ export function* readSourcesSaga() {
   }
 }
 
+export function* readDiagnosticsSaga(action) {
+  const { payload } = action;
+  try {
+    yield put(fetchDiagnosticsBusy(true));
+    yield put(fetchDiagnosticsError());
+    const form = yield select(selectDataForm);
+    const response = yield call(readDiagnostics, _.merge(form, payload));
+    yield put(fetchDiagnosticsSuccess(response));
+  } catch (error) {
+    yield put(fetchDiagnosticsError(error.message));
+  } finally {
+    yield put(fetchDiagnosticsBusy(false));
+  }
+}
+
 export default function* dataSaga() {
   yield takeLatest(TRANSMOGRIFY_CONFIG[REQUEST], transmogrifyConfigSaga);
   yield takeLatest(EDIT_CONFIG[REQUEST], editConfigSaga);
   yield takeLatest(UPLOAD_SAMPLE[REQUEST], uploadSampleSaga);
   yield takeLatest(UPLOAD_CONFIG[REQUEST], uploadConfigSaga);
   yield takeLatest(FETCH_SOURCES[REQUEST], readSourcesSaga);
+  yield takeLatest(FETCH_DIAGNOSTICS[REQUEST], readDiagnosticsSaga);
 }

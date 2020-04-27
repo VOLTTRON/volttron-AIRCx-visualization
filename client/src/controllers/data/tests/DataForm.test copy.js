@@ -17,8 +17,10 @@ describe("data.setForm()", () => {
       building: "",
       device: "",
       diagnostic: "",
-      start: moment(end).year(moment(end).year() - 1),
-      end: end,
+      start: moment(end)
+        .year(moment(end).year() - 1)
+        .format(),
+      end: end.format(),
       filter: "all",
     };
     reduxStore.dispatch(setDataForm(payload));

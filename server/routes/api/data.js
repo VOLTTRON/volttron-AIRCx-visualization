@@ -17,4 +17,13 @@ router.get("/sources", auth.optional, (req, res, next) => {
   });
 });
 
+// get diagnostics data
+router.post("/diagnostics", auth.optional, (req, res, next) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 3 * 1000);
+  }).then(() => {
+    return res.status(200).json({ name: "Fake Data" });
+  });
+});
+
 module.exports = router;

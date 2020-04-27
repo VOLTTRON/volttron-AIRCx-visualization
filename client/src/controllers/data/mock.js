@@ -1,6 +1,7 @@
 import _ from "lodash";
 import {
-  SERVICE_ENDPOINT_SOURCES_READ,
+  SERVICE_ENDPOINT_DIAGNOSTICS,
+  SERVICE_ENDPOINT_SOURCES,
   UNIQUE_KEY_UPLOAD_CONFIG,
   UNIQUE_KEY_UPLOAD_SAMPLE,
 } from "./api";
@@ -37,7 +38,7 @@ export default {
       items: [],
     },
   },
-  [SERVICE_ENDPOINT_SOURCES_READ]: {
+  [SERVICE_ENDPOINT_SOURCES]: {
     payload: null,
     result: {
       sites: ["PNNL"],
@@ -52,6 +53,19 @@ export default {
         "350_BUILDING": ["HP3", "HP4", "HP5", "HP6", "HP7"],
       },
       diagnostics: ["Economizer_RCx", "Airside_RCx"],
+    },
+  },
+  [SERVICE_ENDPOINT_DIAGNOSTICS]: {
+    payload: {
+      site: "PNNL",
+      building: "SEB",
+      device: "AHU1",
+      diagnostic: "Economizer_RCx",
+      start: "2019-04-27T00:00:00-07:00",
+      end: "2020-04-27T00:00:00-07:00",
+    },
+    result: {
+      name: "Mocked Data",
     },
   },
 };

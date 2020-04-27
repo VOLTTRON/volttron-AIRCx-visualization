@@ -1,12 +1,12 @@
 import CsvParser from "csv-parser";
 import { Readable } from "stream";
-import { doMocked, isMocked, read } from "../api";
+import { create, doMocked, isMocked, read } from "../api";
 import { key } from "./action";
 export const UNIQUE_KEY_UPLOAD_SAMPLE = "sample/upload";
 export const UNIQUE_KEY_UPLOAD_CONFIG = "config/upload";
 export const SERVICE_ENDPOINT = "data";
+export const SERVICE_ENDPOINT_DIAGNOSTICS = `${SERVICE_ENDPOINT}/diagnostics`;
 export const SERVICE_ENDPOINT_SOURCES = `${SERVICE_ENDPOINT}/sources`;
-export const SERVICE_ENDPOINT_SOURCES_READ = `${SERVICE_ENDPOINT_SOURCES}/get`;
 
 const readSample = (file) => {
   return new Promise((resolve, reject) => {
@@ -74,6 +74,11 @@ export const uploadConfig = (file) => {
 };
 
 export const readSources = () => {
-  if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_SOURCES_READ);
+  if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_SOURCES);
   return read(`${SERVICE_ENDPOINT_SOURCES}`, null, false);
+};
+
+export const readDiagnostics = (form) => {
+  if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_DIAGNOSTICS);
+  return create(`${SERVICE_ENDPOINT_DIAGNOSTICS}`, form, null, false);
 };

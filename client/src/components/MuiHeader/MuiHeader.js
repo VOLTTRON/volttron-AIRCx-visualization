@@ -12,8 +12,10 @@ import filters from "constants/filters";
 import { black } from "constants/palette";
 import { selectMode, setMode } from "controllers/common/action";
 import {
+  fetchDiagnostics,
   fetchSources,
   selectDataForm,
+  selectDiagnosticsBusy,
   selectSources,
   setDataForm,
 } from "controllers/data/action";
@@ -76,6 +78,7 @@ class MuiHeader extends React.Component {
       .add(1, "day")
       .format(),
     filter: "",
+    changed: false,
   };
 
   componentDidMount() {
@@ -109,18 +112,23 @@ class MuiHeader extends React.Component {
       case "site":
         form.building = "";
         form.device = "";
+        this.setState({ changed: true });
         this.setState(form);
         this.props.setDataForm(form);
         break;
       case "building":
         form.device = "";
+        this.setState({ changed: true });
         this.setState(form);
         this.props.setDataForm(form);
         break;
       case "device":
       case "diagnostic":
-      case "filter":
       case "end":
+        this.setState({ changed: true });
+        this.props.setDataForm(form);
+        break;
+      case "filter":
         this.props.setDataForm(form);
         break;
       case "start":
@@ -131,6 +139,7 @@ class MuiHeader extends React.Component {
             .format();
           this.setState(form);
         }
+        this.setState({ changed: true });
         this.props.setDataForm(form);
         break;
       default:
@@ -139,10 +148,13 @@ class MuiHeader extends React.Component {
   };
 
   isDisabled = (key) => {
-    const { site, building, device, diagnostic } = this.state;
+    const { busy } = this.props;
+    const { site, building, device, diagnostic, changed } = this.state;
     switch (key) {
       case "load-data":
         return (
+          !changed ||
+          Boolean(busy) ||
           _.isEmpty(site) ||
           _.isEmpty(building) ||
           _.isEmpty(device) ||
@@ -173,7 +185,8 @@ class MuiHeader extends React.Component {
   };
 
   handleLoadData = () => {
-    console.log("Load Data...");
+    this.setState({ changed: false });
+    this.props.fetchDiagnostics();
   };
 
   renderUser() {
@@ -433,6 +446,7 @@ const mapStateToProps = (state) => ({
   mode: selectMode(state),
   sources: selectSources(state),
   form: selectDataForm(state),
+  busy: selectDiagnosticsBusy(state),
 });
 
 const mapActionToProps = {
@@ -440,6 +454,7 @@ const mapActionToProps = {
   setMode,
   fetchSources,
   setDataForm,
+  fetchDiagnostics,
 };
 
 export default connect(

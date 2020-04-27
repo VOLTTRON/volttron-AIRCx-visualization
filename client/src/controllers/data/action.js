@@ -101,3 +101,19 @@ export const [
   ,
   selectSourcesRequest,
 ] = generateSelectors(FETCH_SOURCES);
+
+// fetch data
+export const FETCH_DIAGNOSTICS = generateTypes(key, "diagnostics");
+export const [
+  fetchDiagnostics,
+  fetchDiagnosticsSuccess,
+  fetchDiagnosticsError,
+  fetchDiagnosticsBusy,
+] = generateActions(FETCH_DIAGNOSTICS);
+export const [
+  selectDiagnostics,
+  selectDiagnosticsError,
+  selectDiagnosticsBusy,
+  ,
+  selectDiagnosticsRequest,
+] = generateSelectors(FETCH_DIAGNOSTICS);
