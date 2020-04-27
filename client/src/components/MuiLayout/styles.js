@@ -1,14 +1,13 @@
-const styles = theme => {
+const styles = (theme) => {
   return {
     root: {
-      display: "flex"
+      display: "flex",
     },
     content: {
       flexGrow: 1,
       overflowX: "hidden",
-      paddingLeft: "20px"
     },
-    toolbar: theme.mixins.toolbar
+    toolbar: theme.mixins.toolbar,
   };
 };
 

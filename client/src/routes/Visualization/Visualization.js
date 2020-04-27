@@ -1,16 +1,38 @@
 import { Grid, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import { MuiLoading } from "components";
 import React from "react";
 import { connect } from "react-redux";
 import styles from "./styles";
 
 class Visualization extends React.Component {
   render() {
-    const { page } = this.props;
+    const { classes, data, busy } = this.props;
+    if (!data) {
+      if (busy) {
+        return (
+          <div className={classes.container}>
+            <MuiLoading />
+          </div>
+        );
+      } else {
+        return (
+          <div className={classes.container}>
+            <Typography variant="h4" className={classes.message}>
+              <strong>Specify device details to load data…</strong>
+            </Typography>
+          </div>
+        );
+      }
+    }
     return (
-      <Grid container alignContent="center" justify="center" spacing={2}>
+      <Grid container alignContent="center" justify="center" spacing={0}>
         <Grid item xs={12}>
-          <Typography variant="h5">{page.label}</Typography>
+          <div className={classes.container}>
+            <Typography variant="h4" className={classes.message}>
+              <strong>Visualization goes here</strong>
+            </Typography>
+          </div>
         </Grid>
       </Grid>
     );
