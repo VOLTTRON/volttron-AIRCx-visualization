@@ -45,7 +45,7 @@ const styles = (theme) => ({
     bottom: "50%",
   },
   days: { position: "relative" },
-  day: { color: gray, fontSize: ".875rem" },
+  day: { color: gray, fontSize: ".875rem", height: "21px" },
   xAxis: {
     width: "100%",
     height: "90px",
