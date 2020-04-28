@@ -94,6 +94,20 @@ const styles = (theme) => ({
     color: gray,
     fontSize: ".8rem",
   },
+  popupContent: {
+    display: "flex",
+    height: "600px",
+  },
+  popupPrevious: {
+    display: "flex",
+    height: "100%",
+    padding: "8px",
+  },
+  popupNext: {
+    display: "flex",
+    height: "100%",
+    padding: "8px",
+  },
 });
 
 export default styles;

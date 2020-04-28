@@ -9,6 +9,7 @@ import _ from "lodash";
 import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
+import Popup from "./Popup";
 import styles from "./styles";
 
 class Graph extends React.Component {
@@ -26,20 +27,62 @@ class Graph extends React.Component {
               y: d + 1,
               size: 10,
               color: primary,
+              date: moment()
+                .year(year)
+                .month(m)
+                .date(d + 1),
             };
           })
         );
       }, []),
       temp: [],
+      show: null,
     };
   }
 
-  handleValueClick = (datapoint) => {
-    console.log(`Datapoint clicked: ${JSON.stringify(datapoint)}`);
+  isPrevious = () => {
+    const { show } = this.state;
+    if (show) {
+      return show.date.dayOfYear() > 1;
+    }
+  };
+
+  isNext = () => {
+    const { show } = this.state;
+    if (show) {
+      return (show.date.isLeapYear() ? 366 : 365) - show.date.dayOfYear() > 0;
+    }
+  };
+
+  handleValueClick = (value) => {
+    console.log(JSON.stringify(value));
+    this.setState({ show: value });
+  };
+
+  handleValuePrevious = () => {
+    const { base, show } = this.state;
+    if (this.isPrevious()) {
+      const date = show.date.clone().subtract("day", 1);
+      const mark = _.find(base, { x: date.month() + 1, y: date.date() });
+      this.setState({ show: mark });
+    }
+  };
+
+  handleValueNext = () => {
+    const { base, show } = this.state;
+    if (this.isPrevious()) {
+      const date = show.date.clone().add("day", 1);
+      const mark = _.find(base, { x: date.month() + 1, y: date.date() });
+      this.setState({ show: mark });
+    }
+  };
+
+  handleClose = () => {
+    this.setState({ show: null });
   };
 
   render() {
-    const { year, base } = this.state;
+    const { year, base, show } = this.state;
     const { classes, data } = this.props;
     const marks = base.map((item) =>
       _.merge({}, item, _.find(data, { x: item.x, y: item.y }))
@@ -75,6 +118,16 @@ class Graph extends React.Component {
             <strong>Economizer Outdoor Air Problems</strong>
           </Typography>
         </div>
+        {show && (
+          <Popup
+            data={show}
+            onClose={this.handleClose}
+            isNext={this.isNext()}
+            isPrevious={this.isPrevious()}
+            onNext={this.handleValueNext}
+            onPrevious={this.handleValuePrevious}
+          />
+        )}
       </Paper>
     );
   }
