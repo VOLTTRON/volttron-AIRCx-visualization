@@ -7,7 +7,10 @@ import {
 } from "controllers/data/action";
 import React from "react";
 import { connect } from "react-redux";
+import Graph from "./Graph";
 import styles from "./styles";
+import XAxis from "./XAxis";
+import YAxis from "./YAxis";
 
 class Visualization extends React.Component {
   render() {
@@ -28,15 +31,17 @@ class Visualization extends React.Component {
       );
     }
     return (
-      // <Grid container alignContent="center" justify="center" spacing={0}>
-      //   <Grid item xs={12}>
-      <div className={classes.container}>
-        <Typography variant="h4" className={classes.message}>
-          <strong>Visualization goes here</strong>
-        </Typography>
+      <div className={classes.content}>
+        <XAxis />
+        <div className={classes.flex}>
+          <YAxis />
+          <Graph />
+          <Graph />
+          <Graph />
+          <Graph />
+          <Graph />
+        </div>
       </div>
-      //   </Grid>
-      // </Grid>
     );
   }
 }
