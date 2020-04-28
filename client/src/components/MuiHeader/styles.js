@@ -8,7 +8,7 @@ const styles = (theme) => ({
   image: {
     height: "48px",
   },
-  title: {
+  titleLabel: {
     flexGrow: 0,
     color: black,
   },
@@ -40,6 +40,12 @@ const styles = (theme) => ({
     color: black,
     backgroundColor: white,
   },
+  navigation: {
+    maxHeight: "32px",
+  },
+  title: {
+    maxHeight: "32px",
+  },
   row: {
     display: "flex",
     width: "100%",
@@ -54,7 +60,7 @@ const styles = (theme) => ({
     marginRight: "7px",
   },
   form: {
-    height: "136px",
+    height: "140px",
     paddingTop: "45px",
   },
   site: {

@@ -4,11 +4,6 @@ import { all, faults, inconclusive, unitOff } from "./palette";
 export default {
   values: [
     {
-      name: "faults",
-      label: "Faults Only",
-      color: faults,
-    },
-    {
       name: "inconclusive",
       label: "Inconclusive Only",
       color: inconclusive,
@@ -17,6 +12,11 @@ export default {
       name: "unit-off",
       label: "Unit Off Only",
       color: unitOff,
+    },
+    {
+      name: "faults",
+      label: "Faults Only",
+      color: faults,
     },
     {
       name: "all",

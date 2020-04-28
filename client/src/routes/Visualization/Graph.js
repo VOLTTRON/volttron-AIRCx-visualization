@@ -1,4 +1,4 @@
-import { Paper } from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { primary, white } from "constants/palette";
 import {
@@ -9,7 +9,6 @@ import _ from "lodash";
 import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
-import { CustomSVGSeries, XYPlot } from "react-vis";
 import styles from "./styles";
 
 class Graph extends React.Component {
@@ -20,7 +19,6 @@ class Graph extends React.Component {
       year: year,
       base: _.range(12).reduce((a, m) => {
         const month = moment(`${year}-${m + 1}`);
-        // const abbr = month.format("MMM").slice(1);
         return a.concat(
           _.range(month.daysInMonth()).map((d) => {
             return {
@@ -32,14 +30,22 @@ class Graph extends React.Component {
           })
         );
       }, []),
+      temp: [],
     };
   }
+
+  handleValueClick = (datapoint) => {
+    console.log(`Datapoint clicked: ${JSON.stringify(datapoint)}`);
+  };
 
   render() {
     const { year, base } = this.state;
     const { classes, data } = this.props;
+    const marks = base.map((item) =>
+      _.merge({}, item, _.find(data, { x: item.x, y: item.y }))
+    );
     return (
-      <Paper className={classes.graph} color={white} elevation={3}>
+      <Paper className={classes.paper} color={white} elevation={3}>
         <div className={classes.months}>
           {_.range(12).map((v) => (
             <span key={`month-${v}`} className={classes.month}>
@@ -51,20 +57,24 @@ class Graph extends React.Component {
             </span>
           ))}
         </div>
-        <XYPlot
-          width={227}
-          height={648}
-          yDomain={[31, 1]}
-          margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
-        >
-          <CustomSVGSeries
-            sizeRange={[1, 10]}
-            style={{ fill: primary }}
-            colorType="literal"
-            customComponent="square"
-            data={_.merge(base, data)}
-          />
-        </XYPlot>
+        <div className={classes.chart}>
+          {marks.map((mark) => (
+            <div
+              key={`mark-${mark.x}-${mark.y}`}
+              className={classes.mark}
+              style={{
+                left: mark.x * 19 - 18,
+                top: mark.y * 21 - 19,
+              }}
+              onMouseDown={() => this.handleValueClick(mark)}
+            />
+          ))}
+        </div>
+        <div className={classes.footer}>
+          <Typography className={classes.footerLabel} variant="body1">
+            <strong>Economizer Outdoor Air Problems</strong>
+          </Typography>
+        </div>
       </Paper>
     );
   }

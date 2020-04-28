@@ -8,6 +8,7 @@ import {
 import React from "react";
 import { connect } from "react-redux";
 import Graph from "./Graph";
+import Legend from "./Legend";
 import styles from "./styles";
 import XAxis from "./XAxis";
 import YAxis from "./YAxis";
@@ -15,20 +16,22 @@ import YAxis from "./YAxis";
 class Visualization extends React.Component {
   render() {
     const { classes, data, busy } = this.props;
-    if (busy) {
-      return (
-        <div className={classes.container}>
-          <MuiLoading />
-        </div>
-      );
-    } else if (!data) {
-      return (
-        <div className={classes.container}>
-          <Typography variant="h4" className={classes.message}>
-            <strong>Specify device details to load data…</strong>
-          </Typography>
-        </div>
-      );
+    if (false) {
+      if (busy) {
+        return (
+          <div className={classes.container}>
+            <MuiLoading />
+          </div>
+        );
+      } else if (!data) {
+        return (
+          <div className={classes.container}>
+            <Typography variant="h4" className={classes.message}>
+              <strong>Specify device details to load data…</strong>
+            </Typography>
+          </div>
+        );
+      }
     }
     return (
       <div className={classes.content}>
@@ -41,6 +44,7 @@ class Visualization extends React.Component {
           <Graph />
           <Graph />
         </div>
+        <Legend />
       </div>
     );
   }

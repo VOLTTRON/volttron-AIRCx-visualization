@@ -262,11 +262,11 @@ class MuiHeader extends React.Component {
       .find((route) => route.name !== page.name);
     const MuiIcon = temp.icon;
     return (
-      <div className={classes.row}>
+      <div className={clsx(classes.row, classes.navigation)}>
         <div className={classes.spacer} />
         <MuiLink className={classes.link} to={temp.path}>
           <MuiIcon className={classes.linkIcon} color="primary" />
-          <Typography color="primary">
+          <Typography variant="h6" color="primary">
             <strong>{temp.label}</strong>
           </Typography>
         </MuiLink>
@@ -277,8 +277,8 @@ class MuiHeader extends React.Component {
   renderTitle() {
     const { classes } = this.props;
     return (
-      <div className={classes.row}>
-        <Typography variant="h6" className={classes.title}>
+      <div className={clsx(classes.row, classes.title)}>
+        <Typography variant="h6" className={classes.titleLabel}>
           <strong>{`Fault Detection & Diagnostic Visualization`}</strong>
         </Typography>
       </div>
@@ -369,7 +369,8 @@ class MuiHeader extends React.Component {
             id="end"
             placeholder="Until Date"
             format="MM/DD/YYYY"
-            minDate={moment(start).day(moment(start).day() + 1)}
+            minDate={moment(start).add("day", 1)}
+            maxDate={moment(start).add("year", 1)}
             value={moment(end)}
             onChange={(v) => this.handleChange("end")(null, v.format())}
           />
