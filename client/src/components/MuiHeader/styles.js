@@ -61,27 +61,33 @@ const styles = (theme) => ({
   },
   form: {
     height: "140px",
-    paddingTop: "45px",
+    paddingTop: "25px",
   },
   site: {
     minWidth: "136px",
     marginRight: "24px",
+    color: gray,
   },
   building: {
     minWidth: "136px",
     marginRight: "24px",
+    color: gray,
   },
   device: {
     minWidth: "136px",
     marginRight: "24px",
+    color: gray,
   },
   diagnostic: {
     minWidth: "166px",
     marginRight: "24px",
+    color: gray,
   },
   filter: {
     minWidth: "166px",
     marginRight: "24px",
+    color: gray,
+    paddingTop: "24px",
   },
   selectedBox: {
     width: ".8rem !important",
@@ -96,14 +102,27 @@ const styles = (theme) => ({
     marginRight: "7px",
     border: `1px solid ${gray}`,
   },
-  range: {
+  from: {
+    width: "136px",
+    minWidth: "136px",
+    color: gray,
+    paddingTop: "24px",
+  },
+  until: {
     width: "136px",
     minWidth: "136px",
     marginRight: "24px",
+    color: gray,
+    paddingTop: "24px",
+  },
+  to: { paddingTop: "30px" },
+  toIcon: {
+    color: gray,
   },
   loadButton: {
     width: "136px",
     minWidth: "136px",
+    paddingTop: "24px",
   },
 });
 

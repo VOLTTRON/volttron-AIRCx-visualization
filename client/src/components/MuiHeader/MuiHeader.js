@@ -3,6 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import {
   AccountCircle as AccountCircleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
+  Remove,
   Today as TodayIcon,
 } from "@material-ui/icons";
 import clsx from "clsx";
@@ -73,10 +74,10 @@ class MuiHeader extends React.Component {
     building: "",
     device: "",
     diagnostic: "",
-    start: moment().format(),
-    end: moment()
-      .add(1, "day")
+    start: moment()
+      .subtract(1, "day")
       .format(),
+    end: moment().format(),
     filter: "",
     changed: false,
   };
@@ -134,8 +135,14 @@ class MuiHeader extends React.Component {
       case "start":
         const { start } = _.get(this.props, ["form"], {});
         if (start) {
-          form.end = moment(form.end)
-            .add(moment(form.start).diff(moment(start), "day", true), "day")
+          form.end = moment
+            .min(
+              moment(form.end).add(
+                moment(form.start).diff(moment(start), "day", true),
+                "day"
+              ),
+              moment().startOf("day")
+            )
             .format();
           this.setState(form);
         }
@@ -301,7 +308,7 @@ class MuiHeader extends React.Component {
         <div className={classes.site}>
           <MuiSelect
             id="site"
-            placeholder="Site"
+            header="Site"
             value={site}
             onChange={this.handleChange("site")}
           >
@@ -315,7 +322,7 @@ class MuiHeader extends React.Component {
         <div className={classes.building}>
           <MuiSelect
             id="building"
-            placeholder="Building"
+            header="Building"
             value={building}
             onChange={this.handleChange("building")}
           >
@@ -329,7 +336,7 @@ class MuiHeader extends React.Component {
         <div className={classes.device}>
           <MuiSelect
             id="device"
-            placeholder="Device"
+            header="Device"
             value={device}
             onChange={this.handleChange("device")}
           >
@@ -343,7 +350,7 @@ class MuiHeader extends React.Component {
         <div className={classes.diagnostic}>
           <MuiSelect
             id="diagnostic"
-            placeholder="Diagnostic"
+            header="Diagnostic"
             value={diagnostic}
             onChange={this.handleChange("diagnostic")}
           >
@@ -354,25 +361,37 @@ class MuiHeader extends React.Component {
             ))}
           </MuiSelect>
         </div>
-        <div className={classes.range}>
+        <div className={classes.from}>
           <MuiDatePicker
             id="start"
             placeholder="From Date"
             format="MM/DD/YYYY"
             value={moment(start)}
-            onChange={(v) => this.handleChange("start")(null, v.format())}
+            onChange={(v) =>
+              this.handleChange("start")(null, _.isEmpty(v) ? "" : v.format())
+            }
             keyboardIcon={<TodayIcon />}
           />
         </div>
-        <div className={classes.range}>
+        <div className={classes.to}>
+          <Remove className={classes.toIcon} />
+        </div>
+        <div className={classes.until}>
           <MuiDatePicker
             id="end"
             placeholder="Until Date"
             format="MM/DD/YYYY"
-            minDate={moment(start).add("day", 1)}
-            maxDate={moment(start).add("year", 1)}
+            minDate={moment(start)}
+            maxDate={moment.min(
+              moment(start)
+                .add(1, "year")
+                .subtract(1, "day"),
+              moment()
+            )}
             value={moment(end)}
-            onChange={(v) => this.handleChange("end")(null, v.format())}
+            onChange={(v) =>
+              this.handleChange("end")(null, _.isEmpty(v) ? "" : v.format())
+            }
           />
         </div>
         {page.name === "Visualization" ? (

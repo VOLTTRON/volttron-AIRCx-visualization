@@ -26,13 +26,15 @@ const styles = (theme) => ({
     width: "fit-content",
     display: "inline-block",
   },
-  chart: { width: "227px", height: "648px", position: "relative" },
+  chart: { minWidth: "227px", height: "648px", position: "relative" },
   mark: {
     background: primary,
     width: "16px",
     height: "16px",
     border: `3px solid ${background}`,
     position: "absolute",
+  },
+  hover: {
     transition: "all .2s ease-in-out",
     "&:hover": {
       background: gray,
@@ -67,7 +69,7 @@ const styles = (theme) => ({
   },
   xHeader: { color: gray, letterSpacing: "7px" },
   footer: {
-    width: "227px",
+    minWidth: "227px",
     height: "90px",
     textAlign: "center",
     paddingTop: "20px",
