@@ -98,18 +98,34 @@ const styles = (theme) => ({
   },
   popupContent: {
     display: "flex",
-    height: "600px",
+    minHeight: "300px",
+    height: `${document.documentElement.clientHeight - 100}px`,
+    maxHeight: "500px",
+  },
+  popupClock: {
+    flex: 0,
+    height: "100px",
+  },
+  popupChart: {
+    display: "inline-block",
+    flex: "1 1 auto",
+    width: "100%",
+    height: "100%",
   },
   popupPrevious: {
     display: "flex",
+    flex: 0,
     height: "100%",
     padding: "8px",
   },
   popupNext: {
     display: "flex",
+    flex: 0,
     height: "100%",
     padding: "8px",
   },
+  clockContent: { width: "min-content" },
+  chartContent: {},
 });
 
 export default styles;

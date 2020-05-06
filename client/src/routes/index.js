@@ -1,3 +1,5 @@
+import aboutRoute from "./About/route";
+import contentRoute from "./Content/route";
 import dashboardRoute from "./Dashboard/route";
 import errorRoute from "./Error/route";
 import homeRoute from "./Home/route";
@@ -13,6 +15,8 @@ export { default as NotFound } from "./NotFound";
 export { default as Visualization } from "./Visualization";
 
 export const routes = [
+  aboutRoute,
+  contentRoute,
   dashboardRoute,
   errorRoute,
   homeRoute,

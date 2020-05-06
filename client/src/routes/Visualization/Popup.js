@@ -1,9 +1,11 @@
-import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { ArrowBackIos, ArrowForwardIos } from "@material-ui/icons";
 import { MuiButton, MuiDialog } from "components";
 import React from "react";
 import { connect } from "react-redux";
+import { AutoSizer } from "react-virtualized";
+import Chart from "./Chart";
+import Clock from "./Clock";
 import styles from "./styles";
 
 class Popup extends React.Component {
@@ -27,9 +29,16 @@ class Popup extends React.Component {
               <ArrowBackIos color="primary" />
             </MuiButton>
           </div>
-          <Typography style={{ flex: 1 }}>
-            Popup content goes here...
-          </Typography>
+          <div className={classes.popupClock}>
+            <Clock data={[]} size={200} />
+          </div>
+          <div className={classes.popupChart}>
+            <AutoSizer>
+              {({ width, height }) => (
+                <Chart data={[]} width={width} height={height} />
+              )}
+            </AutoSizer>
+          </div>
           <div className={classes.popupNext}>
             <MuiButton
               // type="outlined"

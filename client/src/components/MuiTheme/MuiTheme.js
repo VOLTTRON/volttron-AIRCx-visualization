@@ -4,6 +4,7 @@ import { MuiThemeProvider, withStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import React from "react";
+import "react-vis/dist/style.css";
 import styles from "./styles";
 import theme from "./theme";
 

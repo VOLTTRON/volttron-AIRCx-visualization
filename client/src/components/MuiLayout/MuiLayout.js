@@ -39,7 +39,9 @@ class MuiLayout extends React.Component {
         {/* {name !== "Error" && <MuiNavigation page={page} />} */}
         <div className={classes.content}>
           <div className={classes.toolbar} />
-          <div style={{ height: height, overflowY: "auto" }}>
+          <div
+            style={{ height: height, overflowY: "auto", overflowX: "hidden" }}
+          >
             {this.props.children}
           </div>
         </div>

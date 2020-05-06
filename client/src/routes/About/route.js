@@ -9,9 +9,10 @@ const route = {
   exact: true,
   component: Root,
   icon: InfoIcon,
+  user: false,
   admin: false,
   indent: true,
-  hidden: true
+  hidden: false,
 };
 
 export default route;
