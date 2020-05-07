@@ -87,7 +87,6 @@ class Clock extends React.Component {
           <LineSeries color={gray} strokeWidth={2} data={ticks} />
           <LabelSeries
             style={{ fontSize: ".8rem" }}
-            color={gray}
             labelAnchorX="middle"
             labelAnchorY="middle"
             data={labels}
@@ -99,8 +98,7 @@ class Clock extends React.Component {
           />
           {Boolean(item) && (
             <LabelSeries
-              style={{ fontSize: "1rem" }}
-              color={white}
+              style={{ fill: white, fontSize: "1rem" }}
               data={[
                 {
                   style: { fill: white, fontSize: "1rem" },

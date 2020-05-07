@@ -6,11 +6,11 @@ import styles from "./styles";
 
 class XAxis extends React.Component {
   render() {
-    const { classes } = this.props;
+    const { classes, label } = this.props;
     return (
       <div className={classes.xAxis}>
         <Typography className={classes.xHeader} variant="h5">
-          <strong>Month</strong>
+          <strong>{label}</strong>
         </Typography>
       </div>
     );

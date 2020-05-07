@@ -6,6 +6,7 @@ import {
   selectDiagnostics,
   selectDiagnosticsBusy,
 } from "controllers/data/action";
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import Graph from "./Graph";
@@ -35,9 +36,9 @@ class Visualization extends React.Component {
     const { start, end } = form ? form : {};
     return (
       <div className={classes.content}>
-        <XAxis />
+        <XAxis label="Month" />
         <div className={classes.flex}>
-          <YAxis />
+          <YAxis label="Day" values={_.range(31)} />
           <Graph start={start} end={end} data={data} />
           <Graph start={start} end={end} data={data} />
           <Graph start={start} end={end} data={data} />

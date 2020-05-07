@@ -66,8 +66,9 @@ const styles = (theme) => ({
     height: "90px",
     textAlign: "center",
     paddingTop: "55px",
+    whiteSpace: "nowrap",
   },
-  xHeader: { color: gray, letterSpacing: "7px" },
+  xHeader: { color: gray, letterSpacing: "7px", whiteSpace: "nowrap" },
   footer: {
     minWidth: "227px",
     height: "90px",
@@ -125,7 +126,26 @@ const styles = (theme) => ({
     padding: "8px",
   },
   clockContent: { width: "min-content" },
-  chartContent: {},
+  chartContent: { display: "flex" },
+  chartXAxis: {
+    height: "40px",
+    position: "absolute",
+    width: "100%",
+    bottom: "0px",
+    textAlign: "center",
+  },
+  chartYAxis: {
+    width: "40px",
+    "& h5": {
+      left: "-130px",
+    },
+  },
+  chartFlex: {
+    display: "flex",
+  },
+  chartPlot: {
+    flex: 1,
+  },
 });
 
 export default styles;
