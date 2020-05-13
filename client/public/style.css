@@ -26,3 +26,7 @@
 }
 
 @import url("https://fonts.googleapis.com/css?family=Lato");
+
+.js-plotly-plot .plotly .modebar {
+  transform: translate(-40px, 0);
+}

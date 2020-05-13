@@ -38,6 +38,7 @@ class MuiDialog extends React.Component {
     } = this.props;
     return (
       <Dialog
+        className={classes.dialog}
         fullWidth={true}
         maxWidth={maxWidth ? maxWidth : "xs"}
         open={open}

@@ -1,4 +1,4 @@
-import { background, gray, primary } from "constants/palette";
+import { background, gray, primary, white } from "constants/palette";
 
 const styles = (theme) => ({
   container: {
@@ -26,7 +26,12 @@ const styles = (theme) => ({
     width: "fit-content",
     display: "inline-block",
   },
-  chart: { minWidth: "227px", height: "648px", position: "relative" },
+  chart: {
+    minWidth: "227px",
+    height: "648px",
+    position: "relative",
+    overflow: "hidden",
+  },
   mark: {
     background: primary,
     width: "16px",
@@ -125,7 +130,7 @@ const styles = (theme) => ({
     height: "100%",
     padding: "8px",
   },
-  clockContent: { width: "min-content" },
+  clockContent: { width: "min-content", background: white },
   chartContent: { display: "flex" },
   chartXAxis: {
     height: "40px",

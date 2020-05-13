@@ -1,6 +1,9 @@
-import { primary } from "constants/palette";
+import { primary, white } from "constants/palette";
 
 const styles = {
+  dialog: {
+    "& > div > div": { background: white },
+  },
   header: {
     display: "flex",
     paddingTop: "8px",
@@ -18,9 +21,11 @@ const styles = {
     textAlign: "right",
   },
   form: {
+    overflow: "hidden",
     padding: "0px",
   },
   content: {
+    overflow: "hidden",
     padding: "0 24px 4px 24px",
   },
   footer: {
