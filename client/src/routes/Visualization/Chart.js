@@ -124,12 +124,16 @@ class Chart extends React.Component {
                 data={mockDataSets[2]}
               />
               <LabelSeries
-                style={{ fontSize: "1rem", fontWeight: "bold" }}
+                style={{
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  transform: "translate(55px, 12px)",
+                }}
                 labelAnchorX="middle"
                 labelAnchorY="middle"
                 data={labels.map((v, i) =>
                   _.merge({}, v, {
-                    x: v.x + padding / 2,
+                    x: v.x,
                     style: { fill: mockColors[i] },
                   })
                 )}
