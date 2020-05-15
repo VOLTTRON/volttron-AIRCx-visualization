@@ -13,6 +13,7 @@ export const black = "#000000";
 
 // colors
 export const background = "#F6F8FC";
+export const backgroundShade = "#454C5B";
 export const primary = "#5786CD"; // primay color
 export const primaryTint = "#667087"; // light primary
 export const primaryShade = "#454C5B"; // dark primary

@@ -31,6 +31,7 @@ import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import { routes } from "routes";
+import mixin from "utils/mixin";
 import styles from "./styles";
 
 const createFormUpdate = (state, sources) => {
@@ -68,36 +69,29 @@ class MuiHeader extends React.Component {
     return createFormUpdate(prevState, _.get(nextProps, ["sources"], {}));
   }
 
-  state = {
-    anchorEl: null,
-    site: "",
-    building: "",
-    device: "",
-    diagnostic: "",
-    start: moment()
-      .subtract(1, "day")
-      .format(),
-    end: moment().format(),
-    filter: "",
-    changed: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      anchorEl: null,
+      site: "",
+      building: "",
+      device: "",
+      diagnostic: "",
+      start: moment()
+        .subtract(1, "day")
+        .format(),
+      end: moment().format(),
+      filter: "",
+      changed: false,
+    };
+    _.merge(this, mixin);
+  }
 
   componentDidMount() {
     const { form, sources } = this.props;
     this.props.fetchSources();
     this.setState(createFormUpdate(_.merge(this.state, form), sources));
   }
-
-  handleChange = (key) => (event, value) => {
-    value = _.get(event, "target.value", value);
-    const state = key ? { [key]: value } : _.assign({}, value);
-    const updated = _.intersection(_.keys(this.state), _.keys(state))
-      .map((k) => this.state[k] !== state[k])
-      .includes(true);
-    if (updated) {
-      this.setState(state, this.handleUpdate(key));
-    }
-  };
 
   handleUpdate = (key) => () => {
     const form = _.pick(this.state, [
