@@ -154,6 +154,17 @@ class MuiHeader extends React.Component {
     }
   };
 
+  isLogin = () => {
+    const { user } = this.props;
+    if (Boolean(user)) {
+      return true;
+    } else if (routes.find((r) => r.user || r.admin)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   isDisabled = (key) => {
     const { busy } = this.props;
     const { site, building, device, diagnostic, changed } = this.state;
@@ -202,55 +213,59 @@ class MuiHeader extends React.Component {
     const username = user ? user.email : request ? request.email : "Unknown";
     return (
       <Toolbar variant="dense" className={classes.toolbar}>
-        <AccountCircleIcon />
-        <Typography variant="h6" className={classes.user}>
-          {auth ? username : "Guest"}
-        </Typography>
-        <MuiIconButton color="inherit" onClick={this.handleOpen("user")}>
-          <KeyboardArrowDownIcon />
-        </MuiIconButton>
-        <Menu
-          id="user-menu"
-          anchorEl={anchorEl}
-          getContentAnchorEl={null}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-          keepMounted
-          open={type === "user"}
-          onClose={this.handleClose}
-        >
-          <MenuItem key="logout" onClick={this.handleLogout}>
-            Logout
-          </MenuItem>
-        </Menu>
-        <Typography className={classes.spacer} />
-        {mode && (
+        {this.isLogin() && (
           <React.Fragment>
-            <Typography variant="h6" className={classes.mode}>
-              {mode.mode.label}
+            <AccountCircleIcon />
+            <Typography variant="h6" className={classes.user}>
+              {auth ? username : "Guest"}
             </Typography>
-            <MuiIconButton color={black} onClick={this.handleOpen("mode")}>
+            <MuiIconButton color="inherit" onClick={this.handleOpen("user")}>
               <KeyboardArrowDownIcon />
             </MuiIconButton>
             <Menu
-              id="mode-menu"
+              id="user-menu"
               anchorEl={anchorEl}
               getContentAnchorEl={null}
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
-              open={type === "mode"}
+              keepMounted
+              open={type === "user"}
               onClose={this.handleClose}
             >
-              {mode.modes.map((m) => (
-                <MenuItem
-                  key={`mode-${m.name}`}
-                  selected={m.name === mode.mode.name}
-                  onClick={() => this.handleMode(m)}
-                >
-                  {m.label}
-                </MenuItem>
-              ))}
+              <MenuItem key="logout" onClick={this.handleLogout}>
+                Logout
+              </MenuItem>
             </Menu>
+            <Typography className={classes.spacer} />
+            {mode && (
+              <React.Fragment>
+                <Typography variant="h6" className={classes.mode}>
+                  {mode.mode.label}
+                </Typography>
+                <MuiIconButton color={black} onClick={this.handleOpen("mode")}>
+                  <KeyboardArrowDownIcon />
+                </MuiIconButton>
+                <Menu
+                  id="mode-menu"
+                  anchorEl={anchorEl}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  open={type === "mode"}
+                  onClose={this.handleClose}
+                >
+                  {mode.modes.map((m) => (
+                    <MenuItem
+                      key={`mode-${m.name}`}
+                      selected={m.name === mode.mode.name}
+                      onClick={() => this.handleMode(m)}
+                    >
+                      {m.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </React.Fragment>
+            )}
           </React.Fragment>
         )}
       </Toolbar>

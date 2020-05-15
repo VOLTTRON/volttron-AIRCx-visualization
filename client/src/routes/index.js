@@ -1,5 +1,4 @@
 import aboutRoute from "./About/route";
-import contentRoute from "./Content/route";
 import dashboardRoute from "./Dashboard/route";
 import errorRoute from "./Error/route";
 import homeRoute from "./Home/route";
@@ -7,7 +6,6 @@ import notfoundRoute from "./NotFound/route";
 import visualizationRoute from "./Visualization/route";
 
 export { default as About } from "./About";
-export { default as Content } from "./Content";
 export { default as Dashboard } from "./Dashboard";
 export { default as Error } from "./Error";
 export { default as Home } from "./Home";
@@ -16,7 +14,6 @@ export { default as Visualization } from "./Visualization";
 
 export const routes = [
   aboutRoute,
-  contentRoute,
   dashboardRoute,
   errorRoute,
   homeRoute,
