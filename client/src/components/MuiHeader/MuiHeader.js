@@ -35,38 +35,37 @@ import mixin from "utils/mixin";
 import styles from "./styles";
 
 const createFormUpdate = (state, sources) => {
+  const items = sources ? _.merge({}, ...Object.values(sources)) : {};
   const update = {};
-  if (_.get(sources, ["sites"], []).length === 1 && _.isEmpty(state.site)) {
-    update.site = _.get(sources, ["sites", "0"], "");
+  const sites = Object.keys(items);
+  if (sites.length === 1 && _.isEmpty(state.site)) {
+    update.site = sites[0];
   }
   const site = _.get(_.merge({}, state, update), "site");
-  if (
-    site &&
-    _.get(sources, ["buildings", site], []).length === 1 &&
-    _.isEmpty(state.building)
-  ) {
-    update.building = _.get(sources, ["buildings", site, "0"], "");
+  const buildings = Object.keys(_.get(items, [site], []));
+  if (site && buildings.length === 1 && _.isEmpty(state.building)) {
+    update.building = buildings[0];
   }
   const building = _.get(_.merge({}, state, update), "building");
-  if (
-    building &&
-    _.get(sources, ["devices", building], []).length === 1 &&
-    _.isEmpty(state.device)
-  ) {
-    update.device = _.get(sources, ["devices", building, "0"], "");
+  const devices = Object.keys(_.get(items, [site, building], []));
+  if (building && devices.length === 1 && _.isEmpty(state.device)) {
+    update.device = devices[0];
   }
-  if (
-    _.get(sources, ["diagnostics"], []).length === 1 &&
-    _.isEmpty(state.diagnostic)
-  ) {
-    update.diagnostic = _.get(sources, ["diagnostics", "0"], "");
+  const device = _.get(_.merge({}, state, update), "device");
+  const diagnostics = sources
+    ? Object.keys(sources).filter((d) =>
+        Boolean(_.get(sources, [d, site, building, device]))
+      )
+    : [];
+  if (diagnostics.length === 1 && _.isEmpty(state.diagnostic)) {
+    update.diagnostic = diagnostics[0];
   }
   return update;
 };
 
 class MuiHeader extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
-    return createFormUpdate(prevState, _.get(nextProps, ["sources"], {}));
+    return createFormUpdate(prevState, nextProps.sources);
   }
 
   constructor(props) {
@@ -90,7 +89,7 @@ class MuiHeader extends React.Component {
   componentDidMount() {
     const { form, sources } = this.props;
     this.props.fetchSources();
-    this.setState(createFormUpdate(_.merge(this.state, form), sources));
+    this.setState(createFormUpdate(_.merge({}, this.state, form), sources));
   }
 
   handleUpdate = (key) => () => {
@@ -106,23 +105,17 @@ class MuiHeader extends React.Component {
     switch (key) {
       case "site":
         form.building = "";
-        form.device = "";
-        this.setState({ changed: true });
-        this.setState(form);
-        this.props.setDataForm(form);
-        break;
+      // eslint-disable-next-line
       case "building":
         form.device = "";
-        this.setState({ changed: true });
-        this.setState(form);
-        this.props.setDataForm(form);
-        break;
+      // eslint-disable-next-line
       case "device":
+        form.diagnostic = "";
+      // eslint-disable-next-line
       case "diagnostic":
       case "end":
-        this.setState({ changed: true });
-        this.props.setDataForm(form);
-        break;
+        this.setState(_.merge({ changed: true }, form));
+      // eslint-disable-next-line
       case "filter":
         this.props.setDataForm(form);
         break;
@@ -312,6 +305,12 @@ class MuiHeader extends React.Component {
       start,
       end,
     } = this.state;
+    const diagnostics = sources
+      ? Object.keys(sources).filter((d) =>
+          Boolean(_.get(sources, [d, site, building, device]))
+        )
+      : [];
+    const items = sources ? _.merge({}, ...Object.values(sources)) : {};
     return (
       <div className={clsx(classes.row, classes.form)}>
         <div className={classes.site}>
@@ -321,7 +320,7 @@ class MuiHeader extends React.Component {
             value={site}
             onChange={this.handleChange("site")}
           >
-            {_.get(sources, "sites", []).map((i) => (
+            {Object.keys(items).map((i) => (
               <MenuItem key={`site-${i}`} value={i}>
                 {i}
               </MenuItem>
@@ -335,7 +334,7 @@ class MuiHeader extends React.Component {
             value={building}
             onChange={this.handleChange("building")}
           >
-            {_.get(sources, ["buildings", site], []).map((i) => (
+            {Object.keys(_.get(items, [site], {})).map((i) => (
               <MenuItem key={`building-${i}`} value={i}>
                 {i}
               </MenuItem>
@@ -349,7 +348,7 @@ class MuiHeader extends React.Component {
             value={device}
             onChange={this.handleChange("device")}
           >
-            {_.get(sources, ["devices", building], []).map((i) => (
+            {Object.keys(_.get(items, [site, building], {})).map((i) => (
               <MenuItem key={`device-${i}`} value={i}>
                 {i}
               </MenuItem>
@@ -363,7 +362,7 @@ class MuiHeader extends React.Component {
             value={diagnostic}
             onChange={this.handleChange("diagnostic")}
           >
-            {_.get(sources, "diagnostics", []).map((i) => (
+            {diagnostics.map((i) => (
               <MenuItem key={`diagnostic-${i}`} value={i}>
                 {i}
               </MenuItem>
