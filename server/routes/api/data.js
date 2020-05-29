@@ -6,6 +6,8 @@ const { loggers } = require("winston");
 const logger = loggers.get("default");
 require("dotenv").config();
 
+const pattern = /^(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
+
 var token = null;
 const authenticate = () => {
   axios
@@ -36,16 +38,7 @@ router.get("/sources", auth.optional, (req, res, next) => {
     .then((response) => {
       const result = {};
       _.get(response, ["data", "result"], []).forEach((d) => {
-        _.set(
-          result,
-          _.slice(
-            /^(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i.exec(
-              d
-            ),
-            1
-          ),
-          d
-        );
+        _.set(result, _.slice(pattern.exec(d), 1), d);
       });
       return res.status(200).json(result);
     })
@@ -71,7 +64,12 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
       },
     })
     .then((response) => {
-      const result = _.get(response, ["data", "result", "values"], {});
+      const result = {};
+      Object.entries(_.get(response, ["data", "result", "values"], {})).forEach(
+        ([k, v]) => {
+          _.set(result, _.slice(pattern.exec(k), 5), v);
+        }
+      );
       return res.status(200).json(result);
     })
     .catch((error) => {

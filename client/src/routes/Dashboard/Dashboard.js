@@ -27,24 +27,6 @@ import { ArcSeries, LabelSeries, MarkSeries, XYPlot } from "react-vis/dist";
 import mixin from "utils/mixin";
 import styles from "./styles";
 
-const tabs = [
-  {
-    label: "Insuficient Outdoor-Air Intake",
-  },
-  {
-    label: "Excess Outdoor-Air Intake",
-  },
-  {
-    label: "Economizing When Unit Should Not",
-  },
-  {
-    label: "Not Economizing When Unit Should",
-  },
-  {
-    label: "Temp Sensor",
-  },
-];
-
 const mockData = _.range(24).map((v) => ({
   type: filters.values[Math.floor(Math.random() * Math.floor(3))].name,
   start: `2020-05-15T${`${v}`.padStart(2, "0")}:00`,
@@ -58,10 +40,21 @@ const mockItem = {
 };
 
 class Dashboard extends React.Component {
+  static getDerivedStateFromProps(props, state) {
+    const { data } = props;
+    const { tab } = state;
+    if (data) {
+      const tabs = Object.keys(data);
+      if (!tabs.includes(tab)) {
+        return { tab: tabs.length > 0 ? tabs[0] : "" };
+      }
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
-      tab: tabs[0],
+      tab: "",
       sticky: null,
       selected: null,
     };
@@ -71,7 +64,7 @@ class Dashboard extends React.Component {
   handleUpdate = (key) => () => {};
 
   renderTabs() {
-    const { classes } = this.props;
+    const { classes, data } = this.props;
     const { tab } = this.state;
     return (
       <div className={classes.tabs}>
@@ -83,13 +76,13 @@ class Dashboard extends React.Component {
           indicatorColor="primary"
           textColor="primary"
         >
-          {tabs.map((t, i) => {
+          {Object.keys(data).map((t, i) => {
             return (
               <Tab
                 className={classes.tab}
-                key={`tab-${i}`}
+                key={`tab-${t}`}
                 value={t}
-                label={t.label}
+                label={_.replace(t, / Dx$/i, "")}
                 wrapped={false}
               />
             );

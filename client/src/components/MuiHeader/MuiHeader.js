@@ -64,8 +64,8 @@ const createFormUpdate = (state, sources) => {
 };
 
 class MuiHeader extends React.Component {
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return createFormUpdate(prevState, nextProps.sources);
+  static getDerivedStateFromProps(props, state) {
+    return createFormUpdate(state, props.sources);
   }
 
   constructor(props) {
@@ -89,7 +89,7 @@ class MuiHeader extends React.Component {
   componentDidMount() {
     const { form, sources } = this.props;
     this.props.fetchSources();
-    this.setState(createFormUpdate(_.merge({}, this.state, form), sources));
+    this.setState(createFormUpdate(_.merge(this.state, form), sources));
   }
 
   handleUpdate = (key) => () => {
@@ -190,8 +190,13 @@ class MuiHeader extends React.Component {
   };
 
   handleLoadData = () => {
+    const { sources, form } = this.props;
+    const { site, building, device, diagnostic } = form;
+    const topic = Object.values(
+      _.get(sources, [diagnostic, site, building, device], {})
+    );
     this.setState({ changed: false });
-    this.props.fetchDiagnostics();
+    this.props.fetchDiagnostics({ topic });
   };
 
   renderUser() {
