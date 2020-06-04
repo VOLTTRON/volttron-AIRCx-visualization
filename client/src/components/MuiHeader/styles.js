@@ -83,6 +83,12 @@ const styles = (theme) => ({
     marginRight: "24px",
     color: gray,
   },
+  group: {
+    minWidth: "166px",
+    marginRight: "24px",
+    color: gray,
+    paddingTop: "24px",
+  },
   filter: {
     minWidth: "166px",
     marginRight: "24px",

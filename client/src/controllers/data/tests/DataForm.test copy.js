@@ -21,6 +21,7 @@ describe("data.setForm()", () => {
         .year(moment(end).year() - 1)
         .format(),
       end: end.format(),
+      group: "day",
       filter: "all",
     };
     reduxStore.dispatch(setDataForm(payload));

@@ -17,6 +17,7 @@ const initialState = (function() {
         diagnostic: "",
         start: start.format(),
         end: end.format(),
+        group: "day",
         filter: "all",
       },
     },

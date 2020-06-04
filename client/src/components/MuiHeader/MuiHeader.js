@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { MuiButton, MuiDatePicker, MuiIconButton, MuiSelect } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
+import groups from "constants/groups";
 import { black } from "constants/palette";
 import { selectMode, setMode } from "controllers/common/action";
 import {
@@ -80,6 +81,7 @@ class MuiHeader extends React.Component {
         .subtract(1, "day")
         .format(),
       end: moment().format(),
+      group: "",
       filter: "",
       changed: false,
     };
@@ -100,6 +102,7 @@ class MuiHeader extends React.Component {
       "diagnostic",
       "start",
       "end",
+      "group",
       "filter",
     ]);
     switch (key) {
@@ -116,6 +119,7 @@ class MuiHeader extends React.Component {
       case "end":
         this.setState(_.merge({ changed: true }, form));
       // eslint-disable-next-line
+      case "group":
       case "filter":
         this.props.setDataForm(form);
         break;
@@ -306,6 +310,7 @@ class MuiHeader extends React.Component {
       building,
       device,
       diagnostic,
+      group,
       filter,
       start,
       end,
@@ -407,6 +412,28 @@ class MuiHeader extends React.Component {
             }
           />
         </div>
+        {page.name === "Dashboard" ? (
+          <div className={classes.group}>
+            <MuiSelect
+              id="group"
+              placeholder="Group"
+              value={group}
+              onChange={this.handleChange("group")}
+              renderValue={(v) => {
+                const value = groups.parse(v);
+                if (value) {
+                  return <React.Fragment>{value.label}</React.Fragment>;
+                }
+              }}
+            >
+              {groups.values.map((i) => (
+                <MenuItem key={`group-${i.name}`} value={i.name}>
+                  {i.label}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </div>
+        ) : null}
         {page.name === "Visualization" ? (
           <div className={classes.filter}>
             <MuiSelect
