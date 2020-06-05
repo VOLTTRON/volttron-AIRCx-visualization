@@ -13,8 +13,10 @@ const styles = (theme) => ({
   },
   flex: {
     display: "flex",
+    flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "center",
+    marginLeft: "90px",
     marginRight: "90px",
   },
   message: {

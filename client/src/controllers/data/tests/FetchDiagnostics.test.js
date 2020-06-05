@@ -10,7 +10,10 @@ import {
 } from "controllers/data/action";
 import { SERVICE_ENDPOINT_DIAGNOSTICS } from "controllers/data/api";
 import mock from "controllers/data/mock";
-import { readDiagnosticsSaga } from "controllers/data/saga";
+import {
+  readDiagnosticsSaga,
+  transformDiagnostics,
+} from "controllers/data/saga";
 import configureStore from "controllers/store";
 import { fetchMock } from "fetch-mock";
 import { expectSaga } from "redux-saga-test-plan";
@@ -39,7 +42,7 @@ describe("diagnostics.fetchDiagnostics()", () => {
       .withState(reduxStore.getState())
       .put(fetchDiagnosticsBusy(true))
       .put(fetchDiagnosticsError())
-      .put(fetchDiagnosticsSuccess(result))
+      .put(fetchDiagnosticsSuccess(transformDiagnostics(result)))
       .put(fetchDiagnosticsBusy(false))
       .run()
       .then(() => {

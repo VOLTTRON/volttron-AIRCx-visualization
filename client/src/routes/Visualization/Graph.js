@@ -1,7 +1,7 @@
 import { Paper, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { lighter, primary, white } from "constants/palette";
+import { deriveColor, lighter, primary, white } from "constants/palette";
 import _ from "lodash";
 import moment from "moment";
 import React from "react";
@@ -34,7 +34,9 @@ class Graph extends React.Component {
     ];
     const base = [];
     while (pad.isBefore(end)) {
+      const month = months[months.length - 1];
       base.push({
+        path: [`${month.year}`, `${month.month}`, `${pad.date()}`],
         x: months.length,
         y: pad.date(),
         size: 10,
@@ -133,9 +135,20 @@ class Graph extends React.Component {
   renderChart() {
     const { classes, data } = this.props;
     const { base, months } = this.state;
-    const marks = base.map((item) =>
-      _.merge({}, item, _.find(data, { x: item.x, y: item.y }))
-    );
+    const marks = base.map((item) => {
+      const values = _.get(data, item.path, {});
+      const hours = Object.keys(values).length;
+      console.log(values);
+      let color = primary;
+      if (hours > 5) {
+        color = deriveColor("error");
+      } else if (hours > 3) {
+        color = deriveColor("warning");
+      } else if (hours > 1) {
+        color = deriveColor("info");
+      }
+      return _.merge({}, item, { color: color });
+    });
     return (
       <div className={classes.chart} style={{ width: months.length * 19 + 4 }}>
         {marks.map((mark) => (
@@ -155,12 +168,12 @@ class Graph extends React.Component {
   }
 
   renderFooter() {
-    const { classes } = this.props;
+    const { classes, label } = this.props;
     const { months } = this.state;
     return (
       <div className={classes.footer} style={{ width: months.length * 19 + 4 }}>
         <Typography className={classes.footerLabel} variant="body1">
-          <strong>Economizer Outdoor Air Problems</strong>
+          <strong>{_.replace(label, / Dx$/i, "")}</strong>
         </Typography>
       </div>
     );

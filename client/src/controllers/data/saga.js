@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment";
 import { call, put, select, takeLatest } from "redux-saga/effects";
 import { filter as filterItems } from "utils/utils";
 import { BUSY_GLOBAL } from "../busy/action";
@@ -220,6 +221,28 @@ export function* readSourcesSaga() {
   }
 }
 
+export const transformDiagnostics = (data) => {
+  const result = {};
+  if (data) {
+    Object.keys(data).forEach((k) => {
+      data[k].forEach((t) => {
+        const date = moment(t[0]);
+        const path = [
+          k,
+          `${date.year()}`,
+          `${date.month() + 1}`,
+          `${date.date() + 1}`,
+          `${date.hour()}`,
+        ];
+        const values = _.get(result, path, []);
+        values.push(t[1]);
+        _.setWith(result, path, values, Object);
+      });
+    });
+  }
+  return result;
+};
+
 export function* readDiagnosticsSaga(action) {
   const { payload } = action;
   try {
@@ -227,7 +250,8 @@ export function* readDiagnosticsSaga(action) {
     yield put(fetchDiagnosticsError());
     const form = yield select(selectDataForm);
     const response = yield call(readDiagnostics, _.merge(form, payload));
-    yield put(fetchDiagnosticsSuccess(response));
+    const result = yield call(transformDiagnostics, response);
+    yield put(fetchDiagnosticsSuccess(result));
   } catch (error) {
     yield put(fetchDiagnosticsError(error.message));
   } finally {
