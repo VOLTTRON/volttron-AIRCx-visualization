@@ -1,18 +1,22 @@
 import _ from "lodash";
+import moment from "moment";
 
 export default {
   values: [
     {
       name: "day",
       label: "One Day",
+      range: moment.duration(1, "days"),
     },
     {
       name: "week",
       label: "One Week",
+      range: moment.duration(1, "weeks"),
     },
     {
       name: "month",
       label: "One Month",
+      range: moment.duration(1, "months"),
     },
   ],
   parse: function(value) {

@@ -1,6 +1,6 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { darker, gray, light, primary, white } from "constants/palette";
+import { darker, faults, gray, light, white } from "constants/palette";
 import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
@@ -25,17 +25,6 @@ const labels = _.range(0, 8).map((i) => {
   const y = r * Math.sin(a);
   return { x, y, label: LABELS[i] };
 });
-const mockItem = {
-  time: "24",
-  unit: "hr",
-  label: "Fault",
-  message:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-};
-
-function getSeconds() {
-  return Math.floor(new Date().getTime() / 1000);
-}
 
 class Clock extends React.Component {
   state = {
@@ -43,18 +32,6 @@ class Clock extends React.Component {
     sticky: null,
     selected: null,
   };
-
-  componentDidMount() {
-    this._timerId = setInterval(
-      () => this.setState({ time: getSeconds() }),
-      100
-    );
-  }
-
-  componentWillUnmount() {
-    clearInterval(this._timerId);
-    this.setState({ timerId: false });
-  }
 
   handleHover = (item) => {
     this.setState({ selected: item });
@@ -66,8 +43,7 @@ class Clock extends React.Component {
 
   render() {
     const { classes, data, size } = this.props;
-    const { time, sticky, selected } = this.state;
-    const seconds = time % 60;
+    const { sticky, selected } = this.state;
     const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
     return (
@@ -77,8 +53,8 @@ class Clock extends React.Component {
           xDomain={[-domain, domain]}
           yDomain={[-domain, domain]}
           width={size}
-          getAngle={(d) => d.time}
-          getAngle0={() => 0}
+          getAngle={(d) => d.angle}
+          getAngle0={(d) => d.angle0}
           height={size}
           onMouseLeave={() => {
             this.handleHover();
@@ -94,7 +70,7 @@ class Clock extends React.Component {
           <ArcSeries
             color={darker}
             radiusDomain={[0, domain]}
-            data={[{ time: 2 * Math.PI, radius0: 0, radius: 25 }]}
+            data={[{ angle: 2 * Math.PI, angle0: 0, radius0: 0, radius: 25 }]}
           />
           {Boolean(item) && (
             <LabelSeries
@@ -115,7 +91,7 @@ class Clock extends React.Component {
                   },
                   x: 0,
                   y: 0,
-                  label: item.unit,
+                  label: item.time === 1 ? "hr" : "hrs",
                   xOffset: 4,
                 },
                 {
@@ -135,24 +111,30 @@ class Clock extends React.Component {
           <ArcSeries
             color={light}
             radiusDomain={[0, domain]}
-            data={[{ time: 2 * Math.PI, radius0: 25, radius: 35 }]}
+            data={[{ angle: 2 * Math.PI, angle0: 0, radius0: 25, radius: 35 }]}
           />
-          <ArcSeries
-            color={primary}
-            radiusDomain={[0, domain]}
-            data={[
-              {
-                time: (seconds / 60) * 2 * Math.PI,
+          {Boolean(data) ? (
+            <ArcSeries
+              color={faults}
+              radiusDomain={[0, domain]}
+              data={Object.entries(data).map((k, v) => ({
+                label: "Fault",
+                message:
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+                time: Object.entries(data).length,
+                angle0:
+                  (parseInt(k) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
+                angle: (parseInt(k) / 24) * 2 * Math.PI,
                 radius0: 25,
                 radius: 35,
-              },
-            ]}
-            onValueMouseOver={(item, event) => this.handleHover(mockItem)}
-            onSeriesMouseOut={() => this.handleHover()}
-            onValueClick={(item, event) => {
-              this.handleClick(mockItem);
-            }}
-          />
+              }))}
+              onValueMouseOver={(item, event) => this.handleHover(item)}
+              onSeriesMouseOut={() => this.handleHover()}
+              onValueClick={(item, event) => {
+                this.handleClick(item);
+              }}
+            />
+          ) : null}
         </XYPlot>
         {Boolean(item) && (
           <React.Fragment>

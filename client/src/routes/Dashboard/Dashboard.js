@@ -73,6 +73,7 @@ class Dashboard extends React.Component {
           onChange={this.handleChange("tab")}
           variant="fullWidth"
           scrollButtons="auto"
+          variant="scrollable"
           indicatorColor="primary"
           textColor="primary"
         >

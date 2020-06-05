@@ -53,11 +53,13 @@ class Graph extends React.Component {
         });
       }
     }
+    const month = months[months.length - 1];
     base.push({
+      path: [`${month.year}`, `${month.month}`, `${pad.date()}`],
       x: months.length,
       y: pad.date(),
       size: 10,
-      color: primary,
+      color: pad.isBefore(start) ? lighter : primary,
       date: pad.clone(),
     });
     this.state = {
@@ -180,7 +182,7 @@ class Graph extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, data } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
@@ -189,7 +191,10 @@ class Graph extends React.Component {
         {this.renderFooter()}
         {show && (
           <Popup
-            data={show}
+            data={_.merge({}, show, {
+              diagnostic: _.get(data, show.path, {}),
+              data: [],
+            })}
             onClose={this.handleClose}
             isNext={this.isNext()}
             isPrevious={this.isPrevious()}

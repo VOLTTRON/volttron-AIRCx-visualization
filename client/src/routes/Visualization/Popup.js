@@ -30,12 +30,12 @@ class Popup extends React.Component {
             </MuiButton>
           </div>
           <div className={classes.popupClock}>
-            <Clock data={[]} size={200} />
+            <Clock data={data.diagnostic} size={200} />
           </div>
           <div className={classes.popupChart}>
             <AutoSizer>
               {({ width, height }) => (
-                <ChartPlotly data={[]} width={width} height={height} />
+                <ChartPlotly data={data.data} width={width} height={height} />
               )}
             </AutoSizer>
           </div>
