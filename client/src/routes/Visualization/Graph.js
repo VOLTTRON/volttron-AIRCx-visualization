@@ -1,7 +1,8 @@
 import { Paper, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { deriveColor, lighter, primary, white } from "constants/palette";
+import filters from "constants/filters";
+import { lighter, primary, white } from "constants/palette";
 import _ from "lodash";
 import moment from "moment";
 import React from "react";
@@ -135,21 +136,30 @@ class Graph extends React.Component {
   }
 
   renderChart() {
-    const { classes, data } = this.props;
+    const { classes, data, form } = this.props;
     const { base, months } = this.state;
+    const filter = filters.parse(form.filter);
     const marks = base.map((item) => {
-      const values = _.get(data, item.path, {});
-      const hours = Object.keys(values).length;
-      console.log(values);
-      let color = primary;
-      if (hours > 5) {
-        color = deriveColor("error");
-      } else if (hours > 3) {
-        color = deriveColor("warning");
-      } else if (hours > 1) {
-        color = deriveColor("info");
+      const values = Object.values(_.get(data, item.path, {}))
+        .reduce((p, v) => p.concat(v), [])
+        .filter((v) => {
+          const t = filter.isType(v.normal);
+          return t;
+        })
+        .map((v) => ({
+          filter: filters.getType(v.normal),
+          value: v.normal,
+        }));
+      let temp = { color: primary, value: null };
+      for (let index = 0; index < filters.values.length; index++) {
+        const filter = filters.values[index];
+        const value = _.find(values, { filter });
+        if (value) {
+          temp = { color: filter.color, value: value };
+          break;
+        }
       }
-      return _.merge({}, item, { color: color });
+      return _.merge({}, item, temp);
     });
     return (
       <div className={classes.chart} style={{ width: months.length * 19 + 4 }}>
@@ -182,7 +192,7 @@ class Graph extends React.Component {
   }
 
   render() {
-    const { classes, data } = this.props;
+    const { classes, form, data } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
@@ -191,6 +201,7 @@ class Graph extends React.Component {
         {this.renderFooter()}
         {show && (
           <Popup
+            form={form}
             data={_.merge({}, show, {
               diagnostic: _.get(data, show.path, {}),
               data: [],

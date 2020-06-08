@@ -1,6 +1,8 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { darker, faults, gray, light, white } from "constants/palette";
+import filters from "constants/filters";
+import { getMessage } from "constants/messages";
+import { darker, gray, light, primary, white } from "constants/palette";
 import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
@@ -42,7 +44,7 @@ class Clock extends React.Component {
   };
 
   render() {
-    const { classes, data, size } = this.props;
+    const { classes, form, data, size } = this.props;
     const { sticky, selected } = this.state;
     const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
@@ -102,7 +104,7 @@ class Clock extends React.Component {
                   },
                   x: 0,
                   y: 0,
-                  label: item.label.toLowerCase(),
+                  label: item.abbr.toLowerCase(),
                   yOffset: 16,
                 },
               ]}
@@ -115,19 +117,47 @@ class Clock extends React.Component {
           />
           {Boolean(data) ? (
             <ArcSeries
-              color={faults}
+              colorType="literal"
               radiusDomain={[0, domain]}
-              data={Object.entries(data).map((k, v) => ({
-                label: "Fault",
-                message:
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-                time: Object.entries(data).length,
-                angle0:
-                  (parseInt(k) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
-                angle: (parseInt(k) / 24) * 2 * Math.PI,
-                radius0: 25,
-                radius: 35,
-              }))}
+              data={Object.entries(data)
+                .map(([k, v]) => {
+                  console.log(v);
+                  let temp = { filter: null, message: null };
+                  const values = v
+                    .map((i) => ({
+                      filter: filters.getType(i.normal),
+                      value: i.normal,
+                    }))
+                    .filter((i) => i.filter);
+                  if (values.length === 0) {
+                    return null;
+                  }
+                  for (let index = 0; index < filters.values.length; index++) {
+                    const filter = filters.values[index];
+                    const value = _.find(values, { filter });
+                    if (value) {
+                      const message = getMessage(form.diagnostic, value.value);
+                      temp = {
+                        filter: filter,
+                        message: message,
+                      };
+                      break;
+                    }
+                  }
+                  return {
+                    label: _.get(temp, ["filter", "single"], "Unk"),
+                    abbr: _.get(temp, ["filter", "abbr"], "Unk"),
+                    message: _.get(temp, "message", ""),
+                    time: 1,
+                    color: _.get(temp, ["filter", "color"], primary),
+                    angle0:
+                      (parseInt(k) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
+                    angle: (parseInt(k) / 24) * 2 * Math.PI,
+                    radius0: 25,
+                    radius: 35,
+                  };
+                })
+                .filter((v) => v)}
               onValueMouseOver={(item, event) => this.handleHover(item)}
               onSeriesMouseOut={() => this.handleHover()}
               onValueClick={(item, event) => {

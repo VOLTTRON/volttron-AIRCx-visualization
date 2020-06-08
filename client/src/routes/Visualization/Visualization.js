@@ -40,7 +40,13 @@ class Visualization extends React.Component {
         <div className={classes.flex}>
           <YAxis label="Day" values={_.range(31)} />
           {Object.keys(data).map((k) => (
-            <Graph label={k} start={start} end={end} data={data[k]} />
+            <Graph
+              label={k}
+              start={start}
+              end={end}
+              data={data[k]}
+              form={form}
+            />
           ))}
         </div>
         <Legend />

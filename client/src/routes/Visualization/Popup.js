@@ -10,7 +10,7 @@ import styles from "./styles";
 
 class Popup extends React.Component {
   render() {
-    const { classes, data } = this.props;
+    const { classes, form, data } = this.props;
     return (
       <MuiDialog
         title={data.date.format("MMM Do, YYYY")}
@@ -30,7 +30,7 @@ class Popup extends React.Component {
             </MuiButton>
           </div>
           <div className={classes.popupClock}>
-            <Clock data={data.diagnostic} size={200} />
+            <Clock form={form} data={data.diagnostic} size={200} />
           </div>
           <div className={classes.popupChart}>
             <AutoSizer>

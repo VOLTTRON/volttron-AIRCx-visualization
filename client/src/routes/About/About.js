@@ -8,7 +8,7 @@ import styles from "./styles";
 
 class About extends React.Component {
   render() {
-    const { page } = this.props;
+    // const { page } = this.props;
     return (
       // <Grid container alignContent="center" justify="center" spacing={2}>
       //   <Grid item xs={12}>
