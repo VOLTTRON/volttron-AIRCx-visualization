@@ -7,6 +7,7 @@ import {
   fetchDetailed,
   selectDetailed,
   selectDetailedBusy,
+  selectDetailedRequest,
 } from "controllers/data/action";
 import _ from "lodash";
 import moment from "moment";
@@ -227,7 +228,7 @@ class Graph extends React.Component {
   }
 
   render() {
-    const { classes, form, data, detailed, busy } = this.props;
+    const { classes, form, data, detailed, busy, request } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
@@ -242,6 +243,7 @@ class Graph extends React.Component {
               detailed: detailed,
               busy: busy,
             })}
+            request={request}
             onClose={this.handleClose}
             isNext={this.isNext()}
             isPrevious={this.isPrevious()}
@@ -257,6 +259,7 @@ class Graph extends React.Component {
 const mapStateToProps = (state) => ({
   detailed: selectDetailed(state),
   busy: selectDetailedBusy(state),
+  request: selectDetailedRequest(state),
 });
 
 const mapActionToProps = { fetchDetailed };

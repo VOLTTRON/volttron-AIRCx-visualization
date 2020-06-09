@@ -10,7 +10,7 @@ import styles from "./styles";
 
 class Popup extends React.Component {
   render() {
-    const { classes, form, data } = this.props;
+    const { classes, form, request, data } = this.props;
     return (
       <MuiDialog
         title={data.date.format("MMM Do, YYYY")}
@@ -40,6 +40,7 @@ class Popup extends React.Component {
                 {({ width, height }) => (
                   <ChartPlotly
                     data={data.detailed}
+                    request={request}
                     width={width}
                     height={height}
                   />

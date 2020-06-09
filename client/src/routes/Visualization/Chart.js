@@ -142,7 +142,7 @@ class Chart extends React.Component {
           </div>
           <div className={classes.chartXAxis}>
             <Typography className={classes.xHeader} variant="h5">
-              <strong>Time (min)</strong>
+              <strong>Time</strong>
             </Typography>
           </div>
         </div>

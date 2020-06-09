@@ -41,6 +41,7 @@ class Visualization extends React.Component {
           <YAxis label="Day" values={_.range(31)} />
           {Object.keys(data).map((k) => (
             <Graph
+              key={`graph-${k}`}
               label={k}
               start={start}
               end={end}

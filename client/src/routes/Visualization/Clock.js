@@ -82,7 +82,7 @@ class Clock extends React.Component {
                   style: { fill: white, fontSize: "1rem" },
                   x: 0,
                   y: 0,
-                  label: item.time,
+                  label: `${item.time}`,
                   xOffset: 0,
                 },
                 {

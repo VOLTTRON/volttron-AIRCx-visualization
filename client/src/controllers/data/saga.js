@@ -264,37 +264,51 @@ export function* readDiagnosticsSaga(action) {
   }
 }
 
-export const transformDetailed = (data) => {
-  const result = {};
-  if (data) {
-    Object.keys(data).forEach((k) => {
-      data[k].forEach((t) => {
-        const date = moment(t[0]);
-        const path = [
-          k,
-          `${date.year()}`,
-          `${date.month() + 1}`,
-          `${date.date() + 1}`,
-          `${date.hour()}`,
-        ];
-        const values = _.get(result, path, []);
-        values.push(t[1]);
-        _.setWith(result, path, values, Object);
-      });
-    });
-  }
-  return result;
-};
-
 export function* readDetailedSaga(action) {
   const { payload } = action;
+  const { site, building, device, diagnostic } = payload;
+  const temp = _.cloneDeep(payload);
+  temp.topic = [];
+  switch (diagnostic) {
+    case "EconomizerAIRCx":
+      _.merge(temp, {
+        topic: [
+          "CoolingTemperatureSetPoint",
+          "UnoccupiedHeatingTemperatureSetPoint",
+          "OutdoorAirTemperature",
+          "ReturnAirTemperature",
+          "DischargeAirTemperature",
+          "DischargeAirTemperatureSetPoint",
+          "ZoneTemperature",
+          "ZoneTemperatureSetPoint",
+        ].map((t) => `${site}/${building}/${device}/${t}`),
+      });
+      break;
+    case "AirsideAIRCx":
+      _.merge(temp, {
+        topic: [
+          "CoolingTemperatureSetPoint",
+          "UnoccupiedHeatingTemperatureSetPoint",
+          "OutdoorAirTemperature",
+          "ReturnAirTemperature",
+          "DischargeAirTemperature",
+          "DischargeAirTemperatureSetPoint",
+          "ZoneTemperature",
+          "ZoneTemperatureSetPoint",
+        ].map((t) => `${site}/${building}/${device}/${t}`),
+      });
+      break;
+    default:
+      throw new Error(
+        `Unhandled diagnostic type passed to read detailed: ${diagnostic}`
+      );
+  }
   try {
     yield put(fetchDetailedBusy(true));
     yield put(fetchDetailedError());
-    const form = yield select(selectDataForm);
-    const response = yield call(readDetailed, _.merge(form, payload));
-    const result = yield call(transformDetailed, response);
-    yield put(fetchDetailedSuccess(result));
+    // const form = yield select(selectDataForm);
+    const response = yield call(readDetailed, temp);
+    yield put(fetchDetailedSuccess(response));
   } catch (error) {
     yield put(fetchDetailedError(error.message));
   } finally {
