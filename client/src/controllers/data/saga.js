@@ -9,12 +9,16 @@ import {
   editConfigError,
   editConfigSuccess,
   EDIT_CONFIG,
+  fetchDetailedBusy,
+  fetchDetailedError,
+  fetchDetailedSuccess,
   fetchDiagnosticsBusy,
   fetchDiagnosticsError,
   fetchDiagnosticsSuccess,
   fetchSourcesBusy,
   fetchSourcesError,
   fetchSourcesSuccess,
+  FETCH_DETAILED,
   FETCH_DIAGNOSTICS,
   FETCH_SOURCES,
   selectCurrentConfig,
@@ -36,6 +40,7 @@ import {
   UPLOAD_SAMPLE,
 } from "./action";
 import {
+  readDetailed,
   readDiagnostics,
   readSources,
   uploadConfig,
@@ -259,6 +264,44 @@ export function* readDiagnosticsSaga(action) {
   }
 }
 
+export const transformDetailed = (data) => {
+  const result = {};
+  if (data) {
+    Object.keys(data).forEach((k) => {
+      data[k].forEach((t) => {
+        const date = moment(t[0]);
+        const path = [
+          k,
+          `${date.year()}`,
+          `${date.month() + 1}`,
+          `${date.date() + 1}`,
+          `${date.hour()}`,
+        ];
+        const values = _.get(result, path, []);
+        values.push(t[1]);
+        _.setWith(result, path, values, Object);
+      });
+    });
+  }
+  return result;
+};
+
+export function* readDetailedSaga(action) {
+  const { payload } = action;
+  try {
+    yield put(fetchDetailedBusy(true));
+    yield put(fetchDetailedError());
+    const form = yield select(selectDataForm);
+    const response = yield call(readDetailed, _.merge(form, payload));
+    const result = yield call(transformDetailed, response);
+    yield put(fetchDetailedSuccess(result));
+  } catch (error) {
+    yield put(fetchDetailedError(error.message));
+  } finally {
+    yield put(fetchDetailedBusy(false));
+  }
+}
+
 export default function* dataSaga() {
   yield takeLatest(TRANSMOGRIFY_CONFIG[REQUEST], transmogrifyConfigSaga);
   yield takeLatest(EDIT_CONFIG[REQUEST], editConfigSaga);
@@ -266,4 +309,5 @@ export default function* dataSaga() {
   yield takeLatest(UPLOAD_CONFIG[REQUEST], uploadConfigSaga);
   yield takeLatest(FETCH_SOURCES[REQUEST], readSourcesSaga);
   yield takeLatest(FETCH_DIAGNOSTICS[REQUEST], readDiagnosticsSaga);
+  yield takeLatest(FETCH_DETAILED[REQUEST], readDetailedSaga);
 }

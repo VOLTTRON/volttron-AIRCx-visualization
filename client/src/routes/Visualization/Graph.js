@@ -3,6 +3,11 @@ import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import filters from "constants/filters";
 import { lighter, primary, white } from "constants/palette";
+import {
+  fetchDetailed,
+  selectDetailed,
+  selectDetailedBusy,
+} from "controllers/data/action";
 import _ from "lodash";
 import moment from "moment";
 import React from "react";
@@ -88,12 +93,23 @@ class Graph extends React.Component {
   };
 
   handleValueClick = (value) => {
+    const { form } = this.props;
     if (value.date) {
       this.setState({ show: value });
+      this.props.fetchDetailed(
+        _.merge({}, form, {
+          start: value.date.format(),
+          end: value.date
+            .clone()
+            .add("day", 1)
+            .format(),
+        })
+      );
     }
   };
 
   handleValuePrevious = () => {
+    const { form } = this.props;
     const { base, months, show } = this.state;
     if (this.isPrevious()) {
       const date = show.date.clone().subtract("day", 1);
@@ -102,10 +118,20 @@ class Graph extends React.Component {
         y: date.date(),
       });
       this.setState({ show: mark });
+      this.props.fetchDetailed(
+        _.merge({}, form, {
+          start: date.format(),
+          end: date
+            .clone()
+            .add("day", 1)
+            .format(),
+        })
+      );
     }
   };
 
   handleValueNext = () => {
+    const { form } = this.props;
     const { base, months, show } = this.state;
     if (this.isNext()) {
       const date = show.date.clone().add("day", 1);
@@ -114,6 +140,15 @@ class Graph extends React.Component {
         y: date.date(),
       });
       this.setState({ show: mark });
+      this.props.fetchDetailed(
+        _.merge({}, form, {
+          start: date.format(),
+          end: date
+            .clone()
+            .add("day", 1)
+            .format(),
+        })
+      );
     }
   };
 
@@ -192,7 +227,7 @@ class Graph extends React.Component {
   }
 
   render() {
-    const { classes, form, data } = this.props;
+    const { classes, form, data, detailed, busy } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
@@ -204,7 +239,8 @@ class Graph extends React.Component {
             form={form}
             data={_.merge({}, show, {
               diagnostic: _.get(data, show.path, {}),
-              data: [],
+              detailed: detailed,
+              busy: busy,
             })}
             onClose={this.handleClose}
             isNext={this.isNext()}
@@ -218,9 +254,12 @@ class Graph extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  detailed: selectDetailed(state),
+  busy: selectDetailedBusy(state),
+});
 
-const mapActionToProps = {};
+const mapActionToProps = { fetchDetailed };
 
 export default connect(
   mapStateToProps,

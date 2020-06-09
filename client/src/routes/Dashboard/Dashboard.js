@@ -49,6 +49,7 @@ class Dashboard extends React.Component {
         return { tab: tabs.length > 0 ? tabs[0] : "" };
       }
     }
+    return {};
   }
 
   constructor(props) {

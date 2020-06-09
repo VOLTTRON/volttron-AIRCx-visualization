@@ -121,7 +121,6 @@ class Clock extends React.Component {
               radiusDomain={[0, domain]}
               data={Object.entries(data)
                 .map(([k, v]) => {
-                  console.log(v);
                   let temp = { filter: null, message: null };
                   const values = v
                     .map((i) => ({

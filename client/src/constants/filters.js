@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { all, inconclusive, unitOff } from "./palette";
+import { all, faults, inconclusive, unitOff } from "./palette";
 
 const values = [
   {
@@ -8,7 +8,7 @@ const values = [
     alt: "Faults",
     single: "Fault",
     abbr: "Fault",
-    color: "Fault",
+    color: faults,
     isType: (v) => _.get(getType(v), "name") === "faults",
   },
   {
@@ -44,7 +44,7 @@ const getType = (value) => {
   const s = `${value}`;
   switch (s) {
     case "-99":
-      return values[2];
+      return values[1];
     default:
     // continue
   }

@@ -1,6 +1,6 @@
 import { withStyles } from "@material-ui/core/styles";
 import { ArrowBackIos, ArrowForwardIos } from "@material-ui/icons";
-import { MuiButton, MuiDialog } from "components";
+import { MuiButton, MuiDialog, MuiLoading } from "components";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer } from "react-virtualized";
@@ -33,11 +33,19 @@ class Popup extends React.Component {
             <Clock form={form} data={data.diagnostic} size={200} />
           </div>
           <div className={classes.popupChart}>
-            <AutoSizer>
-              {({ width, height }) => (
-                <ChartPlotly data={data.data} width={width} height={height} />
-              )}
-            </AutoSizer>
+            {data.busy ? (
+              <MuiLoading />
+            ) : (
+              <AutoSizer>
+                {({ width, height }) => (
+                  <ChartPlotly
+                    data={data.detailed}
+                    width={width}
+                    height={height}
+                  />
+                )}
+              </AutoSizer>
+            )}
           </div>
           <div className={classes.popupNext}>
             <MuiButton

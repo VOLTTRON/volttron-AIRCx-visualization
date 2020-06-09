@@ -1,7 +1,16 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { black, gray, primary, white } from "constants/palette";
+import {
+  black,
+  gray,
+  info,
+  primary,
+  secondary,
+  verified,
+  white,
+} from "constants/palette";
 import _ from "lodash";
+import moment from "moment";
 import React from "react";
 import Plot from "react-plotly.js";
 import { connect } from "react-redux";
@@ -42,6 +51,8 @@ const mockLabels = [
 ];
 const mockColors = [primary, gray, black];
 
+const colors = [primary, secondary, verified, info, gray];
+
 class Chart extends React.Component {
   state = {
     sticky: null,
@@ -57,20 +68,29 @@ class Chart extends React.Component {
   };
 
   render() {
-    const { classes, data, width, height } = this.props;
-    const { sticky, selected } = this.state;
-    const domain = 100;
-    const values = _.concat(...mockDataSets).map((v) => v.y);
+    const { classes, width, height, data } = this.props;
+    const values = data
+      ? _.concat(...Object.values(data)).map((v) => v[1])
+      : [];
+    const labels = data
+      ? Object.keys(data).map((l, i) => ({
+          i: i,
+          x:
+            moment(_.last(data[l])[0]).hours() * 60 +
+            moment(_.last(data[l])[0]).minutes(),
+          y: _.last(data[l])[1],
+          label: l.slice(0, 1),
+        }))
+      : [];
     const min = _.min(values) - 10;
     const max = _.max(values) + 10;
     const padding = (max - min) / 40;
     const ys = createPadding(
-      mockLabels.map((v) => v.y),
+      labels.map((v) => v.y),
       min,
       max,
       padding
     );
-    const labels = mockLabels.map((v, i) => _.merge({}, v, { y: ys[i] }));
     return (
       <div className={classes.chartContent}>
         <div className={classes.chartFlex}>
@@ -100,7 +120,7 @@ class Chart extends React.Component {
                   yanchor: "bottom",
                   orientation: "h",
                 },
-                annotations: mockLabels.map((v, i) => ({
+                annotations: labels.map((v, i) => ({
                   x: v.x,
                   y: ys[i],
                   xanchor: "left",
@@ -110,7 +130,7 @@ class Chart extends React.Component {
                   showarrow: false,
                   font: {
                     size: 16,
-                    color: mockColors[i],
+                    color: colors[i],
                   },
                 })),
                 plot_bgcolor: white,

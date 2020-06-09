@@ -6,6 +6,7 @@ export const UNIQUE_KEY_UPLOAD_SAMPLE = "sample/upload";
 export const UNIQUE_KEY_UPLOAD_CONFIG = "config/upload";
 export const SERVICE_ENDPOINT = "data";
 export const SERVICE_ENDPOINT_DIAGNOSTICS = `${SERVICE_ENDPOINT}/diagnostics`;
+export const SERVICE_ENDPOINT_DETAILED = `${SERVICE_ENDPOINT}/detailed`;
 export const SERVICE_ENDPOINT_SOURCES = `${SERVICE_ENDPOINT}/sources`;
 
 const readSample = (file) => {
@@ -81,4 +82,9 @@ export const readSources = () => {
 export const readDiagnostics = (form) => {
   if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_DIAGNOSTICS);
   return create(`${SERVICE_ENDPOINT_DIAGNOSTICS}`, form, null, false);
+};
+
+export const readDetailed = (form) => {
+  if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_DETAILED);
+  return create(`${SERVICE_ENDPOINT_DETAILED}`, form, null, false);
 };
