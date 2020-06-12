@@ -69,23 +69,40 @@ router.get("/sources", auth.optional, (req, res, next) => {
 // get detailed historian data
 router.post("/detailed", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
+  const range = moment(end).diff(moment(start), "hours");
+  const chunks = range <= 6 ? 1 : Math.ceil(range / 6);
+  const span = Math.ceil(range / chunks);
+  // console.log(JSON.stringify({ range, chunks, span: `${span} hours`, topic }));
+  if (span > 25) {
+    return res
+      .status(400)
+      .json("Request time span cannot be greater than a day.");
+  }
+  if (span <= 0) {
+    return res.status(400).json("Request end time must be after start time.");
+  }
   axios
     .all(
-      _.range(0, 4).map((v) => {
+      _.range(0, chunks).map((v) => {
+        const range = {
+          start: moment
+            .min(moment(start).add(v * span, "hours"), moment(end))
+            .format("YYYY-MM-DD HH:mm:ss"),
+          end: moment
+            .min(moment(start).add((v + 1) * span, "hours"), moment(end))
+            .format("YYYY-MM-DD HH:mm:ss"),
+        };
+        console.log(range);
         return axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
           jsonrpc: "2.0",
           id: "data.historian",
           method: "query",
           params: {
             authentication: `${token}`,
-            count: 1000,
             topic: topic,
-            start: moment(start)
-              .add(v * 6, "hours")
-              .format("YYYY-MM-DDTHH:mm:ss"),
-            end: moment(end)
-              .subtract((3 - v) * 6, "hours")
-              .format("YYYY-MM-DDTHH:mm:ss"),
+            count: 1000,
+            start: range.start,
+            end: range.end,
           },
         });
       })
@@ -113,27 +130,63 @@ router.post("/detailed", auth.optional, (req, res, next) => {
 // get diagnostics historian data
 router.post("/diagnostics", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
+  const range = moment(end)
+    .endOf("day")
+    .diff(moment(start), "days");
+  const chunks = range <= 7 ? 1 : Math.ceil(range / 7);
+  const span = Math.ceil(range / chunks);
+  // console.log(JSON.stringify({ range, chunks, span: `${span} hours`, topic }));
+  if (range > 366) {
+    return res
+      .status(400)
+      .json("Request time span cannot be greater than a year.");
+  }
+  if (span <= 0) {
+    return res.status(400).json("Request end time must be after start time.");
+  }
   axios
-    .post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
-      jsonrpc: "2.0",
-      id: "analysis.historian",
-      method: "query",
-      params: {
-        authentication: `${token}`,
-        topic: topic,
-        start: moment(start).format("YYYY-MM-DDTHH:mm:ss"),
-        end: moment(end).format("YYYY-MM-DDTHH:mm:ss"),
-      },
-    })
-    .then((response) => {
-      const result = {};
-      Object.entries(_.get(response, ["data", "result", "values"], {})).forEach(
-        ([k, v]) => {
-          _.set(result, _.slice(pattern_diagnostics.exec(k), 5), v);
-        }
-      );
-      return res.status(200).json(result);
-    })
+    .all(
+      _.range(0, chunks).map((v) => {
+        const range = {
+          start: moment
+            .min(moment(start).add(v * span, "days"), moment(end).endOf("day"))
+            .format("YYYY-MM-DD HH:mm:ss"),
+          end: moment
+            .min(
+              moment(start).add((v + 1) * span, "days"),
+              moment(end).endOf("day")
+            )
+            .format("YYYY-MM-DD HH:mm:ss"),
+        };
+        console.log(range);
+        return axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
+          jsonrpc: "2.0",
+          id: "analysis.historian",
+          method: "query",
+          params: {
+            authentication: `${token}`,
+            topic: topic,
+            count: 1000,
+            start: range.start,
+            end: range.end,
+          },
+        });
+      })
+    )
+    .then(
+      axios.spread((...responses) => {
+        const result = {};
+        responses.forEach((response) => {
+          Object.entries(
+            _.get(response, ["data", "result", "values"], {})
+          ).forEach(([k, v]) => {
+            const key = _.slice(pattern_diagnostics.exec(k), 5);
+            _.set(result, key, _.concat(_.get(result, key, []), v));
+          });
+        });
+        return res.status(200).json(result);
+      })
+    )
     .catch((error) => {
       logger.error(error);
       return res.status(500).json(error.message);

@@ -186,7 +186,7 @@ class Graph extends React.Component {
           filter: filters.getType(v.normal),
           value: v.normal,
         }));
-      let temp = { color: primary, value: null };
+      let temp = {};
       for (let index = 0; index < filters.values.length; index++) {
         const filter = filters.values[index];
         const value = _.find(values, { filter });

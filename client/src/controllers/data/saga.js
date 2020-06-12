@@ -235,8 +235,8 @@ export const transformDiagnostics = (data) => {
         const path = [
           k,
           `${date.year()}`,
-          `${date.month() + 1}`,
-          `${date.date() + 1}`,
+          `${date.month()}`,
+          `${date.date()}`,
           `${date.hour()}`,
         ];
         const values = _.get(result, path, []);
