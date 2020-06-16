@@ -14,8 +14,11 @@ import {
 import { withStyles } from "@material-ui/core/styles";
 import { MuiLoading } from "components";
 import filters from "constants/filters";
+import groups from "constants/groups";
+import { getMessage } from "constants/messages";
 import { gray, lighter } from "constants/palette";
 import {
+  selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
 } from "controllers/data/action";
@@ -94,10 +97,66 @@ class Dashboard extends React.Component {
   }
 
   renderCard(type) {
-    const { classes } = this.props;
-    const { sticky } = this.state;
+    const { classes, data, form } = this.props;
+    const { sticky, tab } = this.state;
     const domain = 100;
-    const data = mockData.filter((d) => filters.parse(d.type) === type);
+    const end = moment(_.get(form, "end", new Date()));
+    const group = groups.parse(_.get(form, "group", "day"));
+    const start = end.clone().subtract(group.range);
+    const temp = start.clone();
+    const max = start.diff(end, "hours");
+    const values = [];
+    console.log(JSON.stringify({ start, end, group }));
+    while (temp.isBefore(end)) {
+      const v = _.concat(
+        ...Object.entries(
+          _.get(data, [tab, temp.year(), temp.month(), temp.date()], {})
+        ).map(([k, v]) => ({ day: k, value: v }))
+      ).filter((e) => type.isType(e.value.normal));
+      if (v.length > 0) {
+        values.push(
+          _.merge(
+            {
+              type: type.name,
+              start: temp
+                .clone()
+                .hour(_.minBy(v, (e) => parseInt(e.key)).day)
+                .format(),
+              end: temp
+                .clone()
+                .hour(_.maxBy(v, (e) => parseInt(e.key)).day)
+                .format(),
+            },
+            _.first(v).value
+          )
+        );
+      }
+      temp.add(1, "day");
+    }
+    const v = _.concat(
+      ...Object.entries(
+        _.get(data, [tab, temp.year(), temp.month(), temp.date()], {})
+      ).map(([k, v]) => ({ day: k, value: v }))
+    ).filter((e) => type.isType(e.value.normal));
+    if (v.length > 0) {
+      values.push(
+        _.merge(
+          {
+            type: type.name,
+            start: temp
+              .clone()
+              .hour(_.minBy(v, (e) => parseInt(e.key)).day)
+              .format(),
+            end: temp
+              .clone()
+              .hour(_.maxBy(v, (e) => parseInt(e.key)).day)
+              .format(),
+          },
+          _.first(v).value
+        )
+      );
+    }
+    console.log(values);
     return (
       <div>
         <Paper className={classes.paperTop} elevation={3}>
@@ -122,32 +181,42 @@ class Dashboard extends React.Component {
               <ArcSeries
                 color={type.color}
                 radiusDomain={[0, domain]}
-                data={[
-                  {
-                    time: ((2 * Math.PI) / 24) * data.length,
-                    radius0: 80,
-                    radius: 100,
-                  },
-                ]}
+                data={
+                  values.length > 0
+                    ? [
+                        {
+                          time: ((2 * Math.PI) / max) * values.length,
+                          radius0: 80,
+                          radius: 100,
+                        },
+                      ]
+                    : []
+                }
               />
               <MarkSeries
                 color={type.color}
-                data={[
-                  {
-                    x: Math.sin(Math.PI) * 90,
-                    y: Math.cos(Math.PI) * 90,
-                    size: 10,
-                  },
-                  {
-                    x:
-                      Math.sin(((2 * Math.PI) / 24) * data.length + Math.PI) *
-                      90,
-                    y:
-                      Math.cos(((2 * Math.PI) / 24) * data.length + Math.PI) *
-                      90,
-                    size: 10,
-                  },
-                ]}
+                data={
+                  values.length > 0
+                    ? [
+                        {
+                          x: Math.sin(Math.PI) * 90,
+                          y: Math.cos(Math.PI) * 90,
+                          size: 10,
+                        },
+                        {
+                          x:
+                            Math.sin(
+                              ((2 * Math.PI) / max) * values.length + Math.PI
+                            ) * 90,
+                          y:
+                            Math.cos(
+                              ((2 * Math.PI) / max) * values.length + Math.PI
+                            ) * 90,
+                          size: 10,
+                        },
+                      ]
+                    : []
+                }
               />
               <LabelSeries
                 data={[
@@ -159,7 +228,7 @@ class Dashboard extends React.Component {
                     },
                     x: 0,
                     y: 0,
-                    label: `${data.length}`,
+                    label: `${values.length}`,
                     yOffset: 16,
                   },
                   {
@@ -170,7 +239,7 @@ class Dashboard extends React.Component {
                     },
                     x: 0,
                     y: 0,
-                    label: `Hour${data.length === 1 ? "" : "s"}`,
+                    label: `Hour${values.length === 1 ? "" : "s"}`,
                     yOffset: 32,
                   },
                 ]}
@@ -190,7 +259,7 @@ class Dashboard extends React.Component {
               <TableBody
                 onMouseOut={() => this.handleChange("selected")(null, null)}
               >
-                {data.map((d, i) => (
+                {values.map((d, i) => (
                   <TableRow
                     className={classes.tableRow}
                     style={{
@@ -223,7 +292,7 @@ class Dashboard extends React.Component {
   }
 
   renderDetails() {
-    const { classes } = this.props;
+    const { classes, form } = this.props;
     const { sticky, selected } = this.state;
     const item = selected ? selected : sticky;
     return (
@@ -231,7 +300,9 @@ class Dashboard extends React.Component {
         <Typography variant="h6">
           {item ? filters.parse(item.type).single : "\u00A0"}
         </Typography>
-        <Typography>{item ? mockItem.message : "\u00A0"}</Typography>
+        <Typography>
+          {item ? getMessage(form.diagnostic, item.normal) : "\u00A0"}
+        </Typography>
       </div>
     );
   }
@@ -284,6 +355,7 @@ class Dashboard extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+  form: selectDataForm(state),
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
 });

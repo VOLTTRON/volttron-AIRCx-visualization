@@ -66,7 +66,8 @@
     "eject": "react-scripts eject",
     "test:ci": "react-scripts test --ci --coverage --reporters=default --reporters=jest-junit --watchAll=false",
     "eslint:ci": "eslint -f checkstyle src > eslint.xml",
-    "prettier": "prettier --loglevel=debug --write \"src/**/*.{js,json,css,md,ts,html}\""
+    "prettier": "prettier --loglevel=debug --write \"src/**/*.{js,json,css,md,ts,html}\"",
+    "deploy": "shx rm -rf ../server/public && shx cp -r build ../server/public"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -98,7 +99,8 @@
     "prettier": "^1.19.1",
     "react-test-renderer": "^16.8.6",
     "redux-saga-test-plan": "^4.0.0-rc.3",
-    "redux-starter-kit": "^0.5.1"
+    "redux-starter-kit": "^0.5.1",
+    "shx": "^0.3.2"
   },
   "proxy": "http://localhost:7898",
   "main": "index.js",

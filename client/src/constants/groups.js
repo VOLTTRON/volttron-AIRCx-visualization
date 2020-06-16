@@ -7,16 +7,19 @@ export default {
       name: "day",
       label: "One Day",
       range: moment.duration(1, "days"),
+      increment: "hour",
     },
     {
       name: "week",
       label: "One Week",
       range: moment.duration(1, "weeks"),
+      increment: "hour",
     },
     {
       name: "month",
       label: "One Month",
       range: moment.duration(1, "months"),
+      increment: "day",
     },
   ],
   parse: function(value) {

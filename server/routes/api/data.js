@@ -135,7 +135,7 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
     .diff(moment(start), "days");
   const chunks = range <= 7 ? 1 : Math.ceil(range / 7);
   const span = Math.ceil(range / chunks);
-  // console.log(JSON.stringify({ range, chunks, span: `${span} hours`, topic }));
+  // console.log(JSON.stringify({ range, chunks, span: `${span} days`, topic }));
   if (range > 366) {
     return res
       .status(400)
