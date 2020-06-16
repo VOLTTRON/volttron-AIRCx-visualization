@@ -91,7 +91,7 @@ app.use(require("./routes"));
 /* static public files hosting */
 app.use(express.static(path.join(process.cwd(), "public")));
 app.get("/*", function(req, res) {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(process.cwd(), "public", "index.html"));
 });
 
 /* Here we define the error handling */
