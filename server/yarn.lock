@@ -2224,9 +2224,9 @@ express-jwt@^5.3.1:
     jsonwebtoken "^8.1.0"
     lodash.set "^4.0.0"
 
-"express-mung@git+https://github.com/tprobinson/express-mung.git#sendFork":
+"express-mung@git+https://github.com/tprobinson/express-mung#sendFork":
   version "0.5.1"
-  resolved "git+https://github.com/tprobinson/express-mung.git#64ebd60cc4b5814ac05ea640dfd230c8df6f3527"
+  resolved "git+https://github.com/tprobinson/express-mung#64ebd60cc4b5814ac05ea640dfd230c8df6f3527"
 
 express-session@^1.15.6:
   version "1.16.1"

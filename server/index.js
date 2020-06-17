@@ -68,6 +68,9 @@ app.use(function(err, req, res, next) {
 });
 require("./config/passport");
 
+/* static public files hosting */
+app.use(express.static(path.join(process.cwd(), "public")));
+
 // setup the cache middleware
 const cacheMiddleware = new ExpressCache(
   cacheManager.caching({
@@ -87,12 +90,6 @@ cacheMiddleware.attach(app);
 
 /* Here we define the api routes */
 app.use(require("./routes"));
-
-/* static public files hosting */
-app.use(express.static(path.join(process.cwd(), "public")));
-app.get("/*", function(req, res) {
-  res.sendFile(path.join(process.cwd(), "public", "index.html"));
-});
 
 /* Here we define the error handling */
 app.use(function(err, req, res, next) {
