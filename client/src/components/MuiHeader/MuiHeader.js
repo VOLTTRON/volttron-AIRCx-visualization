@@ -1,4 +1,11 @@
-import { AppBar, Menu, MenuItem, Toolbar, Typography } from "@material-ui/core";
+import {
+  AppBar,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+  withWidth,
+} from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import {
   AccountCircle as AccountCircleIcon,
@@ -34,6 +41,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { routes } from "routes";
 import mixin from "utils/mixin";
+import { ConditionalWrapper } from "utils/utils";
 import styles from "./styles";
 
 const createFormUpdate = (state, sources) => {
@@ -308,7 +316,7 @@ class MuiHeader extends React.Component {
   }
 
   renderForm() {
-    const { classes, page, sources } = this.props;
+    const { classes, width, page, sources } = this.props;
     const {
       site,
       building,
@@ -326,209 +334,234 @@ class MuiHeader extends React.Component {
         )
       : [];
     const items = sources ? _.merge({}, ...Object.values(sources)) : {};
+    const small = width !== "xl";
     return (
-      <div className={clsx(classes.row, classes.form)}>
-        <div className={classes.site}>
-          <MuiSelect
-            id="site"
-            header="Site"
-            placeholder="Select"
-            value={site}
-            onChange={this.handleChange("site")}
-          >
-            {Object.keys(items).map((i) => (
-              <MenuItem key={`site-${i}`} value={i}>
-                {i}
-              </MenuItem>
-            ))}
-          </MuiSelect>
-        </div>
-        <div className={classes.building}>
-          <MuiSelect
-            id="building"
-            header="Building"
-            placeholder="Select"
-            value={building}
-            onChange={this.handleChange("building")}
-          >
-            {Object.keys(_.get(items, [site], {})).map((i) => (
-              <MenuItem key={`building-${i}`} value={i}>
-                {i}
-              </MenuItem>
-            ))}
-          </MuiSelect>
-        </div>
-        <div className={classes.device}>
-          <MuiSelect
-            id="device"
-            header="Device"
-            placeholder="Select"
-            value={device}
-            onChange={this.handleChange("device")}
-          >
-            {Object.keys(_.get(items, [site, building], {})).map((i) => (
-              <MenuItem key={`device-${i}`} value={i}>
-                {i}
-              </MenuItem>
-            ))}
-          </MuiSelect>
-        </div>
-        <div className={classes.diagnostic}>
-          <MuiSelect
-            id="diagnostic"
-            header="Diagnostic"
-            placeholder="Select"
-            value={diagnostic}
-            onChange={this.handleChange("diagnostic")}
-          >
-            {diagnostics.map((i) => (
-              <MenuItem key={`diagnostic-${i}`} value={i}>
-                {i}
-              </MenuItem>
-            ))}
-          </MuiSelect>
-        </div>
-        <div className={classes.from}>
-          <MuiDatePicker
-            id="start"
-            header="Date Range"
-            placeholder="From Date"
-            format="MM/DD/YYYY"
-            value={moment(start)}
-            onChange={(v) =>
-              this.handleChange("start")(null, _.isEmpty(v) ? "" : v.format())
-            }
-            keyboardIcon={<TodayIcon />}
-          />
-        </div>
-        <div className={classes.to}>
-          <Remove className={classes.toIcon} />
-        </div>
-        <div className={classes.until}>
-          <MuiDatePicker
-            id="end"
-            placeholder="Until Date"
-            format="MM/DD/YYYY"
-            minDate={moment(start)}
-            maxDate={moment.min(
-              moment(start)
-                .add(1, "year")
-                .subtract(1, "day"),
-              moment()
-            )}
-            value={moment(end)}
-            onChange={(v) =>
-              this.handleChange("end")(null, _.isEmpty(v) ? "" : v.format())
-            }
-          />
-        </div>
-        {page.name === "Dashboard" ? (
-          <div className={classes.group}>
+      <ConditionalWrapper
+        condition={!small}
+        wrapper={(c) => (
+          <div className={clsx(classes.row, classes.form)}>{c}</div>
+        )}
+      >
+        <ConditionalWrapper
+          condition={small}
+          wrapper={(c) => (
+            <div
+              className={clsx(classes.row, classes.form)}
+              style={{ height: "85px" }}
+            >
+              {c}
+            </div>
+          )}
+        >
+          <div className={classes.site}>
             <MuiSelect
-              id="group"
-              placeholder="Group"
-              value={group}
-              onChange={this.handleChange("group")}
+              id="site"
+              header="Site"
+              placeholder="Select"
+              value={site}
+              onChange={this.handleChange("site")}
+            >
+              {Object.keys(items).map((i) => (
+                <MenuItem key={`site-${i}`} value={i}>
+                  {i}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </div>
+          <div className={classes.building}>
+            <MuiSelect
+              id="building"
+              header="Building"
+              placeholder="Select"
+              value={building}
+              onChange={this.handleChange("building")}
+            >
+              {Object.keys(_.get(items, [site], {})).map((i) => (
+                <MenuItem key={`building-${i}`} value={i}>
+                  {i}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </div>
+          <div className={classes.device}>
+            <MuiSelect
+              id="device"
+              header="Device"
+              placeholder="Select"
+              value={device}
+              onChange={this.handleChange("device")}
+            >
+              {Object.keys(_.get(items, [site, building], {})).map((i) => (
+                <MenuItem key={`device-${i}`} value={i}>
+                  {i}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </div>
+          <div className={classes.diagnostic}>
+            <MuiSelect
+              id="diagnostic"
+              header="Diagnostic"
+              placeholder="Select"
+              value={diagnostic}
+              onChange={this.handleChange("diagnostic")}
+            >
+              {diagnostics.map((i) => (
+                <MenuItem key={`diagnostic-${i}`} value={i}>
+                  {i}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </div>
+        </ConditionalWrapper>
+        <ConditionalWrapper
+          condition={small}
+          wrapper={(c) => (
+            <div className={clsx(classes.row, classes.form)}>{c}</div>
+          )}
+        >
+          <div className={classes.from}>
+            <MuiDatePicker
+              id="start"
+              header="Date Range"
+              placeholder="From Date"
+              format="MM/DD/YYYY"
+              value={moment(start)}
+              onChange={(v) =>
+                this.handleChange("start")(null, _.isEmpty(v) ? "" : v.format())
+              }
+              keyboardIcon={<TodayIcon />}
+            />
+          </div>
+          <div className={classes.to}>
+            <Remove className={classes.toIcon} />
+          </div>
+          <div className={classes.until}>
+            <MuiDatePicker
+              id="end"
+              placeholder="Until Date"
+              format="MM/DD/YYYY"
+              minDate={moment(start)}
+              maxDate={moment.min(
+                moment(start)
+                  .add(1, "year")
+                  .subtract(1, "day"),
+                moment()
+              )}
+              value={moment(end)}
+              onChange={(v) =>
+                this.handleChange("end")(null, _.isEmpty(v) ? "" : v.format())
+              }
+            />
+          </div>
+          {page.name === "Dashboard" ? (
+            <div className={classes.group}>
+              <MuiSelect
+                id="group"
+                placeholder="Group"
+                value={group}
+                onChange={this.handleChange("group")}
+                renderValue={(v) => {
+                  const value = groups.parse(v);
+                  if (value) {
+                    return <React.Fragment>{value.label}</React.Fragment>;
+                  }
+                }}
+              >
+                {groups.values.map((i) => (
+                  <MenuItem key={`group-${i.name}`} value={i.name}>
+                    {i.label}
+                  </MenuItem>
+                ))}
+              </MuiSelect>
+            </div>
+          ) : null}
+          {page.name === "Visualization" ? (
+            <div className={classes.filter}>
+              <MuiSelect
+                id="filter"
+                placeholder="Filter"
+                value={filter}
+                onChange={this.handleChange("filter")}
+                renderValue={(v) => {
+                  const value = filters.parse(v);
+                  if (value) {
+                    return (
+                      <React.Fragment>
+                        <span
+                          className={classes.selectedBox}
+                          style={{
+                            background: value.color,
+                          }}
+                        />
+                        {value.label}
+                      </React.Fragment>
+                    );
+                  }
+                }}
+              >
+                {filters.values.map((i) => (
+                  <MenuItem key={`filter-${i.name}`} value={i.name}>
+                    <span
+                      className={classes.filterBox}
+                      style={{ background: i.color }}
+                    />
+                    {i.label}
+                  </MenuItem>
+                ))}
+              </MuiSelect>
+            </div>
+          ) : null}
+          <div className={classes.sensitivity}>
+            <MuiSelect
+              id="sensitivity"
+              header="Sensitivity"
+              placeholder="Select"
+              value={sensitivity}
+              onChange={this.handleChange("sensitivity")}
               renderValue={(v) => {
-                const value = groups.parse(v);
+                const value = sensitivities.parse(v);
                 if (value) {
                   return <React.Fragment>{value.label}</React.Fragment>;
                 }
               }}
             >
-              {groups.values.map((i) => (
-                <MenuItem key={`group-${i.name}`} value={i.name}>
-                  {i.label}
+              {sensitivities.values.map((i) => (
+                <MenuItem
+                  style={{ whiteSpace: "normal" }}
+                  key={`sensitivity-${i.name}`}
+                  value={i.name}
+                >
+                  <div>
+                    <Typography>{i.label}</Typography>
+                    <Typography
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        fontSize: ".8rem",
+                      }}
+                    >
+                      {i.description}
+                    </Typography>
+                  </div>
                 </MenuItem>
               ))}
             </MuiSelect>
           </div>
-        ) : null}
-        {page.name === "Visualization" ? (
-          <div className={classes.filter}>
-            <MuiSelect
-              id="filter"
-              placeholder="Filter"
-              value={filter}
-              onChange={this.handleChange("filter")}
-              renderValue={(v) => {
-                const value = filters.parse(v);
-                if (value) {
-                  return (
-                    <React.Fragment>
-                      <span
-                        className={classes.selectedBox}
-                        style={{
-                          background: value.color,
-                        }}
-                      />
-                      {value.label}
-                    </React.Fragment>
-                  );
-                }
-              }}
+          <div className={classes.spacer} />
+          <div className={classes.loadButton}>
+            <MuiButton
+              label="Load Data"
+              type="primary"
+              disabled={this.isDisabled("load-data")}
+              onClick={this.handleLoadData}
+              fullWidth
             >
-              {filters.values.map((i) => (
-                <MenuItem key={`filter-${i.name}`} value={i.name}>
-                  <span
-                    className={classes.filterBox}
-                    style={{ background: i.color }}
-                  />
-                  {i.label}
-                </MenuItem>
-              ))}
-            </MuiSelect>
+              Load Data
+            </MuiButton>
           </div>
-        ) : null}
-        <div className={classes.sensitivity}>
-          <MuiSelect
-            id="sensitivity"
-            header="Sensitivity"
-            placeholder="Select"
-            value={sensitivity}
-            onChange={this.handleChange("sensitivity")}
-            renderValue={(v) => {
-              const value = sensitivities.parse(v);
-              if (value) {
-                return <React.Fragment>{value.label}</React.Fragment>;
-              }
-            }}
-          >
-            {sensitivities.values.map((i) => (
-              <MenuItem
-                style={{ whiteSpace: "normal" }}
-                key={`sensitivity-${i.name}`}
-                value={i.name}
-              >
-                <div>
-                  <Typography>{i.label}</Typography>
-                  <Typography
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      fontSize: ".8rem",
-                    }}
-                  >
-                    {i.description}
-                  </Typography>
-                </div>
-              </MenuItem>
-            ))}
-          </MuiSelect>
-        </div>
-        <div className={classes.spacer} />
-        <div className={classes.loadButton}>
-          <MuiButton
-            label="Load Data"
-            type="primary"
-            disabled={this.isDisabled("load-data")}
-            onClick={this.handleLoadData}
-            fullWidth
-          >
-            Load Data
-          </MuiButton>
-        </div>
-      </div>
+        </ConditionalWrapper>
+      </ConditionalWrapper>
     );
   }
 
@@ -566,4 +599,4 @@ const mapActionToProps = {
 export default connect(
   mapStateToProps,
   mapActionToProps
-)(withStyles(styles)(MuiHeader));
+)(withWidth()(withStyles(styles)(MuiHeader)));

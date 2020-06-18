@@ -46,7 +46,6 @@ class Chart extends React.Component {
           label: l.slice(0, 1),
         }))
       : [];
-    console.log(data);
     const min = _.min(values) - 10;
     const max = _.max(values) + 10;
     const padding = (max - min) / 30;

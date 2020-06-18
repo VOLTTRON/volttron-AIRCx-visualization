@@ -88,11 +88,8 @@ const palette = {
 
 const mixins = {
   toolbar: {
-    minHeight: 252,
-    "@media (min-width:0px) and (orientation: landscape)": {
-      minHeight: 252,
-    },
-    "@media (min-width:600px)": {
+    minHeight: 252 + 85,
+    "@media (min-width:1920px)": {
       minHeight: 252,
     },
   },

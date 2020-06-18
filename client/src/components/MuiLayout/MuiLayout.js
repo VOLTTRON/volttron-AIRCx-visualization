@@ -1,5 +1,6 @@
 import { withStyles, withTheme } from "@material-ui/core/styles";
 import { MuiBusy, MuiFooter, MuiHeader } from "components";
+import _ from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
 import { Redirect } from "react-router-dom";
@@ -32,7 +33,17 @@ class MuiLayout extends React.Component {
       return <Redirect push to={`/error?message=${error.message}`} />;
     }
     // const name = page && page.name;
-    const height = getDocumentHeight() - theme.mixins.toolbar.minHeight;
+    const tbHeight = _.get(
+      theme.mixins.toolbar,
+      [
+        Object.keys(theme.mixins.toolbar)
+          .filter((k) => k.startsWith("@"))
+          .find((k) => window.matchMedia(k.replace("@media ", "")).matches),
+        "minHeight",
+      ],
+      theme.mixins.toolbar.minHeight
+    );
+    const height = getDocumentHeight() - tbHeight;
     return (
       <div className={classes.root}>
         <MuiHeader page={page} />
