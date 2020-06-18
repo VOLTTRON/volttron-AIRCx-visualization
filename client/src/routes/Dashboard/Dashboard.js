@@ -99,6 +99,7 @@ class Dashboard extends React.Component {
   renderCard(type) {
     const { classes, data, form } = this.props;
     const { sticky, tab } = this.state;
+    const sensitivity = _.get(form, "sensitivity", "normal");
     const domain = 100;
     const end = moment(_.get(form, "end", new Date()));
     const group = groups.parse(_.get(form, "group", "day"));
@@ -112,7 +113,7 @@ class Dashboard extends React.Component {
         ...Object.entries(
           _.get(data, [tab, temp.year(), temp.month(), temp.date()], {})
         ).map(([k, v]) => ({ day: k, value: v }))
-      ).filter((e) => type.isType(e.value.normal));
+      ).filter((e) => type.isType(e.value[sensitivity]));
       if (v.length > 0) {
         values.push(
           _.merge(
@@ -137,7 +138,7 @@ class Dashboard extends React.Component {
       ...Object.entries(
         _.get(data, [tab, temp.year(), temp.month(), temp.date()], {})
       ).map(([k, v]) => ({ day: k, value: v }))
-    ).filter((e) => type.isType(e.value.normal));
+    ).filter((e) => type.isType(e.value[sensitivity]));
     if (v.length > 0) {
       values.push(
         _.merge(
@@ -295,13 +296,14 @@ class Dashboard extends React.Component {
     const { classes, form } = this.props;
     const { sticky, selected } = this.state;
     const item = selected ? selected : sticky;
+    const sensitivity = _.get(form, "sensitivity", "normal");
     return (
       <div className={classes.details}>
         <Typography variant="h6">
           {item ? filters.parse(item.type).single : "\u00A0"}
         </Typography>
         <Typography>
-          {item ? getMessage(form.diagnostic, item.normal) : "\u00A0"}
+          {item ? getMessage(form.diagnostic, item[sensitivity]) : "\u00A0"}
         </Typography>
       </div>
     );

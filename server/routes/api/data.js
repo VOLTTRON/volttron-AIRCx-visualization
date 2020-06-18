@@ -72,7 +72,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
   const range = moment(end).diff(moment(start), "hours");
   const chunks = range <= 6 ? 1 : Math.ceil(range / 6);
   const span = Math.ceil(range / chunks);
-  // console.log(JSON.stringify({ range, chunks, span: `${span} hours`, topic }));
+  logger.debug(JSON.stringify({ range, chunks, span: `${span} hours`, topic }));
   if (span > 25) {
     return res
       .status(400)
@@ -92,10 +92,12 @@ router.post("/detailed", auth.optional, (req, res, next) => {
             .min(moment(start).add((v + 1) * span, "hours"), moment(end))
             .format("YYYY-MM-DD HH:mm:ss"),
         };
-        console.log(range);
+        logger.debug(range);
         return axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
           jsonrpc: "2.0",
-          id: "data.historian",
+          id: !_.isEmpty(process.env.HISTORIAN_DATA_ID)
+            ? process.env.HISTORIAN_DATA_ID
+            : "analysis.historian",
           method: "query",
           params: {
             authentication: `${token}`,
@@ -135,7 +137,7 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
     .diff(moment(start), "days");
   const chunks = range <= 7 ? 1 : Math.ceil(range / 7);
   const span = Math.ceil(range / chunks);
-  // console.log(JSON.stringify({ range, chunks, span: `${span} days`, topic }));
+  logger.debug(JSON.stringify({ range, chunks, span: `${span} days`, topic }));
   if (range > 366) {
     return res
       .status(400)
@@ -158,10 +160,12 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
             )
             .format("YYYY-MM-DD HH:mm:ss"),
         };
-        console.log(range);
+        logger.debug(range);
         return axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
           jsonrpc: "2.0",
-          id: "analysis.historian",
+          id: !_.isEmpty(process.env.HISTORIAN_ANALYSIS_ID)
+            ? process.env.HISTORIAN_ANALYSIS_ID
+            : "analysis.historian",
           method: "query",
           params: {
             authentication: `${token}`,

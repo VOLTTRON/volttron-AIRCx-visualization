@@ -95,6 +95,11 @@ const styles = (theme) => ({
     color: gray,
     paddingTop: "24px",
   },
+  sensitivity: {
+    minWidth: "166px",
+    marginRight: "24px",
+    color: gray,
+  },
   selectedBox: {
     width: ".8rem !important",
     height: ".8rem !important",
@@ -112,7 +117,6 @@ const styles = (theme) => ({
     width: "136px",
     minWidth: "136px",
     color: gray,
-    paddingTop: "24px",
   },
   until: {
     width: "136px",

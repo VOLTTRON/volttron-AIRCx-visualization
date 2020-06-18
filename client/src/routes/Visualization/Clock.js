@@ -46,6 +46,7 @@ class Clock extends React.Component {
   render() {
     const { classes, form, data, size } = this.props;
     const { sticky, selected } = this.state;
+    const sensitivity = _.get(form, "sensitivity", "normal");
     const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
     return (
@@ -124,8 +125,8 @@ class Clock extends React.Component {
                   let temp = { filter: null, message: null };
                   const values = v
                     .map((i) => ({
-                      filter: filters.getType(i.normal),
-                      value: i.normal,
+                      filter: filters.getType(i[sensitivity]),
+                      value: i[sensitivity],
                     }))
                     .filter((i) => i.filter);
                   if (values.length === 0) {

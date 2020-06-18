@@ -174,17 +174,18 @@ class Graph extends React.Component {
   renderChart() {
     const { classes, data, form } = this.props;
     const { base, months } = this.state;
+    const sensitivity = _.get(form, "sensitivity", "normal");
     const filter = filters.parse(form.filter);
     const marks = base.map((item) => {
       const values = Object.values(_.get(data, item.path, {}))
         .reduce((p, v) => p.concat(v), [])
         .filter((v) => {
-          const t = filter.isType(v.normal);
+          const t = filter.isType(v[sensitivity]);
           return t;
         })
         .map((v) => ({
-          filter: filters.getType(v.normal),
-          value: v.normal,
+          filter: filters.getType(v[sensitivity]),
+          value: v[sensitivity],
         }));
       let temp = {};
       for (let index = 0; index < filters.values.length; index++) {

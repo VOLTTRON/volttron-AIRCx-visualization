@@ -71,7 +71,9 @@ const parse = function(value) {
       operation.name === value ||
       operation.label.toLowerCase() === value ||
       operation.alt.toLowerCase() === value ||
-      operation.single.toLowerCase() === value
+      operation.single.toLowerCase() === value ||
+      operation.abbr.toLowerCase() === value ||
+      operation.color.toLowerCase() === value
   );
 };
 

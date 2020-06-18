@@ -12,6 +12,7 @@ import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import groups from "constants/groups";
 import { black } from "constants/palette";
+import sensitivities from "constants/sensitivities";
 import { selectMode, setMode } from "controllers/common/action";
 import {
   fetchDiagnostics,
@@ -83,6 +84,7 @@ class MuiHeader extends React.Component {
       end: moment().format(),
       group: "",
       filter: "",
+      sensitivity: "",
       changed: false,
     };
     _.merge(this, mixin);
@@ -104,6 +106,7 @@ class MuiHeader extends React.Component {
       "end",
       "group",
       "filter",
+      "sensitivity",
     ]);
     switch (key) {
       case "site":
@@ -121,6 +124,7 @@ class MuiHeader extends React.Component {
       // eslint-disable-next-line
       case "group":
       case "filter":
+      case "sensitivity":
         this.props.setDataForm(form);
         break;
       case "start":
@@ -314,6 +318,7 @@ class MuiHeader extends React.Component {
       filter,
       start,
       end,
+      sensitivity,
     } = this.state;
     const diagnostics = sources
       ? Object.keys(sources).filter((d) =>
@@ -327,6 +332,7 @@ class MuiHeader extends React.Component {
           <MuiSelect
             id="site"
             header="Site"
+            placeholder="Select"
             value={site}
             onChange={this.handleChange("site")}
           >
@@ -341,6 +347,7 @@ class MuiHeader extends React.Component {
           <MuiSelect
             id="building"
             header="Building"
+            placeholder="Select"
             value={building}
             onChange={this.handleChange("building")}
           >
@@ -355,6 +362,7 @@ class MuiHeader extends React.Component {
           <MuiSelect
             id="device"
             header="Device"
+            placeholder="Select"
             value={device}
             onChange={this.handleChange("device")}
           >
@@ -369,6 +377,7 @@ class MuiHeader extends React.Component {
           <MuiSelect
             id="diagnostic"
             header="Diagnostic"
+            placeholder="Select"
             value={diagnostic}
             onChange={this.handleChange("diagnostic")}
           >
@@ -382,6 +391,7 @@ class MuiHeader extends React.Component {
         <div className={classes.from}>
           <MuiDatePicker
             id="start"
+            header="Date Range"
             placeholder="From Date"
             format="MM/DD/YYYY"
             value={moment(start)}
@@ -470,6 +480,42 @@ class MuiHeader extends React.Component {
             </MuiSelect>
           </div>
         ) : null}
+        <div className={classes.sensitivity}>
+          <MuiSelect
+            id="sensitivity"
+            header="Sensitivity"
+            placeholder="Select"
+            value={sensitivity}
+            onChange={this.handleChange("sensitivity")}
+            renderValue={(v) => {
+              const value = sensitivities.parse(v);
+              if (value) {
+                return <React.Fragment>{value.label}</React.Fragment>;
+              }
+            }}
+          >
+            {sensitivities.values.map((i) => (
+              <MenuItem
+                style={{ whiteSpace: "normal" }}
+                key={`sensitivity-${i.name}`}
+                value={i.name}
+              >
+                <div>
+                  <Typography>{i.label}</Typography>
+                  <Typography
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      fontSize: ".8rem",
+                    }}
+                  >
+                    {i.description}
+                  </Typography>
+                </div>
+              </MenuItem>
+            ))}
+          </MuiSelect>
+        </div>
         <div className={classes.spacer} />
         <div className={classes.loadButton}>
           <MuiButton

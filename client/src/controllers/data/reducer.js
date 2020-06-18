@@ -19,6 +19,7 @@ const initialState = (function() {
         end: end.format(),
         group: "day",
         filter: "all",
+        sensitivity: "normal",
       },
     },
   };
