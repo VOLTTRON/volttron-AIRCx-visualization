@@ -1,6 +1,7 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import {
+  black,
   error,
   gray,
   info,
@@ -16,7 +17,7 @@ import { connect } from "react-redux";
 import { createPadding } from "utils/layout";
 import styles from "./styles";
 
-const colors = [primary, verified, info, warning, error, gray];
+const colors = [primary, verified, info, warning, error, "purple", gray, black];
 
 class Chart extends React.Component {
   state = {
@@ -41,9 +42,10 @@ class Chart extends React.Component {
     const labels = data
       ? Object.keys(data).map((l, i) => ({
           i: i,
-          x: _.last(data[l])[0],
-          y: _.last(data[l])[1],
-          label: l.slice(0, 1),
+          x: data[l].length > 0 ? _.last(data[l])[0] : end,
+          y: data[l].length > 0 ? _.last(data[l])[1] : 0,
+          label: l.replace(/[a-z]+/g, ""),
+          abbr: l.slice(0, 1),
         }))
       : [];
     const min = _.min(values) - 10;
@@ -90,7 +92,7 @@ class Chart extends React.Component {
                   xanchor: "left",
                   yanchor: "center",
                   xshift: padding * 4,
-                  text: `<b>${v.label}</b>`,
+                  text: `<b>${v.abbr}</b>`,
                   showarrow: false,
                   font: {
                     size: 16,

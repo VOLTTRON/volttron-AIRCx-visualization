@@ -254,7 +254,14 @@ export function* readDiagnosticsSaga(action) {
     yield put(fetchDiagnosticsBusy(true));
     yield put(fetchDiagnosticsError());
     const form = yield select(selectDataForm);
-    const response = yield call(readDiagnostics, _.merge(form, payload));
+    const temp = _.merge(
+      _.omit(form, ["topic"]),
+      {
+        topic: _.get(payload, "topic", []).map((t) => t.diagnostics),
+      },
+      _.omit(payload, ["topic"])
+    );
+    const response = yield call(readDiagnostics, temp);
     const result = yield call(transformDiagnostics, response);
     yield put(fetchDiagnosticsSuccess(result));
   } catch (error) {
@@ -266,47 +273,17 @@ export function* readDiagnosticsSaga(action) {
 
 export function* readDetailedSaga(action) {
   const { payload } = action;
-  const { site, building, device, diagnostic } = payload;
-  const temp = _.cloneDeep(payload);
-  temp.topic = [];
-  switch (diagnostic) {
-    case "EconomizerAIRCx":
-      _.merge(temp, {
-        topic: [
-          "CoolingTemperatureSetPoint",
-          "UnoccupiedHeatingTemperatureSetPoint",
-          "OutdoorAirTemperature",
-          "ReturnAirTemperature",
-          "DischargeAirTemperature",
-          "DischargeAirTemperatureSetPoint",
-          "ZoneTemperature",
-          "ZoneTemperatureSetPoint",
-        ].map((t) => `${site}/${building}/${device}/${t}`),
-      });
-      break;
-    case "AirsideAIRCx":
-      _.merge(temp, {
-        topic: [
-          "CoolingTemperatureSetPoint",
-          "UnoccupiedHeatingTemperatureSetPoint",
-          "OutdoorAirTemperature",
-          "ReturnAirTemperature",
-          "DischargeAirTemperature",
-          "DischargeAirTemperatureSetPoint",
-          "ZoneTemperature",
-          "ZoneTemperatureSetPoint",
-        ].map((t) => `${site}/${building}/${device}/${t}`),
-      });
-      break;
-    default:
-      throw new Error(
-        `Unhandled diagnostic type passed to read detailed: ${diagnostic}`
-      );
-  }
   try {
     yield put(fetchDetailedBusy(true));
     yield put(fetchDetailedError());
-    // const form = yield select(selectDataForm);
+    const form = yield select(selectDataForm);
+    const temp = _.merge(
+      _.omit(form, ["topic"]),
+      {
+        topic: _.get(payload, ["topic", "0", "detailed"], []),
+      },
+      _.omit(payload, ["topic"])
+    );
     const response = yield call(readDetailed, temp);
     yield put(fetchDetailedSuccess(response));
   } catch (error) {

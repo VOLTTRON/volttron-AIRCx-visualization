@@ -1,0 +1,62 @@
+{
+    "agentid": "economizerrcx",
+    "application": "economizer.economizer_rcx.Application",
+
+    "device": {
+        "campus": "PNNL",
+        "building": "350_BUILDING",
+        "unit": {
+            "HP5": {
+                "subdevices": []
+            }
+        }
+    },
+    "analysis_name": "EconomizerAIRCx",
+    "pretty_name": "EconomizerAIRCx",
+    "mode": "PASSIVE",
+
+    "arguments": {
+        "point_mapping": {
+            "supply_fan_status": "SupplyFanStatus",
+            "outdoor_air_temperature": "OutdoorAirTemperature",
+            "return_air_temperature": "ReturnAirTemperature",
+            "mixed_air_temperature": "MixedAirTemperature",
+            "outdoor_damper_signal": "OutdoorDamperSignal",
+            "cool_call": "FirstStageCooling",
+            "supply_fan_speed": "SupplyFanSpeed"
+        },
+
+        "device_type": "RTU",
+        "economizer_type": "HL",
+        "constant_volume": true,
+        "econ_hl_temp": 70.0,
+        "data_window": 30,
+        
+        "no_required_data": 10,
+        "open_damper_time": 10,
+        "low_supply_fan_threshold": 20.0,
+
+        "mat_low_threshold": 50.0,
+        "mat_high_threshold": 90.0,
+        "oat_low_threshold": 30.0,
+        "oat_high_threshold": 110.0,
+        "rat_low_threshold": 50.0,
+        "rat_high_threshold": 90.0,
+
+   
+        "eer": 10.0,
+        "minimum_damper_setpoint": 15.0,
+        "desired_oaf": 10.0,
+        "rated_cfm": 1250.0
+    },
+
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*Command": "float",
+        ".*Signal": "float",
+        "SupplyFanStatus": "int",
+        "Chilled.*": "float",
+        "SupplyFanSpeed": "float",
+        ".*Percent": "float"
+    }
+}

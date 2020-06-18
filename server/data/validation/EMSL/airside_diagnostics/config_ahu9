@@ -1,0 +1,58 @@
+{
+    "agentid": "airside_aircx",
+    "application": "airside.airside_aircx.Application",
+
+    "device": {
+        "campus": "PNNL",
+        "building": "EMSL",
+        "unit": {
+            "AHU9": {
+                "subdevices": [
+                    "VAV1001", "VAV1003",
+                    "VAV1005", "VAV1007",
+                    "VAV1009", "VAV1010E",
+                    "VAV1012", "VAV1016",
+                    "VAV1019", "VAV1022",
+                    "VAV1027", "VAV1034",
+                    "VAV1036", "VAV1040"
+                    ]
+            }
+        }
+    },
+
+    "analysis_name": "AirsideAIRCx",
+    "mode": "PASSIVE",
+    "arguments": {
+        "point_mapping": {
+            "fan_status": "SupplyFanStatus",
+            "zn_reheat": "TerminalBoxReheatValvePosition",
+            "zn_damper": "TerminalBoxDamperCommand",
+            "duct_stcpr": "DuctStaticPressure",
+            "duct_stcpr_stpt": "DuctStaticPressureSetPoint",
+            "sa_temp": "DischargeAirTemperature",
+            "fan_speedcmd": "SupplyFanSpeedPercent",
+            "sat_stpt": "DischargeAirTemperatureSetPoint"
+        },
+        "no_required_data": 20,
+        "monday_sch": ["5:00","19:00"],
+        "tuesday_sch": ["5:00","19:00"],
+        "wednesday_sch": ["5:00","19:00"],
+        "thursday_sch": ["5:00","19:00"],
+        "friday_sch": ["5:00","19:00"],
+        "saturday_sch": ["0:00","0:00"],
+        "sunday_sch": ["0:00","0:00"]
+    },
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*SetPoint": "float",
+        "SupplyFanStatus": "int",
+        "ChilledWaterValvePosition": "float",
+        "SupplyFanSpeed": "int",
+        "OutdoorDamper*.": "float",
+        "Heating*.": "float",
+        "DuctStatic*.": "float",
+        ".*Command": "float",
+        ".*Position": "float"
+
+    }
+}

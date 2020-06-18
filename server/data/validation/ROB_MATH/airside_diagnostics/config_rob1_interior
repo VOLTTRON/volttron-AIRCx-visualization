@@ -1,0 +1,48 @@
+{
+    "agentid": "airside_rcx",
+    "application": "airside_aircx.Application",
+
+    "device": {
+        "campus": "PNNL",
+        "building": "ROI",
+        "unit": {
+            "INTERIOR_AHU": {
+                "subdevices": ["VAVM1111", "VAVM1121", "VAVM1127", "VAVM1129", "VAVM1137", "VAVM1139", "VAVM1144", "VAVM1151", "VAVM1153E", "VAVM1153W", "VAVM1154", "VAVM1206",
+                               "VAVM1208", "VAVM1216", "VAVM1226", "VAVM1230", "VAVM1234", "VAVM1236", "VAVM1238", "VAVM1243", "VAVM1250E", "VAVM1250W", "VAVM1260", "VAVM1302",
+                               "VAVM1305", "VAVM1306", "VAVM1316", "VAVM1325", "VAVM1326", "VAVM1327", "VAVM1408", "VAVM1412", "VAVM1418", "VAVM1419N", "VAVM1419S", 
+                               "VAVM1426", "VAVM1427N", "VAVM1427S", "VAVM1431E", "VAVM1431W", "VAVM1435", "VAVMC101", "VAVMC102", "VAVMC104", "VAVMC105", "VAVMC107E",
+                               "VAVMC107W2", "VAVMC107W4", "VAVMC108E", "VAVR1101E", "VAVR1101W", "VAVR1103", "VAVR1104", "VAVR1105", "VAVR1106", "VAVR1108E", "VAVR1108W",
+                               "VAVR1109", "VAVR1122", "VAVR1125", "VAVR1129", "VAVR1131E", "VAVR1131W", "VAVR1133", "VAVR1200", "VAVR1200EW", "VAVR1201", "VAVR1202E", "VAVR1202W",
+                               "VAVR1203", "VAVR1205", "VAVR1209", "VAVR1211", "VAVR1216", "VAVR1216H", "VAVR1220", "VAVR1221", "VAVR1224", "VAVR1225", "VAVR1228",
+                               "VAVR1230E", "VAVR1230W", "VAVR1238", "VAVR1242", "VAVR1244", "VAVR1306", "VAVR1401", "VAVR1402E", "VAVR1402W", "VAVR1417E", "VAVR1417W", "VAVR1418",
+                               "VAVR1424", "VAVR1425", "VAVR1428", "VAVR508", "VAVRC0101", "VAVRC0106", "VAVRC1100", "VAVRCO1245", "VAVRCO1407", "VAVRCO1414", "VAVRCORW", "VAVRLOBN", "VAVRLOBS", "VAVRLOBW", "VAVRVEST"]}
+        }
+    },
+    "analysis_name": "AirsideAIRCx",
+    "mode": "PASSIVE",
+    "arguments": {
+        "point_mapping": {
+            "fan_status": "SupplyFanStatus",
+            "zn_reheat": "TerminalBoxReheatValvePosition",
+            "zn_damper": "TerminalBoxDamperPosition",
+            "duct_stcpr": "DuctStaticPressure",
+            "duct_stcpr_stpt": "DuctStaticPressureSetPoint",
+            "sa_temp": "DischargeAirTemperature",
+            "fan_speedcmd": "SupplyFanSpeedPercent",
+            "sat_stpt": "DischargeAirTemperatureSetPoint"
+        },
+          "no_required_data": 20
+    },
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*SetPoint": "float",
+        "SupplyFanStatus": "int",
+        "ChilledWaterValvePosition": "float",
+        "SupplyFanSpeed": "int",
+        "OutdoorDamper*.": "float",
+        "Heating*.": "float",
+        "DuctStatic*.": "float",
+        ".*Command": "float",
+        ".*Position": "float"
+    }
+}

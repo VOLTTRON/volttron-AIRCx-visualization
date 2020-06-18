@@ -1,0 +1,49 @@
+{
+    "agentid": "airside_aircx",
+    "application": "airside.airside_aircx.Application",
+
+    "device": {
+        "campus": "PNNL-SEQUIM",
+        "building": "MSL5",
+        "unit": {
+            "AHU1": {
+                "subdevices": [
+                   "VAV100", "VAV109", "VAV111", "VAV113", "VAV115",
+                   "VAV117", "VAV119", "VAV121", "VAV123", "VAV125", "VAV127", "VAV129",
+                   "VAV131", "VAV206", "VAV208", "VAV210", "VAV212", "VAV214", "VAV216",
+                   "VAV218", "VAV220", "VAV222", "VAV224", "VAV226", "VAV228", "VAV230",
+                   "VAV232", "VAV302", "VAV304", "VAV306", "VAV309", "VAV310", "VAV312",
+                   "VAV314", "VAV318", "VAV320", "VAV322", "VAV402"
+                ]
+            }
+        }
+    },
+    "analysis_name": "AirsideAIRCx",
+    "mode": "PASSIVE",
+    "arguments": {
+        "point_mapping": {
+            "fan_status": "SupplyFanCommand",
+            "zn_reheat": "TerminalBoxReheatValvePosition",
+            "zn_damper": "TerminalBoxDamperCommand",
+            "duct_stcpr": "DuctStaticPressure",
+            "duct_stcpr_stpt": "DuctStaticPressureSetPoint",
+            "sa_temp": "DischargeAirTemperature",
+            "fan_speedcmd": "SupplyFanSpeed",
+            "sat_stpt": "DischargeAirTemperatureSetPoint"
+        },
+          "no_required_data": 20
+    },
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*SetPoint": "float",
+        "SupplyFanStatus": "int",
+        "ChilledWaterValvePosition": "float",
+        "SupplyFanSpeed": "int",
+        "OutdoorDamper*.": "float",
+        "Heating*.": "float",
+        "DuctStatic*.": "float",
+        ".*Command": "float",
+        ".*Position": "float"
+
+    }
+}

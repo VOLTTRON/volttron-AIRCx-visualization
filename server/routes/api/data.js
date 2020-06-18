@@ -2,6 +2,7 @@ const router = require("express").Router();
 const auth = require("../auth");
 const axios = require("axios");
 const moment = require("moment");
+const validation = require("../../data/validation");
 const _ = require("lodash");
 const { loggers } = require("winston");
 const logger = loggers.get("default");
@@ -54,7 +55,25 @@ router.get("/sources", auth.optional, (req, res, next) => {
         responses.forEach((response) => {
           _.get(response, ["data", "result"], []).forEach((d) => {
             const path = _.slice(pattern_diagnostics.exec(d), 1);
-            _.set(result, path, d);
+            console.log(path);
+            if (path.length === 5) {
+              _.set(result, [...path, "diagnostics"], d);
+              _.set(
+                result,
+                [...path, "detailed"],
+                Object.values(
+                  _.get(
+                    validation,
+                    [
+                      ...path.slice(0, path.length - 1),
+                      "arguments",
+                      "point_mapping",
+                    ],
+                    {}
+                  )
+                ).map((t) => `${path[1]}/${path[2]}/${path[3]}/${t}`)
+              );
+            }
           });
         });
         return res.status(200).json(result);

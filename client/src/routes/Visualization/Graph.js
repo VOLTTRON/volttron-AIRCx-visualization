@@ -8,6 +8,7 @@ import {
   selectDetailed,
   selectDetailedBusy,
   selectDetailedRequest,
+  selectSources,
 } from "controllers/data/action";
 import _ from "lodash";
 import moment from "moment";
@@ -94,8 +95,12 @@ class Graph extends React.Component {
   };
 
   handleValueClick = (value) => {
-    const { form } = this.props;
+    const { form, sources } = this.props;
     if (value.date) {
+      const { site, building, device, diagnostic } = form;
+      const topic = Object.values(
+        _.get(sources, [diagnostic, site, building, device], {})
+      );
       this.setState({ show: value });
       this.props.fetchDetailed(
         _.merge({}, form, {
@@ -104,15 +109,20 @@ class Graph extends React.Component {
             .clone()
             .add("day", 1)
             .format(),
+          topic: topic,
         })
       );
     }
   };
 
   handleValuePrevious = () => {
-    const { form } = this.props;
+    const { form, sources } = this.props;
     const { base, months, show } = this.state;
     if (this.isPrevious()) {
+      const { site, building, device, diagnostic } = form;
+      const topic = Object.values(
+        _.get(sources, [diagnostic, site, building, device], {})
+      );
       const date = show.date.clone().subtract("day", 1);
       const mark = _.find(base, {
         x: _.findIndex(months, { month: date.month(), year: date.year() }) + 1,
@@ -126,15 +136,20 @@ class Graph extends React.Component {
             .clone()
             .add("day", 1)
             .format(),
+          topic: topic,
         })
       );
     }
   };
 
   handleValueNext = () => {
-    const { form } = this.props;
+    const { form, sources } = this.props;
     const { base, months, show } = this.state;
     if (this.isNext()) {
+      const { site, building, device, diagnostic } = form;
+      const topic = Object.values(
+        _.get(sources, [diagnostic, site, building, device], {})
+      );
       const date = show.date.clone().add("day", 1);
       const mark = _.find(base, {
         x: _.findIndex(months, { month: date.month(), year: date.year() }) + 1,
@@ -148,6 +163,7 @@ class Graph extends React.Component {
             .clone()
             .add("day", 1)
             .format(),
+          topic: topic,
         })
       );
     }
@@ -261,6 +277,7 @@ const mapStateToProps = (state) => ({
   detailed: selectDetailed(state),
   busy: selectDetailedBusy(state),
   request: selectDetailedRequest(state),
+  sources: selectSources(state),
 });
 
 const mapActionToProps = { fetchDetailed };
