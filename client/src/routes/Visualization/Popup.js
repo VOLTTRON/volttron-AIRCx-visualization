@@ -30,7 +30,7 @@ class Popup extends React.Component {
             </MuiButton>
           </div>
           <div className={classes.popupClock}>
-            <Clock form={form} data={data.diagnostic} size={200} />
+            <Clock form={form} data={data} size={200} />
           </div>
           <div className={classes.popupChart}>
             {data.busy ? (
@@ -39,7 +39,8 @@ class Popup extends React.Component {
               <AutoSizer>
                 {({ width, height }) => (
                   <ChartPlotly
-                    data={data.detailed}
+                    form={form}
+                    data={data}
                     request={request}
                     width={width}
                     height={height}

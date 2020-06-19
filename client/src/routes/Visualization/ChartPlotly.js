@@ -1,5 +1,6 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import filters from "constants/filters";
 import {
   black,
   error,
@@ -11,6 +12,7 @@ import {
   white,
 } from "constants/palette";
 import _ from "lodash";
+import moment from "moment";
 import React from "react";
 import Plot from "react-plotly.js";
 import { connect } from "react-redux";
@@ -34,16 +36,19 @@ class Chart extends React.Component {
   };
 
   render() {
-    const { classes, width, height, data, request } = this.props;
+    const { classes, width, height, data, request, form } = this.props;
     const { start, end } = request ? request : {};
-    const values = data
-      ? _.concat(...Object.values(data)).map((v) => v[1])
+    const sensitivity = _.get(form, "sensitivity", "normal");
+    const diagnostic = _.get(data, "diagnostic");
+    const detailed = _.get(data, "detailed");
+    const values = detailed
+      ? _.concat(...Object.values(detailed)).map((v) => v[1])
       : [];
-    const labels = data
-      ? Object.keys(data).map((l, i) => ({
+    const labels = detailed
+      ? Object.keys(detailed).map((l, i) => ({
           i: i,
-          x: data[l].length > 0 ? _.last(data[l])[0] : end,
-          y: data[l].length > 0 ? _.last(data[l])[1] : 0,
+          x: detailed[l].length > 0 ? _.last(detailed[l])[0] : end,
+          y: detailed[l].length > 0 ? _.last(detailed[l])[1] : 0,
           label: l.replace(/[a-z]+/g, ""),
           abbr: l.slice(0, 1),
         }))
@@ -57,9 +62,9 @@ class Chart extends React.Component {
       max,
       padding
     );
-    const items = data
+    const items = detailed
       ? _.concat(
-          Object.values(data).map((d, i) => {
+          Object.values(detailed).map((d, i) => {
             return {
               x: d.map((v) => v[0]),
               y: d.map((v) => v[1]),
@@ -71,6 +76,47 @@ class Chart extends React.Component {
           })
         )
       : [];
+    const ranges = Object.entries(diagnostic)
+      .map(([k, v]) => {
+        const temp = { filters: [] };
+        const values = v
+          .map((i) => ({
+            filter: filters.getType(i[sensitivity]),
+            value: i[sensitivity],
+          }))
+          .filter((i) => i.filter);
+        if (values.length === 0) {
+          return null;
+        }
+        filters.values.forEach((filter) => {
+          const value = _.find(values, { filter });
+          if (value) {
+            temp.filters.push(filter);
+            return;
+          }
+        });
+        const filter = _.get(temp, ["filters", "0"]);
+        return {
+          type: "rect",
+          xref: "x",
+          yref: "y",
+          x0: moment(start)
+            .hour(parseInt(k))
+            .format(),
+          y0: min,
+          x1: moment(start)
+            .hour(parseInt(k))
+            .add(1, "hour")
+            .format(),
+          y1: max,
+          fillcolor: _.get(filter, ["color"], primary),
+          opacity: 0.2,
+          line: {
+            width: 0,
+          },
+        };
+      })
+      .filter((v) => v);
     return (
       <div className={classes.chartContent}>
         <div className={classes.chartFlex}>
@@ -113,6 +159,7 @@ class Chart extends React.Component {
                     color: colors[i],
                   },
                 })),
+                shapes: ranges,
                 xaxis: {
                   range: [start, end],
                   type: "date",

@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { MuiLoading } from "components";
+import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import groups from "constants/groups";
 import { getMessage } from "constants/messages";
@@ -310,7 +311,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { classes, data, busy } = this.props;
+    const { classes, data, busy, incomplete } = this.props;
     if (busy) {
       return (
         <div className={classes.container}>
@@ -323,6 +324,23 @@ class Dashboard extends React.Component {
           <Typography variant="h4" className={classes.message}>
             <strong>Specify device details to load data…</strong>
           </Typography>
+        </div>
+      );
+    } else if (incomplete) {
+      return (
+        <div className={classes.container} style={{ flexWrap: "wrap" }}>
+          <Typography
+            variant="h4"
+            className={classes.message}
+            style={{ width: "100%" }}
+          >
+            <strong>Under Construction</strong>
+          </Typography>
+          <MuiLink to="/visualization">
+            <Typography variant="h6" className={classes.message}>
+              Visualization View
+            </Typography>
+          </MuiLink>
         </div>
       );
     }

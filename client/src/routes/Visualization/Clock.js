@@ -55,10 +55,11 @@ class Clock extends React.Component {
   render() {
     const { classes, form, data, size } = this.props;
     const { sticky, selected } = this.state;
+    const diagnostic = _.get(data, "diagnostic");
     const sensitivity = _.get(form, "sensitivity", "normal");
     const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
-    const items = Object.entries(data)
+    const items = Object.entries(diagnostic)
       .map(([k, v]) => {
         const temp = { filters: [], messages: [] };
         const values = v
@@ -82,7 +83,7 @@ class Clock extends React.Component {
         return {
           label: _.get(filter, ["single"], "Unk"),
           abbr: _.get(filter, ["abbr"], "Unk"),
-          labels: temp.filters.map((f) => f.label),
+          labels: temp.filters.map((f) => f.single),
           messages: temp.messages,
           time: 1,
           color: _.get(filter, ["color"], primary),
@@ -136,7 +137,7 @@ class Clock extends React.Component {
             radiusDomain={[0, domain]}
             data={[{ angle: 2 * Math.PI, angle0: 0, radius0: 25, radius: 35 }]}
           />
-          {Boolean(data) ? (
+          {Boolean(diagnostic) ? (
             <ArcSeries
               colorType="literal"
               radiusDomain={[0, domain]}
