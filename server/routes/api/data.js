@@ -55,7 +55,6 @@ router.get("/sources", auth.optional, (req, res, next) => {
         responses.forEach((response) => {
           _.get(response, ["data", "result"], []).forEach((d) => {
             const path = _.slice(pattern_diagnostics.exec(d), 1);
-            console.log(path);
             if (path.length === 5) {
               _.set(result, [...path, "diagnostics"], d);
               _.set(
@@ -103,6 +102,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
   axios
     .all(
       _.range(0, chunks).map((v) => {
+        // the historian doesn't seem to handle time zones
         const range = {
           start: moment
             .min(moment(start).add(v * span, "hours"), moment(end))
@@ -168,6 +168,7 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
   axios
     .all(
       _.range(0, chunks).map((v) => {
+        // the historian doesn't seem to handle time zones
         const range = {
           start: moment
             .min(moment(start).add(v * span, "days"), moment(end).endOf("day"))

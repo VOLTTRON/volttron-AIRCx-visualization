@@ -57,6 +57,20 @@ class Chart extends React.Component {
       max,
       padding
     );
+    const items = data
+      ? _.concat(
+          Object.values(data).map((d, i) => {
+            return {
+              x: d.map((v) => v[0]),
+              y: d.map((v) => v[1]),
+              name: labels[i].label,
+              type: "scatter",
+              mode: "lines+markers",
+              line: { shape: "spline", color: colors[i], width: 8 },
+            };
+          })
+        )
+      : [];
     return (
       <div className={classes.chartContent}>
         <div className={classes.chartFlex}>
@@ -112,22 +126,7 @@ class Chart extends React.Component {
               config={{
                 displaylogo: false,
               }}
-              data={
-                data
-                  ? _.concat(
-                      Object.values(data).map((d, i) => {
-                        return {
-                          x: d.map((v) => v[0]),
-                          y: d.map((v) => v[1]),
-                          name: labels[i].label,
-                          type: "scatter",
-                          mode: "lines+markers",
-                          line: { shape: "spline", color: colors[i], width: 8 },
-                        };
-                      })
-                    )
-                  : []
-              }
+              data={items}
             />
           </div>
           <div className={classes.chartXAxis}>

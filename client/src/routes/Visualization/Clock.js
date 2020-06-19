@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Divider, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import filters from "constants/filters";
 import { getMessage } from "constants/messages";
@@ -11,6 +11,15 @@ import styles from "./styles";
 
 const LABELS = ["Midnight", "3", "6a", "9", "Noon", "3", "6p", "9"];
 
+const midnight = _.range(0, 1)
+  .map((i) => {
+    const a = -((2 * Math.PI) / 24) * i + Math.PI / 2;
+    const r = i % 3 === 0 ? 47 : 39;
+    const x = r * Math.cos(a);
+    const y = r * Math.sin(a);
+    return { x, y };
+  })
+  .reduce((p, v) => _.concat(p, [v, { x: 0, y: 0 }]), []);
 const ticks = _.range(0, 24)
   .map((i) => {
     const a = -((2 * Math.PI) / 24) * i + Math.PI / 2;
@@ -49,6 +58,58 @@ class Clock extends React.Component {
     const sensitivity = _.get(form, "sensitivity", "normal");
     const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
+    const items = Object.entries(data)
+      .map(([k, v]) => {
+        const temp = { filters: [], messages: [] };
+        const values = v
+          .map((i) => ({
+            filter: filters.getType(i[sensitivity]),
+            value: i[sensitivity],
+          }))
+          .filter((i) => i.filter);
+        if (values.length === 0) {
+          return null;
+        }
+        filters.values.forEach((filter) => {
+          const value = _.find(values, { filter });
+          if (value) {
+            const message = getMessage(form.diagnostic, value.value);
+            temp.filters.push(filter);
+            temp.messages.push(message);
+          }
+        });
+        const filter = _.get(temp, ["filters", "0"]);
+        return {
+          label: _.get(filter, ["single"], "Unk"),
+          abbr: _.get(filter, ["abbr"], "Unk"),
+          labels: temp.filters.map((f) => f.label),
+          messages: temp.messages,
+          time: 1,
+          color: _.get(filter, ["color"], primary),
+          angle0:
+            ((parseInt(k) + 1) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
+          angle: ((parseInt(k) + 1) / 24) * 2 * Math.PI,
+          radius0: 25,
+          radius: 35,
+        };
+      })
+      .filter((v) => v);
+    const prev = {
+      label: items.length > 0 ? items[0].label : undefined,
+      index: 0,
+    };
+    items.forEach((v, i) => {
+      if (prev.label !== v.label) {
+        _.range(prev.index, i)
+          .map((i) => items[i])
+          .forEach((v) => (v.time = i - prev.index));
+        prev.label = v.label;
+        prev.index = i;
+      }
+    });
+    _.range(prev.index, items.length)
+      .map((i) => items[i])
+      .forEach((v) => (v.time = items.length - prev.index));
     return (
       <div className={classes.clockContent}>
         <XYPlot
@@ -70,6 +131,24 @@ class Clock extends React.Component {
             labelAnchorY="middle"
             data={labels}
           />
+          <ArcSeries
+            color={light}
+            radiusDomain={[0, domain]}
+            data={[{ angle: 2 * Math.PI, angle0: 0, radius0: 25, radius: 35 }]}
+          />
+          {Boolean(data) ? (
+            <ArcSeries
+              colorType="literal"
+              radiusDomain={[0, domain]}
+              data={items}
+              onValueMouseOver={(item, event) => this.handleHover(item)}
+              onSeriesMouseOut={() => this.handleHover()}
+              onValueClick={(item, event) => {
+                this.handleClick(item);
+              }}
+            />
+          ) : null}
+          <LineSeries color={gray} strokeWidth={2} data={midnight} />
           <ArcSeries
             color={darker}
             radiusDomain={[0, domain]}
@@ -111,67 +190,27 @@ class Clock extends React.Component {
               ]}
             />
           )}
-          <ArcSeries
-            color={light}
-            radiusDomain={[0, domain]}
-            data={[{ angle: 2 * Math.PI, angle0: 0, radius0: 25, radius: 35 }]}
-          />
-          {Boolean(data) ? (
-            <ArcSeries
-              colorType="literal"
-              radiusDomain={[0, domain]}
-              data={Object.entries(data)
-                .map(([k, v]) => {
-                  let temp = { filter: null, message: null };
-                  const values = v
-                    .map((i) => ({
-                      filter: filters.getType(i[sensitivity]),
-                      value: i[sensitivity],
-                    }))
-                    .filter((i) => i.filter);
-                  if (values.length === 0) {
-                    return null;
-                  }
-                  for (let index = 0; index < filters.values.length; index++) {
-                    const filter = filters.values[index];
-                    const value = _.find(values, { filter });
-                    if (value) {
-                      const message = getMessage(form.diagnostic, value.value);
-                      temp = {
-                        filter: filter,
-                        message: message,
-                      };
-                      break;
-                    }
-                  }
-                  return {
-                    label: _.get(temp, ["filter", "single"], "Unk"),
-                    abbr: _.get(temp, ["filter", "abbr"], "Unk"),
-                    message: _.get(temp, "message", ""),
-                    time: 1,
-                    color: _.get(temp, ["filter", "color"], primary),
-                    angle0:
-                      (parseInt(k) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
-                    angle: (parseInt(k) / 24) * 2 * Math.PI,
-                    radius0: 25,
-                    radius: 35,
-                  };
-                })
-                .filter((v) => v)}
-              onValueMouseOver={(item, event) => this.handleHover(item)}
-              onSeriesMouseOut={() => this.handleHover()}
-              onValueClick={(item, event) => {
-                this.handleClick(item);
-              }}
-            />
-          ) : null}
         </XYPlot>
-        {Boolean(item) && (
-          <React.Fragment>
-            <Typography>{`${item.label} Message: `}</Typography>
-            <Typography style={{ fontSize: ".8em" }}>{item.message}</Typography>
-          </React.Fragment>
-        )}
+        {Boolean(item) &&
+          _.range(0, Math.min(item.messages.length, item.labels.length))
+            .map((i) => (
+              <React.Fragment>
+                <Typography>{`${item.labels[i]} Message: `}</Typography>
+                <Typography style={{ fontSize: ".8em" }}>
+                  {item.messages[i]}
+                </Typography>
+              </React.Fragment>
+            ))
+            .reduce(
+              (c, v, i) =>
+                _.concat(c, [
+                  v,
+                  i < Math.min(item.messages.length, item.labels.length) - 1 ? (
+                    <Divider style={{ margin: "10px" }} />
+                  ) : null,
+                ]),
+              []
+            )}
       </div>
     );
   }
