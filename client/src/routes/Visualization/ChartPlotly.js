@@ -49,8 +49,10 @@ class Chart extends React.Component {
           i: i,
           x: detailed[l].length > 0 ? _.last(detailed[l])[0] : end,
           y: detailed[l].length > 0 ? _.last(detailed[l])[1] : 0,
-          label: l.replace(/[a-z]+/g, ""),
-          abbr: l.slice(0, 1),
+          label: l.replace(/([A-Z]+)/g, " $1").trim(),
+          acronym: l.replace(/[a-z]+/g, "").trim(),
+          abbr: l.trim().slice(0, 1),
+          valid: detailed[l].length > 0,
         }))
       : [];
     const min = _.min(values) - 10;
@@ -66,8 +68,22 @@ class Chart extends React.Component {
       ? _.concat(
           Object.values(detailed).map((d, i) => {
             return {
+              x: [_.get(d, ["0", "0"])],
+              y: [_.get(d, ["0", "1"])],
+              legendgroup: labels[i].acronym,
+              showlegend: true,
+              name: labels[i].acronym,
+              type: "scatter",
+              mode: "lines+markers",
+              line: { shape: "spline", color: colors[i], width: 8 },
+            };
+          }),
+          Object.values(detailed).map((d, i) => {
+            return {
               x: d.map((v) => v[0]),
               y: d.map((v) => v[1]),
+              legendgroup: labels[i].acronym,
+              showlegend: false,
               name: labels[i].label,
               type: "scatter",
               mode: "lines+markers",
@@ -146,19 +162,21 @@ class Chart extends React.Component {
                   yanchor: "bottom",
                   orientation: "h",
                 },
-                annotations: labels.map((v, i) => ({
-                  x: v.x,
-                  y: ys[i],
-                  xanchor: "left",
-                  yanchor: "center",
-                  xshift: padding * 4,
-                  text: `<b>${v.abbr}</b>`,
-                  showarrow: false,
-                  font: {
-                    size: 16,
-                    color: colors[i],
-                  },
-                })),
+                annotations: labels
+                  .filter((l) => l.valid)
+                  .map((v, i) => ({
+                    x: v.x,
+                    y: ys[i],
+                    xanchor: "left",
+                    yanchor: "center",
+                    xshift: padding * 4,
+                    text: `<b>${v.abbr}</b>`,
+                    showarrow: false,
+                    font: {
+                      size: 16,
+                      color: colors[i],
+                    },
+                  })),
                 shapes: ranges,
                 xaxis: {
                   range: [start, end],
