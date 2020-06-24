@@ -310,14 +310,6 @@ export const transformAggregated = (diagnostics, form) => {
         _.merge(a, {
           [v.name]: {
             group: v,
-            // ...sensitivities.values.reduce(
-            //   (a, v) =>
-            //     (a[v.name] = filters.values.reduce(
-            //       (a, v) => (a[v.name] = {}),
-            //       {}
-            //     )),
-            //   {}
-            // ),
           },
         }),
       {}
@@ -326,7 +318,10 @@ export const transformAggregated = (diagnostics, form) => {
     const end = moment(_.get(form, "end", new Date()));
     Object.values(temp).forEach((value) => {
       const { group } = value;
-      const start = end.clone().subtract(group.range);
+      const start = moment.max(
+        end.clone().subtract(group.range),
+        moment(_.get(form, "start", new Date()))
+      );
       const max = Math.ceil(end.diff(start, group.increment));
       _.merge(value, { start: start.format(), end: end.format(), max });
       Object.keys(_.get(diagnostics, diagnostic, {})).forEach((year) =>
