@@ -10,7 +10,7 @@ import {
 } from "controllers/data/action";
 import { SERVICE_ENDPOINT_DETAILED } from "controllers/data/api";
 import mock from "controllers/data/mock";
-import { readDetailedSaga, transformDetailed } from "controllers/data/saga";
+import { readDetailedSaga } from "controllers/data/saga";
 import configureStore from "controllers/store";
 import { fetchMock } from "fetch-mock";
 import { expectSaga } from "redux-saga-test-plan";
@@ -39,7 +39,7 @@ describe("detailed.fetchDetailed()", () => {
       .withState(reduxStore.getState())
       .put(fetchDetailedBusy(true))
       .put(fetchDetailedError())
-      .put(fetchDetailedSuccess(transformDetailed(result)))
+      .put(fetchDetailedSuccess(result))
       .put(fetchDetailedBusy(false))
       .run()
       .then(() => {

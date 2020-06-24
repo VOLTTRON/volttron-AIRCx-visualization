@@ -18,30 +18,19 @@ import filters from "constants/filters";
 import groups from "constants/groups";
 import { getMessage } from "constants/messages";
 import { gray, lighter } from "constants/palette";
+import sensitivities from "constants/sensitivities";
 import {
+  selectAggregated,
   selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
 } from "controllers/data/action";
 import _ from "lodash";
-import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import { ArcSeries, LabelSeries, MarkSeries, XYPlot } from "react-vis/dist";
 import mixin from "utils/mixin";
 import styles from "./styles";
-
-const mockData = _.range(24).map((v) => ({
-  type: filters.values[Math.floor(Math.random() * Math.floor(3))].name,
-  start: `2020-05-15T${`${v}`.padStart(2, "0")}:00`,
-  end: `2020-05-15T${`${v + 1}`.padStart(2, "0")}:00`,
-}));
-
-const mockItem = {
-  label: "Fault",
-  message:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-};
 
 class Dashboard extends React.Component {
   static getDerivedStateFromProps(props, state) {
@@ -66,7 +55,15 @@ class Dashboard extends React.Component {
     _.assign(this, mixin);
   }
 
-  handleUpdate = (key) => () => {};
+  handleUpdate = (key) => () => {
+    switch (key) {
+      case "tab":
+        this.setState({ sticky: null });
+        break;
+      default:
+      // no need to handle all cases
+    }
+  };
 
   renderTabs() {
     const { classes, data } = this.props;
@@ -98,67 +95,18 @@ class Dashboard extends React.Component {
   }
 
   renderCard(type) {
-    const { classes, data, form } = this.props;
-    const { sticky, tab } = this.state;
-    const sensitivity = _.get(form, "sensitivity", "normal");
+    const { classes, aggregated, form } = this.props;
+    const { tab, sticky } = this.state;
     const domain = 100;
-    const end = moment(_.get(form, "end", new Date()));
+    const sensitivity = sensitivities.parse(
+      _.get(form, "sensitivity", "normal")
+    );
     const group = groups.parse(_.get(form, "group", "day"));
-    const start = end.clone().subtract(group.range);
-    const temp = start.clone();
-    const max = start.diff(end, "hours");
+    const entries = Object.entries(
+      _.get(aggregated, [tab, group.name, sensitivity.name, type.name], {})
+    );
+    const max = _.get(aggregated, [tab, group.name, "max"], entries.length);
     const values = [];
-    console.log(JSON.stringify({ start, end, group }));
-    while (temp.isBefore(end)) {
-      const v = _.concat(
-        ...Object.entries(
-          _.get(data, [tab, temp.year(), temp.month(), temp.date()], {})
-        ).map(([k, v]) => ({ day: k, value: v }))
-      ).filter((e) => type.isType(e.value[sensitivity]));
-      if (v.length > 0) {
-        values.push(
-          _.merge(
-            {
-              type: type.name,
-              start: temp
-                .clone()
-                .hour(_.minBy(v, (e) => parseInt(e.key)).day)
-                .format(),
-              end: temp
-                .clone()
-                .hour(_.maxBy(v, (e) => parseInt(e.key)).day)
-                .format(),
-            },
-            _.first(v).value
-          )
-        );
-      }
-      temp.add(1, "day");
-    }
-    const v = _.concat(
-      ...Object.entries(
-        _.get(data, [tab, temp.year(), temp.month(), temp.date()], {})
-      ).map(([k, v]) => ({ day: k, value: v }))
-    ).filter((e) => type.isType(e.value[sensitivity]));
-    if (v.length > 0) {
-      values.push(
-        _.merge(
-          {
-            type: type.name,
-            start: temp
-              .clone()
-              .hour(_.minBy(v, (e) => parseInt(e.key)).day)
-              .format(),
-            end: temp
-              .clone()
-              .hour(_.maxBy(v, (e) => parseInt(e.key)).day)
-              .format(),
-          },
-          _.first(v).value
-        )
-      );
-    }
-    console.log(values);
     return (
       <div>
         <Paper className={classes.paperTop} elevation={3}>
@@ -184,10 +132,10 @@ class Dashboard extends React.Component {
                 color={type.color}
                 radiusDomain={[0, domain]}
                 data={
-                  values.length > 0
+                  entries.length > 0
                     ? [
                         {
-                          time: ((2 * Math.PI) / max) * values.length,
+                          time: ((2 * Math.PI) / max) * entries.length,
                           radius0: 80,
                           radius: 100,
                         },
@@ -198,7 +146,7 @@ class Dashboard extends React.Component {
               <MarkSeries
                 color={type.color}
                 data={
-                  values.length > 0
+                  entries.length > 0
                     ? [
                         {
                           x: Math.sin(Math.PI) * 90,
@@ -208,11 +156,11 @@ class Dashboard extends React.Component {
                         {
                           x:
                             Math.sin(
-                              ((2 * Math.PI) / max) * values.length + Math.PI
+                              ((2 * Math.PI) / max) * entries.length + Math.PI
                             ) * 90,
                           y:
                             Math.cos(
-                              ((2 * Math.PI) / max) * values.length + Math.PI
+                              ((2 * Math.PI) / max) * entries.length + Math.PI
                             ) * 90,
                           size: 10,
                         },
@@ -230,7 +178,7 @@ class Dashboard extends React.Component {
                     },
                     x: 0,
                     y: 0,
-                    label: `${values.length}`,
+                    label: `${entries.length}`,
                     yOffset: 16,
                   },
                   {
@@ -241,7 +189,9 @@ class Dashboard extends React.Component {
                     },
                     x: 0,
                     y: 0,
-                    label: `Hour${values.length === 1 ? "" : "s"}`,
+                    label: `${group.increment}${
+                      values.length === 1 ? "" : "s"
+                    }`,
                     yOffset: 32,
                   },
                 ]}
@@ -254,37 +204,44 @@ class Dashboard extends React.Component {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell className={classes.tableCell}>Date</TableCell>
-                  <TableCell className={classes.tableCell}>Time</TableCell>
+                  <TableCell className={classes.tableCell}>
+                    {group.binDesc}
+                  </TableCell>
+                  <TableCell className={classes.tableCell}>Count</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody
                 onMouseOut={() => this.handleChange("selected")(null, null)}
               >
-                {values.map((d, i) => (
-                  <TableRow
-                    className={classes.tableRow}
-                    style={{
-                      ...(d === sticky && {
-                        backgroundColor: type.color,
-                      }),
-                    }}
-                    key={`table-row-${i}`}
-                    onClick={() => this.handleChange("sticky")(null, d)}
-                    onMouseOver={() => this.handleChange("selected")(null, d)}
-                    selected={d === sticky}
-                    hover
-                  >
-                    <TableCell className={classes.tableCell}>
-                      {moment(d.start).format("M/D")}
-                    </TableCell>
-                    <TableCell className={classes.tableCell}>{`${moment(
-                      d.start
-                    ).format("HH:mm")}-${moment(d.end).format(
-                      "HH:mm"
-                    )}`}</TableCell>
-                  </TableRow>
-                ))}
+                {_.orderBy(
+                  entries,
+                  [(v) => group.binToDate(v[0])],
+                  ["desc"]
+                ).map((e, i) => {
+                  const [k, v] = e;
+                  const t = _.concat(e, [tab, group.name, sensitivity.name]);
+                  const selected = _.isEqual(t, sticky);
+                  return (
+                    <TableRow
+                      className={classes.tableRow}
+                      style={{
+                        ...(selected && {
+                          backgroundColor: type.color,
+                        }),
+                      }}
+                      key={`table-row-${i}`}
+                      onClick={() => this.handleChange("sticky")(null, t)}
+                      onMouseOver={() => this.handleChange("selected")(null, t)}
+                      selected={selected}
+                      hover
+                    >
+                      <TableCell className={classes.tableCell}>{k}</TableCell>
+                      <TableCell className={classes.tableCell}>
+                        {v.length}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -295,17 +252,33 @@ class Dashboard extends React.Component {
 
   renderDetails() {
     const { classes, form } = this.props;
-    const { sticky, selected } = this.state;
-    const item = selected ? selected : sticky;
+    const { sticky, tab } = this.state;
+    const group = _.get(form, "group", "day");
     const sensitivity = _.get(form, "sensitivity", "normal");
+    // this causes the selection to be lost and regained when the screen height changes
+    // const item = selected ? selected : sticky;
+    const item =
+      sticky &&
+      sticky[2] === tab &&
+      sticky[3] === group &&
+      sticky[4] === sensitivity
+        ? sticky
+        : null;
+    const values = _.uniqBy(
+      _.get(item, "1", [{}]).map((v) => ({
+        type: _.get(filters.getType(v[sensitivity]), "single", "\u00A0"),
+        message: v[sensitivity]
+          ? getMessage(form.diagnostic, v[sensitivity])
+          : "\u00A0",
+      })),
+      (v) => JSON.stringify(v)
+    );
     return (
       <div className={classes.details}>
-        <Typography variant="h6">
-          {item ? filters.parse(item.type).single : "\u00A0"}
-        </Typography>
-        <Typography>
-          {item ? getMessage(form.diagnostic, item[sensitivity]) : "\u00A0"}
-        </Typography>
+        <Typography variant="h6">{values[0].type}</Typography>
+        {values.map((v, i) => (
+          <Typography key={`details-message-${i}`}>{v.message}</Typography>
+        ))}
       </div>
     );
   }
@@ -378,6 +351,7 @@ const mapStateToProps = (state) => ({
   form: selectDataForm(state),
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
+  aggregated: selectAggregated(state),
 });
 
 const mapActionToProps = {};

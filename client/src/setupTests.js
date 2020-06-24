@@ -30,6 +30,21 @@ console.error = function(message) {
   throw new Error("Warning message posted to console: " + text);
 };
 
+// mock of matchMedia
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 // no op function necessary for plotly
 function noOp() {}
 if (typeof window.URL.createObjectURL === "undefined") {

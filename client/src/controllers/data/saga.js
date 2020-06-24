@@ -1,3 +1,6 @@
+import filters from "constants/filters";
+import groups from "constants/groups";
+import sensitivities from "constants/sensitivities";
 import _ from "lodash";
 import moment from "moment";
 import { call, put, select, takeLatest } from "redux-saga/effects";
@@ -9,6 +12,9 @@ import {
   editConfigError,
   editConfigSuccess,
   EDIT_CONFIG,
+  fetchAggregatedBusy,
+  fetchAggregatedError,
+  fetchAggregatedSuccess,
   fetchDetailedBusy,
   fetchDetailedError,
   fetchDetailedSuccess,
@@ -18,11 +24,13 @@ import {
   fetchSourcesBusy,
   fetchSourcesError,
   fetchSourcesSuccess,
+  FETCH_AGGREGATED,
   FETCH_DETAILED,
   FETCH_DIAGNOSTICS,
   FETCH_SOURCES,
   selectCurrentConfig,
   selectDataForm,
+  selectDiagnostics,
   selectTransmogrifyConfigRequest,
   setCurrentConfig,
   transmogrifyConfig,
@@ -240,7 +248,7 @@ export const transformDiagnostics = (data) => {
           `${date.hour()}`,
         ];
         const values = _.get(result, path, []);
-        values.push(t[1]);
+        values.push(_.merge({ timestamp: t[0] }, t[1]));
         _.setWith(result, path, values, Object);
       });
     });
@@ -264,6 +272,7 @@ export function* readDiagnosticsSaga(action) {
     const response = yield call(readDiagnostics, temp);
     const result = yield call(transformDiagnostics, response);
     yield put(fetchDiagnosticsSuccess(result));
+    yield call(readAggregatedSaga);
   } catch (error) {
     yield put(fetchDiagnosticsError(error.message));
   } finally {
@@ -293,6 +302,95 @@ export function* readDetailedSaga(action) {
   }
 }
 
+export const transformAggregated = (diagnostics, form) => {
+  const data = {};
+  Object.keys(diagnostics).forEach((diagnostic) => {
+    const temp = groups.values.reduce(
+      (a, v) =>
+        _.merge(a, {
+          [v.name]: {
+            group: v,
+            // ...sensitivities.values.reduce(
+            //   (a, v) =>
+            //     (a[v.name] = filters.values.reduce(
+            //       (a, v) => (a[v.name] = {}),
+            //       {}
+            //     )),
+            //   {}
+            // ),
+          },
+        }),
+      {}
+    );
+    data[diagnostic] = temp;
+    const end = moment(_.get(form, "end", new Date()));
+    Object.values(temp).forEach((value) => {
+      const { group } = value;
+      const start = end.clone().subtract(group.range);
+      const max = Math.ceil(end.diff(start, group.increment));
+      _.merge(value, { start: start.format(), end: end.format(), max });
+      Object.keys(_.get(diagnostics, diagnostic, {})).forEach((year) =>
+        Object.keys(_.get(diagnostics, [diagnostic, year], {})).forEach(
+          (month) =>
+            Object.keys(
+              _.get(diagnostics, [diagnostic, year, month], {})
+            ).forEach((day) =>
+              Object.keys(
+                _.get(diagnostics, [diagnostic, year, month, day], {})
+              ).forEach((i) =>
+                _.get(
+                  diagnostics,
+                  [diagnostic, year, month, day, i],
+                  []
+                ).forEach((v) => {
+                  const timestamp = moment(v.timestamp);
+                  if (
+                    timestamp.isSameOrAfter(start) &&
+                    timestamp.isBefore(end)
+                  ) {
+                    const bin = group.buildBin(v.timestamp);
+                    sensitivities.values.forEach((s) => {
+                      if (s.isType(v)) {
+                        filters.values.forEach((f) => {
+                          if (f.isType(v[s.name])) {
+                            _.set(
+                              value,
+                              [s.name, f.name, bin],
+                              _.concat(
+                                _.get(value, [s.name, f.name, bin], []),
+                                [v]
+                              )
+                            );
+                          }
+                        });
+                      }
+                    });
+                  }
+                })
+              )
+            )
+        )
+      );
+    });
+  });
+  return data;
+};
+
+export function* readAggregatedSaga() {
+  try {
+    yield put(fetchAggregatedBusy(true));
+    yield put(fetchAggregatedError());
+    const form = yield select(selectDataForm);
+    const diagnostics = yield select(selectDiagnostics);
+    const response = yield call(transformAggregated, diagnostics, form);
+    yield put(fetchAggregatedSuccess(response));
+  } catch (error) {
+    yield put(fetchAggregatedError(error.message));
+  } finally {
+    yield put(fetchAggregatedBusy(false));
+  }
+}
+
 export default function* dataSaga() {
   yield takeLatest(TRANSMOGRIFY_CONFIG[REQUEST], transmogrifyConfigSaga);
   yield takeLatest(EDIT_CONFIG[REQUEST], editConfigSaga);
@@ -301,4 +399,5 @@ export default function* dataSaga() {
   yield takeLatest(FETCH_SOURCES[REQUEST], readSourcesSaga);
   yield takeLatest(FETCH_DIAGNOSTICS[REQUEST], readDiagnosticsSaga);
   yield takeLatest(FETCH_DETAILED[REQUEST], readDetailedSaga);
+  yield takeLatest(FETCH_AGGREGATED[REQUEST], readAggregatedSaga);
 }

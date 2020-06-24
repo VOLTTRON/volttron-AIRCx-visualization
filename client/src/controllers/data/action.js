@@ -133,3 +133,19 @@ export const [
   ,
   selectDetailedRequest,
 ] = generateSelectors(FETCH_DETAILED);
+
+// fetch aggregated
+export const FETCH_AGGREGATED = generateTypes(key, "aggregated");
+export const [
+  fetchAggregated,
+  fetchAggregatedSuccess,
+  fetchAggregatedError,
+  fetchAggregatedBusy,
+] = generateActions(FETCH_AGGREGATED);
+export const [
+  selectAggregated,
+  selectAggregatedError,
+  selectAggregatedBusy,
+  ,
+  selectAggregatedRequest,
+] = generateSelectors(FETCH_AGGREGATED);

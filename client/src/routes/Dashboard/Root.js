@@ -19,7 +19,7 @@ class Root extends React.Component {
     } else {
       return (
         <MuiLayout page={route}>
-          <Page page={route} incomplete />
+          <Page page={route} />
         </MuiLayout>
       );
     }
