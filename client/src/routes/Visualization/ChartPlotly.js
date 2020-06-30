@@ -55,8 +55,8 @@ class Chart extends React.Component {
           valid: detailed[l].length > 0,
         }))
       : [];
-    const min = _.min(values) - 10;
-    const max = _.max(values) + 10;
+    const min = (!_.isEmpty(values) ? _.min(values) : 0) - 10;
+    const max = (!_.isEmpty(values) ? _.max(values) : 0) + 10;
     const padding = (max - min) / 30;
     const ys = createPadding(
       labels.map((v) => v.y),
