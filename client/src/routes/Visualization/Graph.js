@@ -1,4 +1,4 @@
-import { Paper, Typography } from "@material-ui/core";
+import { Paper, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import filters from "constants/filters";
@@ -38,6 +38,7 @@ class Graph extends React.Component {
         label: pad.format("MMM").slice(0, 1),
         month: pad.month(),
         year: pad.year(),
+        tooltip: pad.format("MMMM YYYY"),
       },
     ];
     const base = [];
@@ -58,6 +59,7 @@ class Graph extends React.Component {
           label: pad.format("MMM").slice(0, 1),
           month: pad.month(),
           year: pad.year(),
+          tooltip: pad.format("MMMM YYYY"),
         });
       }
     }
@@ -179,9 +181,15 @@ class Graph extends React.Component {
     return (
       <div className={classes.months} style={{ width: months.length * 19 }}>
         {months.map((m) => (
-          <span key={`month-${m.year}-${m.month}`} className={classes.month}>
-            <strong>{m.label}</strong>
-          </span>
+          <Tooltip
+            key={`tooltip-${m.year}-${m.month}`}
+            title={m.tooltip}
+            placement="top"
+          >
+            <span key={`month-${m.year}-${m.month}`} className={classes.month}>
+              <strong>{m.label}</strong>
+            </span>
+          </Tooltip>
         ))}
       </div>
     );
