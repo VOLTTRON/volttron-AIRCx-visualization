@@ -299,6 +299,14 @@ class Dashboard extends React.Component {
           </Typography>
         </div>
       );
+    } else if (_.isEmpty(Object.keys(data))) {
+      return (
+        <div className={classes.container}>
+          <Typography variant="h4" className={classes.message}>
+            <strong>No data available for specified criteria.</strong>
+          </Typography>
+        </div>
+      );
     } else if (incomplete) {
       return (
         <div className={classes.container} style={{ flexWrap: "wrap" }}>

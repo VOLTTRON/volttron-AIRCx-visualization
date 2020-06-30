@@ -47,17 +47,21 @@ import styles from "./styles";
 const createFormUpdate = (state, sources) => {
   const items = sources ? _.merge({}, ...Object.values(sources)) : {};
   const update = {};
-  const sites = Object.keys(items);
+  const sites = Object.keys(items).sort((a, b) => a.localeCompare(b));
   if (sites.length === 1 && _.isEmpty(state.site)) {
     update.site = sites[0];
   }
   const site = _.get(_.merge({}, state, update), "site");
-  const buildings = Object.keys(_.get(items, [site], []));
+  const buildings = Object.keys(_.get(items, [site], [])).sort((a, b) =>
+    a.localeCompare(b)
+  );
   if (site && buildings.length === 1 && _.isEmpty(state.building)) {
     update.building = buildings[0];
   }
   const building = _.get(_.merge({}, state, update), "building");
-  const devices = Object.keys(_.get(items, [site, building], []));
+  const devices = Object.keys(_.get(items, [site, building], [])).sort((a, b) =>
+    a.localeCompare(b)
+  );
   if (building && devices.length === 1 && _.isEmpty(state.device)) {
     update.device = devices[0];
   }
@@ -361,11 +365,13 @@ class MuiHeader extends React.Component {
               value={site}
               onChange={this.handleChange("site")}
             >
-              {Object.keys(items).map((i) => (
-                <MenuItem key={`site-${i}`} value={i}>
-                  {i}
-                </MenuItem>
-              ))}
+              {Object.keys(items)
+                .sort((a, b) => a.localeCompare(b))
+                .map((i) => (
+                  <MenuItem key={`site-${i}`} value={i}>
+                    {i}
+                  </MenuItem>
+                ))}
             </MuiSelect>
           </div>
           <div className={classes.building}>
@@ -376,11 +382,13 @@ class MuiHeader extends React.Component {
               value={building}
               onChange={this.handleChange("building")}
             >
-              {Object.keys(_.get(items, [site], {})).map((i) => (
-                <MenuItem key={`building-${i}`} value={i}>
-                  {i}
-                </MenuItem>
-              ))}
+              {Object.keys(_.get(items, [site], {}))
+                .sort((a, b) => a.localeCompare(b))
+                .map((i) => (
+                  <MenuItem key={`building-${i}`} value={i}>
+                    {i}
+                  </MenuItem>
+                ))}
             </MuiSelect>
           </div>
           <div className={classes.device}>
@@ -391,11 +399,13 @@ class MuiHeader extends React.Component {
               value={device}
               onChange={this.handleChange("device")}
             >
-              {Object.keys(_.get(items, [site, building], {})).map((i) => (
-                <MenuItem key={`device-${i}`} value={i}>
-                  {i}
-                </MenuItem>
-              ))}
+              {Object.keys(_.get(items, [site, building], {}))
+                .sort((a, b) => a.localeCompare(b))
+                .map((i) => (
+                  <MenuItem key={`device-${i}`} value={i}>
+                    {i}
+                  </MenuItem>
+                ))}
             </MuiSelect>
           </div>
           <div className={classes.diagnostic}>

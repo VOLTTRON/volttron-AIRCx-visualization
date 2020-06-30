@@ -1,6 +1,7 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { MuiLoading } from "components";
+import MuiLink from "components/MuiNavigation/MuiLink";
 import {
   selectDataForm,
   selectDiagnostics,
@@ -17,7 +18,7 @@ import YAxis from "./YAxis";
 
 class Visualization extends React.Component {
   render() {
-    const { classes, form, data, busy } = this.props;
+    const { classes, form, data, busy, incomplete } = this.props;
     if (busy) {
       return (
         <div className={classes.container}>
@@ -30,6 +31,31 @@ class Visualization extends React.Component {
           <Typography variant="h4" className={classes.message}>
             <strong>Specify device details to load data…</strong>
           </Typography>
+        </div>
+      );
+    } else if (_.isEmpty(Object.keys(data))) {
+      return (
+        <div className={classes.container}>
+          <Typography variant="h4" className={classes.message}>
+            <strong>No data available for specified criteria.</strong>
+          </Typography>
+        </div>
+      );
+    } else if (incomplete) {
+      return (
+        <div className={classes.container} style={{ flexWrap: "wrap" }}>
+          <Typography
+            variant="h4"
+            className={classes.message}
+            style={{ width: "100%" }}
+          >
+            <strong>Under Construction</strong>
+          </Typography>
+          <MuiLink to="/dashboard">
+            <Typography variant="h6" className={classes.message}>
+              Dashboard View
+            </Typography>
+          </MuiLink>
         </div>
       );
     }
