@@ -80,16 +80,17 @@ class Clock extends React.Component {
           }
         });
         const filter = _.get(temp, ["filters", "0"]);
+        const hour = parseInt(k);
         return {
           label: _.get(filter, ["single"], "Unk"),
           abbr: _.get(filter, ["abbr"], "Unk"),
           labels: temp.filters.map((f) => f.single),
           messages: temp.messages,
+          hour: hour,
           time: 1,
           color: _.get(filter, ["color"], primary),
-          angle0:
-            ((parseInt(k) + 1) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
-          angle: ((parseInt(k) + 1) / 24) * 2 * Math.PI,
+          angle0: ((hour + 1) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
+          angle: ((hour + 1) / 24) * 2 * Math.PI,
           radius0: 25,
           radius: 35,
         };
@@ -100,7 +101,7 @@ class Clock extends React.Component {
       index: 0,
     };
     items.forEach((v, i) => {
-      if (prev.label !== v.label) {
+      if (prev.label !== v.label || (i > 0 && v.hour - items[i - 1].hour > 1)) {
         _.range(prev.index, i)
           .map((i) => items[i])
           .forEach((v) => (v.time = i - prev.index));
@@ -195,9 +196,14 @@ class Clock extends React.Component {
         {Boolean(item) &&
           _.range(0, Math.min(item.messages.length, item.labels.length))
             .map((i) => (
-              <React.Fragment>
-                <Typography>{`${item.labels[i]} Message: `}</Typography>
-                <Typography style={{ fontSize: ".8em" }}>
+              <React.Fragment key={`message-frag-${i}`}>
+                <Typography
+                  key={`message-label-${i}`}
+                >{`${item.labels[i]} Message: `}</Typography>
+                <Typography
+                  key={`message-text-${i}`}
+                  style={{ fontSize: ".8em" }}
+                >
                   {item.messages[i]}
                 </Typography>
               </React.Fragment>
@@ -207,7 +213,10 @@ class Clock extends React.Component {
                 _.concat(c, [
                   v,
                   i < Math.min(item.messages.length, item.labels.length) - 1 ? (
-                    <Divider style={{ margin: "10px" }} />
+                    <Divider
+                      key={`message-div-${i}`}
+                      style={{ margin: "10px" }}
+                    />
                   ) : null,
                 ]),
               []
