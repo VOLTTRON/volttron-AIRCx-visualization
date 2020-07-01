@@ -74,8 +74,8 @@ class Chart extends React.Component {
               showlegend: true,
               name: labels[i].acronym,
               type: "scatter",
-              mode: "lines+markers",
-              line: { shape: "spline", color: colors[i], width: 8 },
+              mode: "lines",
+              line: { shape: "spline", color: colors[i], size: 3, width: 3 },
             };
           }),
           Object.values(detailed).map((d, i) => {
@@ -86,8 +86,8 @@ class Chart extends React.Component {
               showlegend: false,
               name: labels[i].label,
               type: "scatter",
-              mode: "lines+markers",
-              line: { shape: "spline", color: colors[i], width: 8 },
+              mode: "lines",
+              line: { shape: "spline", color: colors[i], size: 3, width: 3 },
             };
           })
         )
@@ -169,7 +169,7 @@ class Chart extends React.Component {
                     y: ys[i],
                     xanchor: "left",
                     yanchor: "center",
-                    xshift: padding * 4,
+                    xshift: padding,
                     text: `<b>${v.abbr}</b>`,
                     showarrow: false,
                     font: {
@@ -181,6 +181,18 @@ class Chart extends React.Component {
                 xaxis: {
                   range: [start, end],
                   type: "date",
+                  tickvals: _.range(0, 24 / 3).map((v) =>
+                    moment(start)
+                      .add(v * 3, "hours")
+                      .format()
+                  ),
+                  ticktext: _.range(0, 24 / 3).map((v, i) =>
+                    i > 0 && i < 24 / 3
+                      ? moment(start)
+                          .add(v * 3, "hours")
+                          .format("HH:mm")
+                      : ""
+                  ),
                 },
                 yaxis: {
                   range: [min, max],

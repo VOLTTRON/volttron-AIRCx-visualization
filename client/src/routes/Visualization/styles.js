@@ -59,11 +59,10 @@ const styles = (theme) => ({
   },
   yHeader: {
     color: gray,
-    letterSpacing: "7px",
     display: "inline-block",
     position: "absolute",
     transform: "rotate(-90deg)",
-    left: "0px",
+    left: "-80px !important",
     bottom: "50%",
   },
   days: { position: "relative" },
@@ -75,7 +74,7 @@ const styles = (theme) => ({
     paddingTop: "55px",
     whiteSpace: "nowrap",
   },
-  xHeader: { color: gray, letterSpacing: "7px", whiteSpace: "nowrap" },
+  xHeader: { color: gray, whiteSpace: "nowrap" },
   footer: {
     minWidth: "227px",
     height: "90px",
