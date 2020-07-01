@@ -54,10 +54,12 @@ class Clock extends React.Component {
 
   render() {
     const { classes, form, data, size } = this.props;
-    const { sticky, selected } = this.state;
+    const { selected } = this.state;
     const diagnostic = _.get(data, "diagnostic");
     const sensitivity = _.get(form, "sensitivity", "normal");
-    const item = selected ? selected : sticky;
+    const item = selected;
+    // using sticky can cause confusion with what's being viewed
+    // const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
     const items = Object.entries(diagnostic)
       .map(([k, v]) => {

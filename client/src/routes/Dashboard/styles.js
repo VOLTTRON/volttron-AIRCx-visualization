@@ -61,7 +61,7 @@ const styles = (theme) => ({
       backgroundColor: `${light} !important`,
     },
   },
-  tableCell: { color: white },
+  tableCell: { color: white, padding: "6px" },
   chartContent: {
     paddingTop: "20px",
   },

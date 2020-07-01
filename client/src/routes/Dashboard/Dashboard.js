@@ -106,7 +106,6 @@ class Dashboard extends React.Component {
       _.get(aggregated, [tab, group.name, sensitivity.name, type.name], {})
     );
     const max = _.get(aggregated, [tab, group.name, "max"], entries.length);
-    const values = [];
     return (
       <div>
         <Paper className={classes.paperTop} elevation={3}>
@@ -190,7 +189,7 @@ class Dashboard extends React.Component {
                     x: 0,
                     y: 0,
                     label: `${group.increment}${
-                      values.length === 1 ? "" : "s"
+                      entries.length === 1 ? "" : "s"
                     }`,
                     yOffset: 32,
                   },
@@ -204,44 +203,54 @@ class Dashboard extends React.Component {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell className={classes.tableCell}>
-                    {group.binDesc}
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>Count</TableCell>
+                  {group.headers.map((h) => (
+                    <TableCell
+                      key={`header-${h}`}
+                      className={classes.tableCell}
+                    >
+                      {h}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody
                 onMouseOut={() => this.handleChange("selected")(null, null)}
               >
-                {_.orderBy(
-                  entries,
-                  [(v) => group.binToDate(v[0])],
-                  ["desc"]
-                ).map((e, i) => {
-                  const [k, v] = e;
-                  const t = _.concat(e, [tab, group.name, sensitivity.name]);
-                  const selected = _.isEqual(t, sticky);
-                  return (
-                    <TableRow
-                      className={classes.tableRow}
-                      style={{
-                        ...(selected && {
-                          backgroundColor: type.color,
-                        }),
-                      }}
-                      key={`table-row-${i}`}
-                      onClick={() => this.handleChange("sticky")(null, t)}
-                      onMouseOver={() => this.handleChange("selected")(null, t)}
-                      selected={selected}
-                      hover
-                    >
-                      <TableCell className={classes.tableCell}>{k}</TableCell>
-                      <TableCell className={classes.tableCell}>
-                        {v.length}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {group
+                  .groupEntries(
+                    _.orderBy(entries, [(v) => group.binToDate(v[0])], ["desc"])
+                  )
+                  .map((e, i) => {
+                    const [k, v] = e;
+                    const t = _.concat(e, [tab, group.name, sensitivity.name]);
+                    const selected = _.isEqual(t, sticky);
+                    return (
+                      <TableRow
+                        className={classes.tableRow}
+                        style={{
+                          ...(selected && {
+                            backgroundColor: type.color,
+                          }),
+                        }}
+                        key={`table-row-${i}`}
+                        onClick={() => this.handleChange("sticky")(null, t)}
+                        onMouseOver={() =>
+                          this.handleChange("selected")(null, t)
+                        }
+                        selected={selected}
+                        hover
+                      >
+                        {group.values.map((value, j) => (
+                          <TableCell
+                            key={`value-${i}-${j}`}
+                            className={classes.tableCell}
+                          >
+                            {value(k, v)}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
