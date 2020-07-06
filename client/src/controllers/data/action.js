@@ -9,74 +9,71 @@ import {
 
 export const key = "data";
 
-// current config
-export const CURRENT_CONFIG = generateType(key, "current");
-export const setCurrentConfig = generateAction(CURRENT_CONFIG);
-export const selectCurrentConfig = generateSelector(key, CURRENT_CONFIG);
+// form
+export const DATA_FORM = generateType(key, "form");
+export const setDataForm = generateAction(DATA_FORM);
+export const selectDataForm = generateSelector(key, DATA_FORM);
 
-// edit config
-export const EDIT_CONFIG = generateTypes(key, "edit");
+// fetch sources
+export const FETCH_SOURCES = generateTypes(key, "sources");
 export const [
-  editConfig,
-  editConfigSuccess,
-  editConfigError,
-  editConfigBusy,
-] = generateActions(EDIT_CONFIG);
+  fetchSources,
+  fetchSourcesSuccess,
+  fetchSourcesError,
+  fetchSourcesBusy,
+] = generateActions(FETCH_SOURCES);
 export const [
-  selectEditConfig,
-  selectEditConfigError,
-  selectEditConfigBusy,
+  selectSources,
+  selectSourcesError,
+  selectSourcesBusy,
   ,
-  selectEditConfigRequest,
-] = generateSelectors(EDIT_CONFIG);
+  selectSourcesRequest,
+] = generateSelectors(FETCH_SOURCES);
 
-// transmogrify config
-export const TRANSMOGRIFY_CONFIG = generateTypes(key, "transmogrify");
+// fetch diagnostics
+export const FETCH_DIAGNOSTICS = generateTypes(key, "diagnostics");
 export const [
-  transmogrifyConfig,
-  transmogrifyConfigSuccess,
-  transmogrifyConfigError,
-  transmogrifyConfigBusy,
-  transmogrifyConfigPoll,
-] = generateActions(TRANSMOGRIFY_CONFIG);
+  fetchDiagnostics,
+  fetchDiagnosticsSuccess,
+  fetchDiagnosticsError,
+  fetchDiagnosticsBusy,
+] = generateActions(FETCH_DIAGNOSTICS);
 export const [
-  selectTransmogrifyConfig,
-  selectTransmogrifyConfigError,
-  selectTransmogrifyConfigBusy,
-  selectTransmogrifyConfigPoll,
-  selectTransmogrifyConfigRequest,
-] = generateSelectors(TRANSMOGRIFY_CONFIG);
+  selectDiagnostics,
+  selectDiagnosticsError,
+  selectDiagnosticsBusy,
+  ,
+  selectDiagnosticsRequest,
+] = generateSelectors(FETCH_DIAGNOSTICS);
 
-// upload sample
-export const UPLOAD_SAMPLE = generateTypes(key, "sample");
+// fetch detailed
+export const FETCH_DETAILED = generateTypes(key, "detailed");
 export const [
-  uploadSample,
-  uploadSampleSuccess,
-  uploadSampleError,
-  uploadSampleBusy,
-  uploadSamplePoll,
-] = generateActions(UPLOAD_SAMPLE);
+  fetchDetailed,
+  fetchDetailedSuccess,
+  fetchDetailedError,
+  fetchDetailedBusy,
+] = generateActions(FETCH_DETAILED);
 export const [
-  selectSample,
-  selectSampleError,
-  selectSampleBusy,
-  selectSamplePoll,
-  selectSampleRequest,
-] = generateSelectors(UPLOAD_SAMPLE);
+  selectDetailed,
+  selectDetailedError,
+  selectDetailedBusy,
+  ,
+  selectDetailedRequest,
+] = generateSelectors(FETCH_DETAILED);
 
-// upload config
-export const UPLOAD_CONFIG = generateTypes(key, "config");
+// fetch aggregated
+export const FETCH_AGGREGATED = generateTypes(key, "aggregated");
 export const [
-  uploadConfig,
-  uploadConfigSuccess,
-  uploadConfigError,
-  uploadConfigBusy,
-  uploadConfigPoll,
-] = generateActions(UPLOAD_CONFIG);
+  fetchAggregated,
+  fetchAggregatedSuccess,
+  fetchAggregatedError,
+  fetchAggregatedBusy,
+] = generateActions(FETCH_AGGREGATED);
 export const [
-  selectConfig,
-  selectConfigError,
-  selectConfigBusy,
-  selectConfigPoll,
-  selectConfigRequest,
-] = generateSelectors(UPLOAD_CONFIG);
+  selectAggregated,
+  selectAggregatedError,
+  selectAggregatedBusy,
+  ,
+  selectAggregatedRequest,
+] = generateSelectors(FETCH_AGGREGATED);

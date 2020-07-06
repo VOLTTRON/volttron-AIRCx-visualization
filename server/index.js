@@ -6,6 +6,8 @@ const fs = require("fs");
 const https = require("https");
 const winston = require("winston");
 const expressWinston = require("express-winston");
+const ExpressCache = require("express-cache-middleware");
+const cacheManager = require("cache-manager");
 const models = require("./models");
 const path = require("path");
 const util = require("./utils/util");
@@ -68,6 +70,23 @@ require("./config/passport");
 
 /* static public files hosting */
 app.use(express.static(path.join(process.cwd(), "public")));
+
+// setup the cache middleware
+const cacheMiddleware = new ExpressCache(
+  cacheManager.caching({
+    store: "memory",
+    max: 10000,
+    ttl: 3600,
+  }),
+  {
+    getCacheKey: (req) => {
+      const { topic, start, end } = req.body;
+      const key = `${req.url}|${start}|${end}|${JSON.stringify(topic)}`;
+      return key;
+    },
+  }
+);
+cacheMiddleware.attach(app);
 
 /* Here we define the api routes */
 app.use(require("./routes"));

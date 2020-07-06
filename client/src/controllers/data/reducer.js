@@ -1,8 +1,29 @@
 import { fromJS } from "immutable";
-import { isActionType, isResetType } from "../util";
-import { CURRENT_CONFIG, key } from "./action";
+import moment from "moment";
+import { getTimestamp, isActionType, isResetType } from "../util";
+import { DATA_FORM, key } from "./action";
 
-const initialState = {};
+const initialState = (function() {
+  const end = moment(getTimestamp().getTime()).startOf("day");
+  const start = moment(end)
+    .subtract(1, "year")
+    .add(1, "day");
+  return {
+    data: {
+      form: {
+        site: "",
+        building: "",
+        device: "",
+        diagnostic: "",
+        start: start.format(),
+        end: end.format(),
+        group: "day",
+        filter: "all",
+        sensitivity: "normal",
+      },
+    },
+  };
+})();
 
 const reducer = (state = fromJS(initialState), action) => {
   const { type, payload } = action;
@@ -13,7 +34,7 @@ const reducer = (state = fromJS(initialState), action) => {
     return fromJS(initialState);
   }
   switch (type) {
-    case CURRENT_CONFIG:
+    case DATA_FORM:
       return state.setIn(type.split("/"), fromJS(payload));
     default:
       return state;

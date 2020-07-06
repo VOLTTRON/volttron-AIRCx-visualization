@@ -1,4 +1,4 @@
-import { error, gray } from "constants/palette";
+import { error, gray, primary } from "constants/palette";
 
 const styles = {
   attribute: {
@@ -62,6 +62,9 @@ const styles = {
       padding: "0.3125em",
       width: "100%",
     },
+    "& svg": {
+      color: primary,
+    },
   },
   value: {
     display: "flex",
@@ -81,6 +84,22 @@ const styles = {
       overflow: "hidden",
       whiteSpace: "nowrap",
       textOverflow: "ellipsis",
+    },
+  },
+  datePicker: {
+    padding: "0",
+    margin: "0",
+    "& input": {
+      fontSize: ".8rem",
+      height: "2em",
+      padding: "0.3125em",
+    },
+    "& > div": {
+      paddingLeft: "0.3125em",
+      paddingRight: "0px",
+    },
+    "& svg": {
+      color: primary,
     },
   },
 };

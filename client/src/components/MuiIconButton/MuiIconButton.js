@@ -12,18 +12,18 @@ import styles from "./styles";
  * onClick - function
  * @param {object} props
  */
-const MuiIconButton = props => {
+const MuiIconButton = (props) => {
   const { classes, className, disabled, tooltip, children, color } = props;
   const classNames = clsx([
     className,
     !Boolean(color) && classes.default,
-    disabled && "disabled"
+    disabled && "disabled",
   ]);
   const custom = _.isString(color) && color.startsWith("#");
   return (
     <ConditionalWrapper
       condition={Boolean(tooltip)}
-      wrapper={c => (
+      wrapper={(c) => (
         <Tooltip placement="bottom" title={tooltip}>
           {c}
         </Tooltip>
@@ -36,13 +36,12 @@ const MuiIconButton = props => {
           "header",
           "tooltip",
           "children",
-          "color"
+          "color",
         ])}
         className={classNames}
         style={custom ? { color: color } : undefined}
         color={custom ? undefined : color}
         size="small"
-        disableRipple
       >
         {children}
       </IconButton>

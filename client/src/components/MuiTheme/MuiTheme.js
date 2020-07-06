@@ -1,7 +1,10 @@
+import MomentUtils from "@date-io/moment";
 import { CssBaseline } from "@material-ui/core";
 import { MuiThemeProvider, withStyles } from "@material-ui/core/styles";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import React from "react";
+import "react-vis/dist/style.css";
 import styles from "./styles";
 import theme from "./theme";
 
@@ -11,7 +14,9 @@ class MuiTheme extends React.Component {
       <React.Fragment>
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
-          {this.props.children}
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            {this.props.children}
+          </MuiPickersUtilsProvider>
         </MuiThemeProvider>
       </React.Fragment>
     );
@@ -19,7 +24,7 @@ class MuiTheme extends React.Component {
 }
 
 MuiTheme.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export default withStyles(styles)(MuiTheme);

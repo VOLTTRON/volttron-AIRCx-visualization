@@ -11,6 +11,7 @@ const route = {
   icon: HomeIcon,
   admin: false,
   indent: true,
+  hidden: true,
 };
 
 export default route;

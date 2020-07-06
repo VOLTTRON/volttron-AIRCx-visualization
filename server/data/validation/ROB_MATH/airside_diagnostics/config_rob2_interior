@@ -1,0 +1,44 @@
+{
+    "agentid": "airside_rcx",
+    "application": "airside_aircx.Application",
+
+    "device": {
+        "campus": "PNNL",
+        "building": "ROII",
+        "unit": {
+            "INTERIOR_AHU": {
+                "subdevices": 
+                ["VAV1100C", "VAV1100D", "VAV1100E", "VAV1100F", "VAV1149", "VAV1153", "VAV1155", "VAV1157", "VAV1159", "VAV1176", "VAV1181E", "VAV1181W", "VAV1187", "VAV1200", "VAV1200F", "VAV1200H", "VAV1252",
+                 "VAV1254", "VAV1260", "VAV1264", "VAV1270", "VAV1276", "VAV1280", "VAV1286", "VAV1290", "VAV1500E", "VAV1500W", "VAV1501N", "VAV1501S", "VAV1511N", "VAV1511S", "VAV1513", "VAV1522", "VAV1524",
+                 "VAV1526", "VAV1528", "VAV1532", "VAV1534", "VAV155", "VAV1600E", "VAV1600W", "VAV1603", "VAV1605", "VAV1609", "VAV1613", "VAV1622", "VAV1626", "VAV1630", "VAV1632", "VAV185", "VAV257", "VAV501",
+                 "VAV508", "VAV522", "VAV533", "VAV601", "VAV602N", "VAV602S"]}
+        }
+    },
+    "analysis_name": "AirsideAIRCx",
+    "mode": "PASSIVE",
+    "arguments": {
+        "point_mapping": {
+            "fan_status": "SupplyFanStatus",
+            "zn_reheat": "TerminalBoxReheatValvePosition",
+            "zn_damper": "TerminalBoxDamperPosition",
+            "duct_stcpr": "DuctStaticPressure",
+            "duct_stcpr_stpt": "DuctStaticPressureSetPoint",
+            "sa_temp": "DischargeAirTemperature",
+            "fan_speedcmd": "SupplyFanSpeedPercent",
+            "sat_stpt": "DischargeAirTemperatureSetPoint"
+        },
+          "no_required_data": 20
+    },
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*SetPoint": "float",
+        "SupplyFanStatus": "int",
+        "ChilledWaterValvePosition": "float",
+        "SupplyFanSpeed": "int",
+        "OutdoorDamper*.": "float",
+        "Heating*.": "float",
+        "DuctStatic*.": "float",
+        ".*Command": "float",
+        ".*Position": "float"
+    }
+}

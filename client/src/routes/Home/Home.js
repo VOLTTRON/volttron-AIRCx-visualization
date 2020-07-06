@@ -1,7 +1,9 @@
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import React from "react";
 import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import dashboard from "routes/Dashboard/route";
 import styles from "./styles";
 
 class Home extends React.Component {
@@ -16,9 +18,7 @@ class Home extends React.Component {
         spacing={2}
       >
         <Grid item xs={12}>
-          <Typography variant="body1" paragraph>
-            Home content goes here...
-          </Typography>
+          <Redirect to={dashboard.path} />
         </Grid>
       </Grid>
     );

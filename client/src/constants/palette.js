@@ -7,12 +7,13 @@ export const lighter = "#D3D3D3";
 export const light = "#A9A9A9";
 export const gray = "#808080";
 export const dark = "#585858";
-export const darker = "#303030";
+export const darker = "#434343";
 export const darkest = "#181818";
 export const black = "#000000";
 
 // colors
 export const background = "#F6F8FC";
+export const backgroundShade = "#454C5B";
 export const primary = "#5786CD"; // primay color
 export const primaryTint = "#667087"; // light primary
 export const primaryShade = "#454C5B"; // dark primary

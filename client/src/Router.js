@@ -3,7 +3,7 @@ import rootSaga from "controllers/saga";
 import configureStore from "controllers/store";
 import React from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import { routes } from "./routes";
 
 const reduxStore = configureStore(window.REDUX_INITIAL_DATA);
@@ -14,7 +14,7 @@ class Router extends React.Component {
     return (
       <Provider store={reduxStore}>
         <MuiTheme>
-          <BrowserRouter>
+          <HashRouter>
             <Switch>
               {routes.map((route) => (
                 <Route
@@ -25,7 +25,7 @@ class Router extends React.Component {
                 />
               ))}
             </Switch>
-          </BrowserRouter>
+          </HashRouter>
         </MuiTheme>
       </Provider>
     );

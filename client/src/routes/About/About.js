@@ -1,23 +1,44 @@
-import { Grid, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import React from "react";
 import { connect } from "react-redux";
+import { AutoSizer } from "react-virtualized";
+import ChartPlotly from "routes/Visualization/ChartPlotly";
+import Clock from "routes/Visualization/Clock";
 import styles from "./styles";
 
 class About extends React.Component {
   render() {
-    const { page } = this.props;
+    // const { page } = this.props;
     return (
-      <Grid container alignContent="center" justify="center" spacing={2}>
-        <Grid item xs={12}>
-          <Typography variant="h5">{page.label}</Typography>
-        </Grid>
-      </Grid>
+      // <Grid container alignContent="center" justify="center" spacing={2}>
+      //   <Grid item xs={12}>
+      // <Typography variant="h5">{page.label}</Typography>
+      <div style={{ display: "flex", height: "100%" }}>
+        <div style={{ display: "inline-block", height: "100%" }}>
+          <Clock data={[]} size={200} />
+        </div>
+        <div
+          style={{
+            display: "inline-block",
+            flex: "1 1 auto",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <AutoSizer>
+            {({ width, height }) => (
+              <ChartPlotly data={[]} width={width} height={height} />
+            )}
+          </AutoSizer>
+        </div>
+      </div>
+      //   </Grid>
+      // </Grid>
     );
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = (state) => ({});
 
 const mapActionToProps = {};
 

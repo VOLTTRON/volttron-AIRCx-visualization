@@ -1,11 +1,13 @@
 {
   "name": "aircx",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "Automatic Identification of Retro-commissioning Measures",
   "private": true,
   "dependencies": {
+    "@date-io/moment": "1.x",
     "@material-ui/core": "^4.8.2",
     "@material-ui/icons": "^4.5.1",
+    "@material-ui/pickers": "^3.2.10",
     "clsx": "^1.0.4",
     "color": "^3.1.2",
     "csv-parser": "^2.3.2",
@@ -22,13 +24,17 @@
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
     "node-sass": "^4.12.0",
+    "plotly.js": "^1.54.1",
     "prettier": "^1.19.1",
     "query-string": "^6.8.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-plotly.js": "^2.4.0",
     "react-redux": "^7.0.3",
     "react-router-dom": "^5.0.0",
     "react-scripts": "^3.3.0",
+    "react-virtualized": "^9.21.2",
+    "react-vis": "^1.11.7",
     "react-window": "^1.8.5",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
@@ -53,14 +59,15 @@
     ]
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts --max_old_space_size=4096 start",
+    "build": "react-scripts --max_old_space_size=4096 build",
     "test": "react-scripts test",
     "coverage": "react-scripts test --coverage --reporters=default --watchAll=false",
     "eject": "react-scripts eject",
     "test:ci": "react-scripts test --ci --coverage --reporters=default --reporters=jest-junit --watchAll=false",
     "eslint:ci": "eslint -f checkstyle src > eslint.xml",
-    "prettier": "prettier --loglevel=debug --write \"src/**/*.{js,json,css,md,ts,html}\""
+    "prettier": "prettier --loglevel=debug --write \"src/**/*.{js,json,css,md,ts,html}\"",
+    "deploy": "shx rm -rf ../server/public && shx cp -r build ../server/public"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -92,9 +99,10 @@
     "prettier": "^1.19.1",
     "react-test-renderer": "^16.8.6",
     "redux-saga-test-plan": "^4.0.0-rc.3",
-    "redux-starter-kit": "^0.5.1"
+    "redux-starter-kit": "^0.5.1",
+    "shx": "^0.3.2"
   },
-  "proxy": "https://localhost:7898",
+  "proxy": "http://localhost:7898",
   "main": "index.js",
   "homepage": "/",
   "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>",

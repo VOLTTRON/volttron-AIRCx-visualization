@@ -28,7 +28,6 @@ const MuiCheckbox = (props) => {
         {..._.omit(props, ["classes", "className", "header", "aria-label"])}
         className={clsx(className, classes.checkbox)}
         aria-label={ariaLabel ? ariaLabel : header}
-        disableRipple
       />
     </ConditionalWrapper>
   );

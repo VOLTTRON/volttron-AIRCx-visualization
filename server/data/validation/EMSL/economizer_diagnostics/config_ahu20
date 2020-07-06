@@ -1,0 +1,51 @@
+{
+    "agentid": "economizerrcx",
+    "application": "economizer.economizer_rcx.Application",
+
+    "device": {
+        "campus": "PNNL",
+        "building": "EMSL",
+        "unit": {
+            "AHU20": {
+                "subdevices": []
+            }
+        }
+    },
+
+    "mode": "PASSIVE",
+    "analysis_name": "EconomizerAIRCx",
+     "pretty_name": "EconomizerAIRCx",
+
+    "arguments": {
+        "point_mapping": {
+            "supply_fan_status": "SupplyFanStatus",
+            "outdoor_air_temperature": "OutdoorAirTemperature",
+            "return_air_temperature": "ReturnAirTemperature",
+            "mixed_air_temperature": "MixedAirTemperature",
+            "outdoor_damper_signal": "OutdoorDamperSignal",
+            "supply_fan_speed": "SupplyFanSpeedPercent",
+            "cool_call": "FirStageCooling"
+        },
+        "device_type": "RTU",
+        "data_window": 30,
+        "no_required_data": 15,
+        "open_damper_time": 5,
+        
+        "low_supply_fan_threshold": 20.0,
+        "oat_low_threshold": 30.0,
+        "oat_high_threshold": 120.0,
+
+        "minimum_damper_setpoint": 10.0,
+        "desired_oaf": 10.0,
+        "rated_cfm": 5000.0,
+        "eer": 11.0
+    },
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*Command": "float",
+        ".*Signal": "float",
+        "SupplyFanStatus": "int",
+        "Chilled.*": "float",
+        "SupplyFanSpeed": "int"
+    }
+}

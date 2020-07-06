@@ -1,0 +1,44 @@
+{
+    "agentid": "airside_aircx",
+    "application": "airside_aircx.Application",
+
+    "device": {
+        "campus": "PNNL",
+        "building": "SEB",
+        "unit": {
+            "AHU3": {
+                "subdevices": [
+                   "VAV104", "VAV105","VAV107","VAV112","VAV116", "VAV108"
+                ]
+            }
+        }
+    },
+    "analysis_name": "AirsideAIRCx",
+    "mode": "PASSIVE",
+    "arguments": {
+        "point_mapping": {
+            "fan_status": "SupplyFanStatus",
+            "zn_reheat": "TerminalBoxReheatValvePosition",
+            "zn_damper": "TerminalBoxDamperCommand",
+            "duct_stcpr": "DuctStaticPressure",
+            "duct_stcpr_stpt": "DuctStaticPressureSetPoint",
+            "sa_temp": "DischargeAirTemperature",
+            "fan_speedcmd": "SupplyFanSpeedPercent",
+            "sat_stpt": "DischargeAirTemperatureSetPoint"
+        },
+          "no_required_data": 20
+    },
+    "conversion_map": {
+        ".*Temperature": "float",
+        ".*SetPoint": "float",
+        "SupplyFanStatus": "int",
+        "ChilledWaterValvePosition": "float",
+        "SupplyFanSpeed": "int",
+        "OutdoorDamper*.": "float",
+        "Heating*.": "float",
+        "DuctStatic*.": "float",
+        ".*Command": "float",
+        ".*Position": "float"
+
+    }
+}

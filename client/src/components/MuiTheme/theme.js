@@ -4,12 +4,12 @@ import {
   error,
   lightest,
   primary,
-  secondary
+  secondary,
 } from "constants/palette";
 
 const typography = {
   useNextVariants: true,
-  fontFamily: ['"Roboto"', "sans-serif"].join(",")
+  fontFamily: "'Lato', sans-serif",
 };
 
 const overrides = {
@@ -20,84 +20,79 @@ const overrides = {
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right",
         backgroundAttachment: "fixed",
-        fontFamily: "'Roboto', sans-serif",
-        overflowY: "hidden"
-      }
-    }
+        fontFamily: "'Lato', sans-serif",
+        overflowY: "hidden",
+      },
+    },
   },
   MuiButtonBase: {
-    root: {
-      disableRipple: true
-    }
+    root: {},
   },
   MuiStepIcon: {
     root: {
       "&$completed": {
-        color: secondary
+        color: secondary,
       },
       "&$active": {
-        color: secondary
-      }
+        color: secondary,
+      },
     },
     active: {},
-    completed: {}
+    completed: {},
   },
   MuiList: {
     root: {
-      width: "100%"
+      width: "100%",
     },
     padding: {
       paddingTop: "0",
       paddingBottom: "0",
-      marginTop: "3px"
-    }
+      marginTop: "3px",
+    },
   },
   MuiExpansionPanelSummary: {
     root: {
-      padding: "0 16px 0 16px"
-    }
+      padding: "0 16px 0 16px",
+    },
   },
   MuiExpansionPanelDetails: {
     root: {
-      padding: "0"
-    }
-  }
+      padding: "0",
+    },
+  },
 };
 
 const appBar = {
-  height: "48px"
+  height: "48px",
 };
 
 const palette = {
   type: "light",
   primary: {
     main: primary,
-    contrastText: lightest
+    contrastText: lightest,
   },
   secondary: {
     main: secondary,
-    contrastText: lightest
+    contrastText: lightest,
   },
   error: {
     main: error,
-    contrastText: lightest
+    contrastText: lightest,
   },
   background: {
     paper: lightest,
-    default: background
-  }
+    default: background,
+  },
 };
 
 const mixins = {
   toolbar: {
-    minHeight: 48,
-    "@media (min-width:0px) and (orientation: landscape)": {
-      minHeight: 48
+    minHeight: 252 + 85,
+    "@media (min-width:1920px)": {
+      minHeight: 252,
     },
-    "@media (min-width:600px)": {
-      minHeight: 48
-    }
-  }
+  },
 };
 
 const name = "Yellow Orange Science Blue Spectacled Bear";
@@ -108,7 +103,7 @@ const theme = createMuiTheme({
   overrides,
   appBar,
   palette,
-  name
+  name,
 });
 
 export default theme;

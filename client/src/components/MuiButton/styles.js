@@ -1,17 +1,17 @@
 import {
-  primary,
-  primaryTint,
   background,
+  dark,
+  darker,
   disabled,
-  info,
-  infoTint,
-  warning,
-  warningTint,
   error,
   errorTint,
+  info,
+  infoTint,
   lightest,
-  dark,
-  darker
+  primary,
+  primaryTint,
+  warning,
+  warningTint,
 } from "constants/palette";
 
 const styles = {
@@ -21,73 +21,72 @@ const styles = {
     color: darker,
     "&:hover": {
       backgroundColor: dark,
-      color: darker
-    }
+      color: darker,
+    },
   },
   default: {
     borderRadius: "3px",
     fontSize: "0.8rem",
     margin: "0",
     minWidth: "0",
-    padding: "0.25rem 0.625rem",
     textTransform: "none",
     "&:first-child": {
-      marginRight: "0.125rem"
+      marginRight: "0.125rem",
     },
     "&:not(:first-child):not(last-child)": {
-      margin: "0 .125rem"
+      margin: "0 .125rem",
     },
     "&:last-child": {
-      marginLeft: "0.125rem"
+      marginLeft: "0.125rem",
     },
     "& span": {
       "& svg": {
-        fontSize: "1rem"
-      }
+        fontSize: "1rem",
+      },
     },
     "&.xl": {
       "& svg, & img": {
-        marginRight: "0.625rem"
-      }
+        marginRight: "0.625rem",
+      },
     },
     "&.disabled": {
       backgroundColor: `${disabled} !important`,
       border: "none",
-      color: `${dark} !important`
-    }
+      color: `${dark} !important`,
+    },
   },
   outlined: {
     border: `2px solid ${primary}`,
-    padding: "2px 8px"
+    padding: "2px 8px",
   },
   primary: {
     backgroundColor: primary,
     color: lightest,
     "&:hover": {
-      backgroundColor: primaryTint
-    }
+      backgroundColor: primaryTint,
+    },
   },
   info: {
     backgroundColor: info,
     color: lightest,
     "&:hover": {
-      backgroundColor: infoTint
-    }
+      backgroundColor: infoTint,
+    },
   },
   warning: {
     backgroundColor: warning,
     color: lightest,
     "&:hover": {
-      backgroundColor: warningTint
-    }
+      backgroundColor: warningTint,
+    },
   },
   error: {
     backgroundColor: error,
     color: lightest,
     "&:hover": {
-      backgroundColor: errorTint
-    }
-  }
+      backgroundColor: errorTint,
+    },
+  },
 };
 
 export default styles;
