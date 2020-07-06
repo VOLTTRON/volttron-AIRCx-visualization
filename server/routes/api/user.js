@@ -57,9 +57,8 @@ router.put("/", auth.required, guard.check("user"), (req, res, next) => {
       }
       User.findAll({
         where: { id: id },
-        include: ["organization"],
         attributes: {
-          exclude: ["name", "surname", "password", "organizationId"],
+          exclude: ["name", "surname", "password"],
         },
       })
         .then((users) => {
@@ -99,8 +98,7 @@ router.get("/", auth.required, (req, res, next) => {
   const { id } = req.user;
   User.findAll({
     where: { id: id },
-    include: ["organization"],
-    attributes: { exclude: ["name", "surname", "password", "organizationId"] },
+    attributes: { exclude: ["name", "surname", "password"] },
   })
     .then((users) => {
       if (users.length === 0) {

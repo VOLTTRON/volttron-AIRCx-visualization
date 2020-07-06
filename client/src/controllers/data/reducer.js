@@ -1,7 +1,7 @@
 import { fromJS } from "immutable";
 import moment from "moment";
 import { getTimestamp, isActionType, isResetType } from "../util";
-import { CURRENT_CONFIG, DATA_FORM, key } from "./action";
+import { DATA_FORM, key } from "./action";
 
 const initialState = (function() {
   const end = moment(getTimestamp().getTime()).startOf("day");
@@ -34,7 +34,6 @@ const reducer = (state = fromJS(initialState), action) => {
     return fromJS(initialState);
   }
   switch (type) {
-    case CURRENT_CONFIG:
     case DATA_FORM:
       return state.setIn(type.split("/"), fromJS(payload));
     default:

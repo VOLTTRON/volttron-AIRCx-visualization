@@ -21,25 +21,23 @@ if (config.use_env_variable) {
 
 const db = {};
 fs.readdirSync(path.join(process.cwd(), "models/database"))
-  .filter(file => {
+  .filter((file) => {
     return (
       file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
     );
   })
-  .forEach(file => {
+  .forEach((file) => {
     const model = sequelize["import"](
       path.join(path.join(process.cwd(), "models/database"), file)
     );
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(modelName => {
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
-
-db.User.belongsTo(db.Organization, { as: "organization" });
 
 db.sequelize = sequelize;
 

@@ -31,6 +31,10 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `npm run deploy`
+
+Deploys the previously built application artifacts to the public server directory.
+
 ### `serve -s build`
 
 Runs the app in production mode.<br>
