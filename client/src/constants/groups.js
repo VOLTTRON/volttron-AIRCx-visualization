@@ -9,9 +9,7 @@ const groupEntries = (entries) => {
     const [pk, pv] = i > 0 ? c[c.length - 1] : ["0-0-0 0:0-0:0", []];
     const [pd, pr] = pk.split(" ");
     const [ps, pe] = pr.split("-");
-    console.log(JSON.stringify({ i, key, pk }));
     if (date === pd && end === ps) {
-      console.log(`Pushing: ${date} ${start}-${pe}`);
       if (i > 0) {
         c.pop();
       }

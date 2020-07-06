@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import Graph from "./Graph";
 import Legend from "./Legend";
 import styles from "./styles";
-import XAxis from "./XAxis";
 import YAxis from "./YAxis";
 
 class Visualization extends React.Component {
@@ -62,7 +61,8 @@ class Visualization extends React.Component {
     const { start, end } = form ? form : {};
     return (
       <div className={classes.content}>
-        <XAxis label="Month" />
+        {/* <XAxis label="Month" /> */}
+        <Legend />
         <div className={classes.flex}>
           <YAxis label="Day" values={_.range(31)} />
           {Object.keys(data).map((k) => (
@@ -76,7 +76,6 @@ class Visualization extends React.Component {
             />
           ))}
         </div>
-        <Legend />
       </div>
     );
   }

@@ -9,6 +9,7 @@ const styles = (theme) => ({
     alignItems: "center",
   },
   content: {
+    padding: "40px",
     margin: "0px",
   },
   flex: {
@@ -16,8 +17,9 @@ const styles = (theme) => ({
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: "90px",
-    marginRight: "90px",
+    padding: "20px",
+    marginLeft: "20px",
+    marginRight: "20px",
   },
   message: {
     color: gray,
@@ -48,6 +50,7 @@ const styles = (theme) => ({
       transform: "scale(1.8)",
     },
   },
+  monthsTitle: { width: "100%", textAlign: "center", paddingBottom: "6px" },
   months: { display: "flex", textAlign: "center" },
   month: { flex: 1, color: gray },
   yAxis: {
@@ -55,14 +58,14 @@ const styles = (theme) => ({
     width: "90px",
     textAlign: "right",
     display: "inline-block",
-    marginTop: "-70px",
+    marginTop: "88px",
   },
   yHeader: {
     color: gray,
     display: "inline-block",
     position: "absolute",
     transform: "rotate(-90deg)",
-    left: "-80px !important",
+    left: "0px !important",
     bottom: "50%",
   },
   days: { position: "relative" },
@@ -84,9 +87,7 @@ const styles = (theme) => ({
   footerLabel: {},
   legend: {
     width: "100%",
-    height: "160px",
     textAlign: "center",
-    paddingTop: "60px",
   },
   legendMark: {
     width: "10px",

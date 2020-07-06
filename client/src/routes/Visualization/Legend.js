@@ -1,6 +1,7 @@
 import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { faults, inconclusive, unitOff } from "constants/palette";
+import filters from "constants/filters";
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import styles from "./styles";
@@ -10,23 +11,39 @@ class Legend extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.legend}>
-        <div
-          className={classes.legendMark}
-          style={{ background: inconclusive }}
-        />
-        <Typography className={classes.legendLabel}>
-          <strong>Inconclusive Only</strong>
-        </Typography>
-        <div className={classes.legendSpacer} />
-        <div className={classes.legendMark} style={{ background: unitOff }} />
-        <Typography className={classes.legendLabel}>
-          <strong>Unit Off Only</strong>
-        </Typography>
-        <div className={classes.legendSpacer} />
-        <div className={classes.legendMark} style={{ background: faults }} />
-        <Typography className={classes.legendLabel}>
-          <strong>Faults Only</strong>
-        </Typography>
+        {filters.values
+          .filter((v) => v.name !== "all")
+          .map((v) => (
+            <React.Fragment key={`filter-frag-${v.name}`}>
+              <div
+                key={`filter-color-${v.name}`}
+                className={classes.legendMark}
+                style={{ background: v.color }}
+              />
+              <Typography
+                key={`filter-label-${v.name}`}
+                className={classes.legendLabel}
+              >
+                <strong>{v.single}</strong>
+              </Typography>
+            </React.Fragment>
+          ))
+          .reduce(
+            (p, v, i, a) =>
+              _.concat(
+                i < a.length - 1
+                  ? [
+                      <div
+                        key={`filter-spacer-${i}`}
+                        className={classes.legendSpacer}
+                      />,
+                    ]
+                  : null,
+                v,
+                p
+              ),
+            []
+          )}
       </div>
     );
   }

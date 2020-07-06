@@ -179,19 +179,29 @@ class Graph extends React.Component {
     const { classes } = this.props;
     const { months } = this.state;
     return (
-      <div className={classes.months} style={{ width: months.length * 19 }}>
-        {months.map((m) => (
-          <Tooltip
-            key={`tooltip-${m.year}-${m.month}`}
-            title={m.tooltip}
-            placement="top"
-          >
-            <span key={`month-${m.year}-${m.month}`} className={classes.month}>
-              <strong>{m.label}</strong>
-            </span>
-          </Tooltip>
-        ))}
-      </div>
+      <React.Fragment>
+        <div className={classes.monthsTitle}>
+          <span className={classes.month}>
+            <strong>Month</strong>
+          </span>
+        </div>
+        <div className={classes.months} style={{ width: months.length * 19 }}>
+          {months.map((m) => (
+            <Tooltip
+              key={`tooltip-${m.year}-${m.month}`}
+              title={m.tooltip}
+              placement="top"
+            >
+              <span
+                key={`month-${m.year}-${m.month}`}
+                className={classes.month}
+              >
+                <strong>{m.label}</strong>
+              </span>
+            </Tooltip>
+          ))}
+        </div>
+      </React.Fragment>
     );
   }
 
@@ -240,7 +250,7 @@ class Graph extends React.Component {
     );
   }
 
-  renderFooter() {
+  renderTitle() {
     const { classes, label } = this.props;
     const { months } = this.state;
     return (
@@ -252,11 +262,17 @@ class Graph extends React.Component {
     );
   }
 
+  renderFooter() {
+    const { classes } = this.props;
+    return <div className={classes.footer} style={{ height: "45px" }} />;
+  }
+
   render() {
     const { classes, form, data, detailed, busy, request } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
+        {this.renderTitle()}
         {this.renderHeader()}
         {this.renderChart()}
         {this.renderFooter()}
