@@ -87,13 +87,11 @@ const styles = (theme) => ({
     minWidth: "166px",
     marginRight: "24px",
     color: gray,
-    paddingTop: "24px",
   },
   filter: {
     minWidth: "166px",
     marginRight: "24px",
     color: gray,
-    paddingTop: "24px",
   },
   sensitivity: {
     minWidth: "166px",

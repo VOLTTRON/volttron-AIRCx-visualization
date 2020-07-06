@@ -2,6 +2,7 @@ import {
   AppBar,
   Menu,
   MenuItem,
+  Snackbar,
   Toolbar,
   Typography,
   withWidth,
@@ -18,14 +19,16 @@ import { MuiButton, MuiDatePicker, MuiIconButton, MuiSelect } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import groups from "constants/groups";
-import { black } from "constants/palette";
+import { black, primary, white } from "constants/palette";
 import sensitivities from "constants/sensitivities";
 import { selectMode, setMode } from "controllers/common/action";
 import {
   fetchDiagnostics,
   fetchSources,
   selectDataForm,
+  selectDiagnostics,
   selectDiagnosticsBusy,
+  selectDiagnosticsRequest,
   selectSources,
   setDataForm,
 } from "controllers/data/action";
@@ -174,11 +177,11 @@ class MuiHeader extends React.Component {
 
   isDisabled = (key) => {
     const { busy } = this.props;
-    const { site, building, device, diagnostic, changed } = this.state;
+    const { site, building, device, diagnostic } = this.state;
     switch (key) {
       case "load-data":
         return (
-          !changed ||
+          !this.isFormChanged() ||
           Boolean(busy) ||
           _.isEmpty(site) ||
           _.isEmpty(building) ||
@@ -188,6 +191,19 @@ class MuiHeader extends React.Component {
       default:
         return false;
     }
+  };
+
+  isFormChanged = () => {
+    const { form, current } = this.props;
+    const attributes = [
+      "start",
+      "end",
+      "site",
+      "building",
+      "device",
+      "diagnostic",
+    ];
+    return !_.isEqual(_.pick(form, attributes), _.pick(current, attributes));
   };
 
   handleOpen = (type) => (event) => {
@@ -216,8 +232,41 @@ class MuiHeader extends React.Component {
       _.get(sources, [diagnostic, site, building, device], {})
     );
     this.setState({ changed: false });
-    this.props.fetchDiagnostics({ topic });
+    this.props.fetchDiagnostics(_.merge({}, form, { topic }));
   };
+
+  renderNotice() {
+    const { busy, current, loaded } = this.props;
+    const open = !busy && loaded && this.isFormChanged();
+    const { start, end, site, building, device, diagnostic } = current
+      ? current
+      : {};
+    return (
+      <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        style={{ top: 0, width: "100%" }}
+        ContentProps={
+          !this.isLogin() && {
+            style: {
+              background: primary,
+              color: white,
+              width: "100%",
+              justifyContent: "center",
+              borderRadius: "0px",
+              padding: "0px",
+            },
+          }
+        }
+        open={open}
+        message={`Showing data for ${site}, ${building}, ${device}, ${diagnostic}, ${moment(
+          start
+        ).format("MM/DD/YYYY")} - ${moment(end).format("MM/DD/YYYY")}.`}
+      />
+    );
+  }
 
   renderUser() {
     const { classes, auth, request, user, mode } = this.props;
@@ -468,6 +517,7 @@ class MuiHeader extends React.Component {
             <div className={classes.group}>
               <MuiSelect
                 id="group"
+                header="Aggregation Period"
                 placeholder="Group"
                 value={group}
                 onChange={this.handleChange("group")}
@@ -490,6 +540,7 @@ class MuiHeader extends React.Component {
             <div className={classes.filter}>
               <MuiSelect
                 id="filter"
+                header="Filter"
                 placeholder="Filter"
                 value={filter}
                 onChange={this.handleChange("filter")}
@@ -583,6 +634,7 @@ class MuiHeader extends React.Component {
         {this.renderNavigation()}
         {this.renderTitle()}
         {this.renderForm()}
+        {this.renderNotice()}
       </AppBar>
     );
   }
@@ -596,6 +648,8 @@ const mapStateToProps = (state) => ({
   sources: selectSources(state),
   form: selectDataForm(state),
   busy: selectDiagnosticsBusy(state),
+  current: selectDiagnosticsRequest(state),
+  loaded: Boolean(selectDiagnostics(state)),
 });
 
 const mapActionToProps = {

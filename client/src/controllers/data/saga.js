@@ -68,9 +68,7 @@ export function* readDiagnosticsSaga(action) {
   try {
     yield put(fetchDiagnosticsBusy(true));
     yield put(fetchDiagnosticsError());
-    const form = yield select(selectDataForm);
     const temp = _.merge(
-      _.omit(form, ["topic"]),
       {
         topic: _.get(payload, "topic", []).map((t) => t.diagnostics),
       },
@@ -92,9 +90,7 @@ export function* readDetailedSaga(action) {
   try {
     yield put(fetchDetailedBusy(true));
     yield put(fetchDetailedError());
-    const form = yield select(selectDataForm);
     const temp = _.merge(
-      _.omit(form, ["topic"]),
       {
         topic: _.get(payload, ["topic", "0", "detailed"], []),
       },
