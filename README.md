@@ -92,6 +92,8 @@ The server configuration consists of a primary configuration file and a director
 * HISTORIAN_ANALYSIS_ID: The topic id for the analysis data.
 * NODE_TLS_REJECT_UNAUTHORIZED: This should be set to 1 to ensure that only historian REST api's with valid certificates are allowed. If the historian service is using SSL with a self signed certificate then it must be set to 0. However, this is not a secure way to access the service and should not be used in a production environment.
 
+The AIRCx configuration files should be placed into the `/server/data/validation` folder. The files can have any name and folder organization. However, the files must be valid JSON and can't contain any comments. If configuration files are missing for existing analysis sources then detailed data will not be available within the visualization detailed popup line chart. There are free JSON validators available such as [https://jsonlint.com/](https://jsonlint.com/).
+
 ### Running
 
 To start the server issue the following command.
