@@ -53,7 +53,7 @@ class Clock extends React.Component {
   };
 
   render() {
-    const { classes, form, data, size } = this.props;
+    const { classes, form, current, data, size } = this.props;
     const { selected } = this.state;
     const diagnostic = _.get(data, "diagnostic");
     const sensitivity = _.get(form, "sensitivity", "normal");
@@ -76,7 +76,10 @@ class Clock extends React.Component {
         filters.values.forEach((filter) => {
           const value = _.find(values, { filter });
           if (value) {
-            const message = getMessage(form.diagnostic, value.value);
+            const message = getMessage(
+              _.get(current, "diagnostic"),
+              value.value
+            );
             temp.filters.push(filter);
             temp.messages.push(message);
           }

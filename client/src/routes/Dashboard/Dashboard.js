@@ -24,6 +24,7 @@ import {
   selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
+  selectDiagnosticsRequest,
 } from "controllers/data/action";
 import _ from "lodash";
 import React from "react";
@@ -260,7 +261,7 @@ class Dashboard extends React.Component {
   }
 
   renderDetails() {
-    const { classes, form } = this.props;
+    const { classes, form, current } = this.props;
     const { sticky, tab } = this.state;
     const group = _.get(form, "group", "day");
     const sensitivity = _.get(form, "sensitivity", "normal");
@@ -277,7 +278,7 @@ class Dashboard extends React.Component {
       _.get(item, "1", [{}]).map((v) => ({
         type: _.get(filters.getType(v[sensitivity]), "single", "\u00A0"),
         message: v[sensitivity]
-          ? getMessage(form.diagnostic, v[sensitivity])
+          ? getMessage(_.get(current, "diagnostic"), v[sensitivity])
           : "\u00A0",
       })),
       (v) => JSON.stringify(v)
@@ -369,6 +370,7 @@ const mapStateToProps = (state) => ({
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
   aggregated: selectAggregated(state),
+  current: selectDiagnosticsRequest(state),
 });
 
 const mapActionToProps = {};

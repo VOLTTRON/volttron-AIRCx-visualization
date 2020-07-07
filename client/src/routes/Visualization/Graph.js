@@ -97,15 +97,15 @@ class Graph extends React.Component {
   };
 
   handleValueClick = (value) => {
-    const { form, sources } = this.props;
+    const { current, sources } = this.props;
     if (value.date) {
-      const { site, building, device, diagnostic } = form;
+      const { site, building, device, diagnostic } = current;
       const topic = Object.values(
         _.get(sources, [diagnostic, site, building, device], {})
       );
       this.setState({ show: value });
       this.props.fetchDetailed(
-        _.merge({}, form, {
+        _.merge({}, current, {
           start: value.date.format(),
           end: value.date
             .clone()
@@ -118,10 +118,10 @@ class Graph extends React.Component {
   };
 
   handleValuePrevious = () => {
-    const { form, sources } = this.props;
+    const { current, sources } = this.props;
     const { base, months, show } = this.state;
     if (this.isPrevious()) {
-      const { site, building, device, diagnostic } = form;
+      const { site, building, device, diagnostic } = current;
       const topic = Object.values(
         _.get(sources, [diagnostic, site, building, device], {})
       );
@@ -132,7 +132,7 @@ class Graph extends React.Component {
       });
       this.setState({ show: mark });
       this.props.fetchDetailed(
-        _.merge({}, form, {
+        _.merge({}, current, {
           start: date.format(),
           end: date
             .clone()
@@ -145,10 +145,10 @@ class Graph extends React.Component {
   };
 
   handleValueNext = () => {
-    const { form, sources } = this.props;
+    const { current, sources } = this.props;
     const { base, months, show } = this.state;
     if (this.isNext()) {
-      const { site, building, device, diagnostic } = form;
+      const { site, building, device, diagnostic } = current;
       const topic = Object.values(
         _.get(sources, [diagnostic, site, building, device], {})
       );
@@ -159,7 +159,7 @@ class Graph extends React.Component {
       });
       this.setState({ show: mark });
       this.props.fetchDetailed(
-        _.merge({}, form, {
+        _.merge({}, current, {
           start: date.format(),
           end: date
             .clone()
@@ -268,7 +268,15 @@ class Graph extends React.Component {
   }
 
   render() {
-    const { classes, form, data, detailed, busy, request } = this.props;
+    const {
+      classes,
+      form,
+      current,
+      data,
+      detailed,
+      busy,
+      request,
+    } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
@@ -279,6 +287,7 @@ class Graph extends React.Component {
         {show && (
           <Popup
             form={form}
+            current={current}
             data={_.merge({}, show, {
               diagnostic: _.get(data, show.path, {}),
               detailed: detailed,

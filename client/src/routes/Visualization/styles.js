@@ -59,13 +59,15 @@ const styles = (theme) => ({
     textAlign: "right",
     display: "inline-block",
     marginTop: "88px",
+    "& h5": {
+      left: "15px",
+    },
   },
   yHeader: {
     color: gray,
     display: "inline-block",
     position: "absolute",
     transform: "rotate(-90deg)",
-    left: "0px !important",
     bottom: "50%",
   },
   days: { position: "relative" },
@@ -144,7 +146,7 @@ const styles = (theme) => ({
   chartYAxis: {
     width: "40px",
     "& h5": {
-      left: "-130px",
+      left: "-80px",
     },
   },
   chartFlex: {
