@@ -6,6 +6,7 @@ import {
   selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
+  selectDiagnosticsRequest,
 } from "controllers/data/action";
 import _ from "lodash";
 import React from "react";
@@ -17,7 +18,7 @@ import YAxis from "./YAxis";
 
 class Visualization extends React.Component {
   render() {
-    const { classes, form, data, busy, incomplete } = this.props;
+    const { classes, form, current, data, busy, incomplete } = this.props;
     if (busy) {
       return (
         <div className={classes.container}>
@@ -58,7 +59,7 @@ class Visualization extends React.Component {
         </div>
       );
     }
-    const { start, end } = form ? form : {};
+    const { start, end } = current ? current : {};
     return (
       <div className={classes.content}>
         {/* <XAxis label="Month" /> */}
@@ -73,6 +74,7 @@ class Visualization extends React.Component {
               end={end}
               data={data[k]}
               form={form}
+              current={current}
             />
           ))}
         </div>
@@ -85,6 +87,7 @@ const mapStateToProps = (state) => ({
   form: selectDataForm(state),
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
+  current: selectDiagnosticsRequest(state),
 });
 
 const mapActionToProps = {};
