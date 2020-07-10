@@ -27,6 +27,23 @@ const authenticate = () => {
 };
 authenticate();
 
+const getUtcOffset = (body) => {
+  const { site, campus, building, device, unit, diagnostic, analysis } = body;
+  const path = [
+    diagnostic ? diagnostic : analysis,
+    site ? site : campus,
+    building,
+    device ? device : unit,
+  ];
+  const offset = _.get(
+    validation,
+    [...path.slice(0, path.length), "utc_offset"],
+    process.env.DEFAULT_UTC_OFFSET
+  );
+  logger.debug(`Using UTC offset of ${offset} for ${JSON.stringify(path)}`);
+  return offset;
+};
+
 // get data sources
 router.get("/sources", auth.optional, (req, res, next) => {
   axios
@@ -72,6 +89,15 @@ router.get("/sources", auth.optional, (req, res, next) => {
                   )
                 ).map((t) => `${path[1]}/${path[2]}/${path[3]}/${t}`)
               );
+              _.set(
+                result,
+                [...path, "utcOffset"],
+                _.get(
+                  validation,
+                  [...path.slice(0, path.length - 1), "utc_offset"],
+                  process.env.DEFAULT_UTC_OFFSET
+                )
+              );
             }
           });
         });
@@ -87,6 +113,7 @@ router.get("/sources", auth.optional, (req, res, next) => {
 // get detailed historian data
 router.post("/detailed", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
+  const offset = getUtcOffset(req.body);
   const range = moment(end).diff(moment(start), "hours");
   const chunks = range <= 6 ? 1 : Math.ceil(range / 6);
   const span = Math.ceil(range / chunks);
@@ -106,9 +133,13 @@ router.post("/detailed", auth.optional, (req, res, next) => {
         const range = {
           start: moment
             .min(moment(start).add(v * span, "hours"), moment(end))
+            .utcOffset(offset)
+            .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
           end: moment
             .min(moment(start).add((v + 1) * span, "hours"), moment(end))
+            .utcOffset(offset)
+            .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
         };
         logger.debug(range);
@@ -136,6 +167,12 @@ router.post("/detailed", auth.optional, (req, res, next) => {
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
             const key = _.get(pattern_detailed.exec(k), "1");
+            v.forEach(
+              (e) =>
+                (e[0] = moment(e[0])
+                  .utcOffset(offset)
+                  .format("YYYY-MM-DD HH:mm:ss"))
+            );
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
         });
@@ -151,6 +188,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
 // get diagnostics historian data
 router.post("/diagnostics", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
+  const offset = getUtcOffset(req.body);
   const range = moment(end)
     .endOf("day")
     .diff(moment(start), "days");
@@ -172,12 +210,16 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
         const range = {
           start: moment
             .min(moment(start).add(v * span, "days"), moment(end).endOf("day"))
+            .utcOffset(offset)
+            .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
           end: moment
             .min(
               moment(start).add((v + 1) * span, "days"),
               moment(end).endOf("day")
             )
+            .utcOffset(offset)
+            .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
         };
         logger.debug(range);
@@ -205,6 +247,12 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
             const key = _.slice(pattern_diagnostics.exec(k), 5);
+            v.forEach(
+              (e) =>
+                (e[0] = moment(e[0])
+                  .utcOffset(offset)
+                  .format("YYYY-MM-DD HH:mm:ss"))
+            );
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
         });
