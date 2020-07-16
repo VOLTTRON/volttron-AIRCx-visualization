@@ -13,3 +13,4 @@ server.log
 /upload
 /uploads
 /public/**/*.*
+/cache/**/*.*

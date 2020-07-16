@@ -19,6 +19,7 @@
     "@mapbox/mbtiles": "^0.11.0",
     "axios": "^0.19.2",
     "cache-manager": "^3.3.0",
+    "cache-manager-fs": "^1.0.8",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
