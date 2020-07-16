@@ -9,7 +9,7 @@ import _ from "lodash";
 export const getMessage = (type, value) => {
   const message = _.get(
     messages,
-    [type, `${value}`],
+    [type, _.isString(value) ? parseInt(value).toFixed(1) : value.toFixed(1)],
     `Unable to locate message for fault: ${value}`
   );
   return message;

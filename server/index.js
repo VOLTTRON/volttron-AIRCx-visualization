@@ -8,6 +8,7 @@ const winston = require("winston");
 const expressWinston = require("express-winston");
 const ExpressCache = require("express-cache-middleware");
 const cacheManager = require("cache-manager");
+const fsCacheStore = require("cache-manager-fs");
 const models = require("./models");
 const path = require("path");
 const util = require("./utils/util");
@@ -73,11 +74,20 @@ app.use(express.static(path.join(process.cwd(), "public")));
 
 // setup the cache middleware
 const cacheMiddleware = new ExpressCache(
-  cacheManager.caching({
-    store: "memory",
-    max: 10000,
-    ttl: 3600,
-  }),
+  cacheManager.multiCaching([
+    cacheManager.caching({
+      store: "memory",
+      max: 10000,
+      ttl: 3600, // one hour
+    }),
+    cacheManager.caching({
+      store: fsCacheStore,
+      max: 10000,
+      ttl: 86400, // one day
+      path: "cache",
+      zip: true,
+    }),
+  ]),
   {
     getCacheKey: (req) => {
       const { topic, start, end } = req.body;
