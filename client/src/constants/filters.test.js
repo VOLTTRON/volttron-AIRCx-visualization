@@ -39,6 +39,10 @@ describe("filters.aggregate()", () => {
     expect(filters.aggregate(5, 0)).toEqual(filters.parse("inconclusive"));
   });
 
+  it("should return inconclusive with no data", () => {
+    expect(filters.aggregate(0, 0)).toEqual(filters.parse("inconclusive"));
+  });
+
   // partial data
   it("should return fault with 1 fault present out of 6 possible", () => {
     expect(filters.aggregate(1, 6 - 1)).toEqual(filters.parse("fault"));
