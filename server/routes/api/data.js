@@ -50,7 +50,9 @@ router.get("/sources", auth.optional, (req, res, next) => {
     .all([
       axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
         jsonrpc: "2.0",
-        id: "analysis.historian",
+        id: !_.isEmpty(process.env.HISTORIAN_ANALYSIS_ID)
+          ? process.env.HISTORIAN_ANALYSIS_ID
+          : "analysis.historian",
         method: "get_topic_list",
         params: {
           authentication: `${token}`,

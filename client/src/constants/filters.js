@@ -1,5 +1,4 @@
-import { cdf, pmf } from "@stdlib/stats/base/dists/binomial";
-import interval from "binomial-proportion";
+import { cdf, pmf, quantile } from "@stdlib/stats/base/dists/binomial";
 import _ from "lodash";
 import { all, dark, faults, inconclusive, unitOff } from "./palette";
 
@@ -106,6 +105,14 @@ const parse = function(value) {
 const getCount = (v) =>
   Array.isArray(v) ? v.length : _.isString(v) ? parseInt(v) : v;
 
+const interval = (a, n, p) => {
+  const q1 = (1.0 - a) / 2;
+  const q2 = (1.0 + a) / 2;
+  const l = quantile(q1, n, p);
+  const u = quantile(q2, n, p);
+  return [l, u];
+};
+
 const aggregate = (errors, passed) => {
   const min = 5;
   const p = 0.5;
@@ -113,8 +120,7 @@ const aggregate = (errors, passed) => {
   const x = getCount(errors);
   const n = x + getCount(passed);
   const c = cdf(x, n, p);
-  // this function is not exactly the same as the python code
-  const i = interval(x, n, a).lowerBound;
+  const i = interval(a, n, p)[0];
   const y = pmf(i, n, p);
   if (n > min) {
     if (y <= c) {
