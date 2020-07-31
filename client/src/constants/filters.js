@@ -1,6 +1,37 @@
 import { cdf, pmf, quantile } from "@stdlib/stats/base/dists/binomial";
 import _ from "lodash";
-import { all, dark, faults, inconclusive, unitOff } from "./palette";
+import {
+  all,
+  dark,
+  faults,
+  inconclusive,
+  lighter,
+  likely,
+  primary,
+  unitOff,
+} from "./palette";
+
+const noData = {
+  name: "no-data",
+  label: "No Analysis Only",
+  alt: "No Analysis",
+  single: "No Analysis",
+  abbr: "Empty",
+  color: primary,
+  isType: (v) => _.get(getType(v), "name") === "no-data",
+  show: (f) => _.includes(["no-data"], _.get(f, "name")),
+};
+
+const outsideRange = {
+  name: "outside-range",
+  label: "Outside Date Range Only",
+  alt: "Outside Date Range",
+  single: "Outside Date Range",
+  abbr: "Outside",
+  color: lighter,
+  isType: (v) => _.get(getType(v), "name") === "outside-range",
+  show: (f) => _.includes(["outside-range"], _.get(f, "name")),
+};
 
 const fault = {
   name: "faults",
@@ -10,6 +41,8 @@ const fault = {
   abbr: "Fault",
   color: faults,
   isType: (v) => _.get(getType(v), "name") === "faults",
+  show: (f) =>
+    _.includes(["faults", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const incon = {
@@ -20,6 +53,8 @@ const incon = {
   abbr: "Incon",
   color: inconclusive,
   isType: (v) => _.get(getType(v), "name") === "inconclusive",
+  show: (f) =>
+    _.includes(["inconclusive", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const okay = {
@@ -30,6 +65,8 @@ const okay = {
   abbr: "Okay",
   color: dark,
   isType: (v) => _.get(getType(v), "name") === "okay",
+  show: (f) =>
+    _.includes(["okay", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const values = [
@@ -43,9 +80,25 @@ const values = [
     abbr: "Unit Off",
     color: unitOff,
     isType: (v) => _.get(getType(v), "name") === "unit-off",
+    show: (f) =>
+      _.includes(["unit-off", "no-data", "outside-range"], _.get(f, "name")),
   },
   // uncomment to view and filter okay messages if available
   okay,
+  {
+    name: "aggregate",
+    label: "Likely State",
+    alt: "Likely",
+    single: "Likely",
+    abbr: "Likely",
+    color: likely,
+    isType: (v) => getType(v) !== null,
+    show: (f) =>
+      _.includes(
+        ["faults", "inconclusive", "okay", "outside-range"],
+        _.get(f, "name")
+      ),
+  },
   {
     name: "all",
     label: "All States",
@@ -54,6 +107,18 @@ const values = [
     abbr: "All",
     color: all,
     isType: (v) => getType(v) !== null,
+    show: (f) =>
+      _.includes(
+        [
+          "faults",
+          "inconclusive",
+          "okay",
+          "unit-off",
+          "no-data",
+          "outside-range",
+        ],
+        _.get(f, "name")
+      ),
   },
 ];
 
@@ -91,7 +156,7 @@ const parse = function(value) {
     return values[value];
   }
   value = _.isString(value) ? value.toLowerCase() : value;
-  return _.concat(values, [okay]).find(
+  return _.concat(values, [okay, noData, outsideRange]).find(
     (operation) =>
       operation.name === value ||
       operation.label.toLowerCase() === value ||

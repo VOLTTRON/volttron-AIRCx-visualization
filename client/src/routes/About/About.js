@@ -2,7 +2,7 @@ import { withStyles } from "@material-ui/core/styles";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer } from "react-virtualized";
-import ChartPlotly from "routes/Visualization/ChartPlotly";
+import Chart from "routes/Visualization/Chart";
 import Clock from "routes/Visualization/Clock";
 import styles from "./styles";
 
@@ -27,7 +27,7 @@ class About extends React.Component {
         >
           <AutoSizer>
             {({ width, height }) => (
-              <ChartPlotly data={[]} width={width} height={height} />
+              <Chart data={[]} width={width} height={height} />
             )}
           </AutoSizer>
         </div>

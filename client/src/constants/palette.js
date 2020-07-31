@@ -102,3 +102,4 @@ export const faults = "#D7191C";
 export const inconclusive = "#FDAE61";
 export const unitOff = "#ABD9E9";
 export const all = "#FFFFFF";
+export const likely = "#A9A9A9";

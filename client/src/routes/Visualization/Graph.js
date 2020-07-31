@@ -2,7 +2,7 @@ import { Paper, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import filters from "constants/filters";
-import { lighter, primary, white } from "constants/palette";
+import { white } from "constants/palette";
 import {
   fetchDetailed,
   selectDetailed,
@@ -20,6 +20,8 @@ import styles from "./styles";
 class Graph extends React.Component {
   constructor(props) {
     super(props);
+    const noData = filters.parse("no-data");
+    const outsideRange = filters.parse("outside-range");
     const start = moment(props.start);
     const end = moment(props.end);
     const pad = moment.min(
@@ -49,7 +51,7 @@ class Graph extends React.Component {
         x: months.length,
         y: pad.date(),
         size: 10,
-        color: pad.isBefore(start) ? lighter : primary,
+        color: pad.isBefore(start) ? outsideRange.color : noData.color,
         date: pad.isBefore(start) ? null : pad.clone(),
       });
       pad.add(1, "day");
@@ -69,7 +71,7 @@ class Graph extends React.Component {
       x: months.length,
       y: pad.date(),
       size: 10,
-      color: pad.isBefore(start) ? lighter : primary,
+      color: pad.isBefore(start) ? outsideRange.color : noData.color,
       date: pad.clone(),
     });
     this.state = {
@@ -208,26 +210,39 @@ class Graph extends React.Component {
   renderChart() {
     const { classes, data, form } = this.props;
     const { base, months } = this.state;
+    const likely = filters.parse("likely");
     const sensitivity = _.get(form, "sensitivity", "normal");
     const filter = filters.parse(form.filter);
+    const outsideRange = filters.parse("outside-range");
     const marks = base.map((item) => {
-      const values = Object.values(_.get(data, item.path, {}))
-        .reduce((p, v) => p.concat(v), [])
-        .filter((v) => {
-          const t = filter.isType(v[sensitivity]);
-          return t;
-        })
-        .map((v) => ({
-          filter: filters.getType(v[sensitivity]),
-          value: v[sensitivity],
-        }));
       let temp = {};
-      for (let index = 0; index < filters.values.length; index++) {
-        const filter = filters.values[index];
-        const value = _.find(values, { filter });
-        if (value) {
-          temp = { color: filter.color, value: value };
-          break;
+      if (item.color !== outsideRange.color) {
+        const values = Object.values(_.get(data, item.path, {}))
+          .reduce((p, v) => p.concat(v), [])
+          .filter((v) => {
+            const t = filter.isType(v[sensitivity]);
+            return t;
+          })
+          .map((v) => ({
+            filter: filters.getType(v[sensitivity]),
+            value: v[sensitivity],
+          }));
+        if (filter === likely) {
+          const errors = _.filter(values, { filter: filters.parse("fault") })
+            .length;
+          const passed = _.filter(values, { filter: filters.parse("okay") })
+            .length;
+          const aggregate = filters.aggregate(errors, passed);
+          temp = { color: aggregate.color, value: 0 };
+        } else {
+          for (let index = 0; index < filters.values.length; index++) {
+            const filter = filters.values[index];
+            const value = _.find(values, { filter });
+            if (value) {
+              temp = { color: filter.color, value: value };
+              break;
+            }
+          }
         }
       }
       return _.merge({}, item, temp);

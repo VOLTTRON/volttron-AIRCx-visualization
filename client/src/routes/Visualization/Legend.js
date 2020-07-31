@@ -8,11 +8,15 @@ import styles from "./styles";
 
 class Legend extends React.Component {
   render() {
-    const { classes } = this.props;
+    const { classes, form } = this.props;
+    const filter = filters.parse(_.get(form, "filter", "all"));
     return (
       <div className={classes.legend}>
-        {filters.values
-          .filter((v) => v.name !== "all")
+        {_.concat(filters.values, [
+          filters.parse("no-data"),
+          filters.parse("outside-range"),
+        ])
+          .filter((v) => filter.show(v))
           .map((v) => (
             <React.Fragment key={`filter-frag-${v.name}`}>
               <div
