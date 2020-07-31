@@ -48,16 +48,19 @@ const getUtcOffset = (body) => {
 router.get("/sources", auth.optional, (req, res, next) => {
   axios
     .all([
-      axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
-        jsonrpc: "2.0",
-        id: !_.isEmpty(process.env.HISTORIAN_ANALYSIS_ID)
-          ? process.env.HISTORIAN_ANALYSIS_ID
-          : "analysis.historian",
-        method: "get_topic_list",
-        params: {
-          authentication: `${token}`,
-        },
-      }),
+      axios.post(
+        `${process.env.HISTORIAN_ADDRESS}/${process.env.HISTORIAN_API}`,
+        {
+          jsonrpc: "2.0",
+          id: !_.isEmpty(process.env.HISTORIAN_ANALYSIS_ID)
+            ? process.env.HISTORIAN_ANALYSIS_ID
+            : "analysis.historian",
+          method: "get_topic_list",
+          params: {
+            authentication: `${token}`,
+          },
+        }
+      ),
       // we're constructing these topics manually
       // axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
       //   jsonrpc: "2.0",
@@ -72,6 +75,10 @@ router.get("/sources", auth.optional, (req, res, next) => {
       axios.spread((...responses) => {
         const result = {};
         responses.forEach((response) => {
+          const error = _.get(response, ["data", "error"]);
+          if (error) {
+            throw Error(error.message);
+          }
           _.get(response, ["data", "result"], []).forEach((d) => {
             const path = _.slice(pattern_diagnostics.exec(d), 1);
             if (path.length === 5) {
@@ -145,26 +152,33 @@ router.post("/detailed", auth.optional, (req, res, next) => {
             .format("YYYY-MM-DD HH:mm:ss"),
         };
         logger.debug(range);
-        return axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
-          jsonrpc: "2.0",
-          id: !_.isEmpty(process.env.HISTORIAN_DATA_ID)
-            ? process.env.HISTORIAN_DATA_ID
-            : "analysis.historian",
-          method: "query",
-          params: {
-            authentication: `${token}`,
-            topic: topic,
-            count: 1000,
-            start: range.start,
-            end: range.end,
-          },
-        });
+        return axios.post(
+          `${process.env.HISTORIAN_ADDRESS}/${process.env.HISTORIAN_API}`,
+          {
+            jsonrpc: "2.0",
+            id: !_.isEmpty(process.env.HISTORIAN_DATA_ID)
+              ? process.env.HISTORIAN_DATA_ID
+              : "analysis.historian",
+            method: "query",
+            params: {
+              authentication: `${token}`,
+              topic: topic,
+              count: 1000,
+              start: range.start,
+              end: range.end,
+            },
+          }
+        );
       })
     )
     .then(
       axios.spread((...responses) => {
         const result = {};
         responses.forEach((response) => {
+          const error = _.get(response, ["data", "error"]);
+          if (error) {
+            throw Error(error.message);
+          }
           Object.entries(
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
@@ -225,26 +239,33 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
             .format("YYYY-MM-DD HH:mm:ss"),
         };
         logger.debug(range);
-        return axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
-          jsonrpc: "2.0",
-          id: !_.isEmpty(process.env.HISTORIAN_ANALYSIS_ID)
-            ? process.env.HISTORIAN_ANALYSIS_ID
-            : "analysis.historian",
-          method: "query",
-          params: {
-            authentication: `${token}`,
-            topic: topic,
-            count: 1000,
-            start: range.start,
-            end: range.end,
-          },
-        });
+        return axios.post(
+          `${process.env.HISTORIAN_ADDRESS}/${process.env.HISTORIAN_API}`,
+          {
+            jsonrpc: "2.0",
+            id: !_.isEmpty(process.env.HISTORIAN_ANALYSIS_ID)
+              ? process.env.HISTORIAN_ANALYSIS_ID
+              : "analysis.historian",
+            method: "query",
+            params: {
+              authentication: `${token}`,
+              topic: topic,
+              count: 1000,
+              start: range.start,
+              end: range.end,
+            },
+          }
+        );
       })
     )
     .then(
       axios.spread((...responses) => {
         const result = {};
         responses.forEach((response) => {
+          const error = _.get(response, ["data", "error"]);
+          if (error) {
+            throw Error(error.message);
+          }
           Object.entries(
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {

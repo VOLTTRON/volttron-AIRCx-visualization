@@ -342,17 +342,21 @@ class MuiHeader extends React.Component {
           (!route.admin ||
             (route.admin && _.get(user, "scope", "").includes("admin")))
       )
-      .find((route) => route.name !== page.name);
-    const MuiIcon = temp.icon;
+      .filter((route) => route.name !== page.name);
     return (
       <div className={clsx(classes.row, classes.navigation)}>
         <div className={classes.spacer} />
-        <MuiLink className={classes.link} to={temp.path}>
-          <MuiIcon className={classes.linkIcon} color="primary" />
-          <Typography variant="h6" color="primary">
-            <strong>{temp.label}</strong>
-          </Typography>
-        </MuiLink>
+        {temp.map((r) => {
+          const MuiIcon = r.icon;
+          return (
+            <MuiLink className={classes.link} to={r.path}>
+              <MuiIcon className={classes.linkIcon} color="primary" />
+              <Typography variant="h6" color="primary">
+                <strong>{r.label}</strong>
+              </Typography>
+            </MuiLink>
+          );
+        })}
       </div>
     );
   }
@@ -513,7 +517,7 @@ class MuiHeader extends React.Component {
               }
             />
           </div>
-          {page.name === "Dashboard" ? (
+          {page.name === "Dashboard" || page.name === "Detailed" ? (
             <div className={classes.group}>
               <MuiSelect
                 id="group"

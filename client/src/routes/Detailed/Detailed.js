@@ -33,7 +33,7 @@ import { ArcSeries, LabelSeries, MarkSeries, XYPlot } from "react-vis/dist";
 import mixin from "utils/mixin";
 import styles from "./styles";
 
-class Dashboard extends React.Component {
+class Detailed extends React.Component {
   static getDerivedStateFromProps(props, state) {
     const { data } = props;
     const { tab } = state;
@@ -327,9 +327,9 @@ class Dashboard extends React.Component {
           >
             <strong>Under Construction</strong>
           </Typography>
-          <MuiLink to="/detailed">
+          <MuiLink to="/visualization">
             <Typography variant="h6" className={classes.message}>
-              Detailed View
+              Visualization View
             </Typography>
           </MuiLink>
         </div>
@@ -378,4 +378,4 @@ const mapActionToProps = {};
 export default connect(
   mapStateToProps,
   mapActionToProps
-)(withStyles(styles)(Dashboard));
+)(withStyles(styles)(Detailed));

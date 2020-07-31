@@ -54,6 +54,7 @@ const styles = (theme) => ({
     background: white,
   },
   link: {
+    marginLeft: "40px",
     textTransform: "none",
   },
   linkIcon: {
