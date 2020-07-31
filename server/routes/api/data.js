@@ -62,7 +62,7 @@ router.get("/sources", auth.optional, (req, res, next) => {
         }
       ),
       // we're constructing these topics manually
-      // axios.post(`${process.env.HISTORIAN_ADDRESS}/jsonrpc`, {
+      // axios.post(`${process.env.HISTORIAN_ADDRESS}/${process.env.HISTORIAN_API}`, {
       //   jsonrpc: "2.0",
       //   id: "data.historian",
       //   method: "get_topic_list",

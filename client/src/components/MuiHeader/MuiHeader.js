@@ -157,6 +157,8 @@ class MuiHeader extends React.Component {
           this.setState(form);
         }
         this.setState({ changed: true });
+      // eslint-disable-next-line
+      case "update":
         this.props.setDataForm(form);
         break;
       default:
@@ -227,12 +229,18 @@ class MuiHeader extends React.Component {
 
   handleLoadData = () => {
     const { sources, form } = this.props;
-    const { site, building, device, diagnostic } = form;
+    const updated = _.merge(
+      {},
+      form,
+      _.pick(this.state, ["site", "building", "device", "diagnostic"])
+    );
+    const { site, building, device, diagnostic } = updated;
     const topic = Object.values(
       _.get(sources, [diagnostic, site, building, device], {})
     );
+    this.handleUpdate("update")();
     this.setState({ changed: false });
-    this.props.fetchDiagnostics(_.merge({}, form, { topic }));
+    this.props.fetchDiagnostics(_.merge({}, updated, { topic }));
   };
 
   renderNotice() {
@@ -349,9 +357,17 @@ class MuiHeader extends React.Component {
         {temp.map((r) => {
           const MuiIcon = r.icon;
           return (
-            <MuiLink className={classes.link} to={r.path}>
-              <MuiIcon className={classes.linkIcon} color="primary" />
-              <Typography variant="h6" color="primary">
+            <MuiLink
+              key={`link-${r.name}`}
+              className={classes.link}
+              to={r.path}
+            >
+              <MuiIcon
+                key={`icon-${r.name}`}
+                className={classes.linkIcon}
+                color="primary"
+              />
+              <Typography key={`text-${r.name}`} variant="h6" color="primary">
                 <strong>{r.label}</strong>
               </Typography>
             </MuiLink>

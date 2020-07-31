@@ -13,7 +13,8 @@
     "seed-all": "npx sequelize-cli db:seed:all --debug",
     "db-init": "node db-init.js",
     "db-del": "trash db.development.sqlite",
-    "reset": "yarn db-del && yarn db-init && yarn seed-all"
+    "reset": "yarn db-del && yarn db-init && yarn seed-all",
+    "clean": "shx rm -rf ./cache"
   },
   "dependencies": {
     "@mapbox/mbtiles": "^0.11.0",
@@ -36,6 +37,7 @@
     "passport-local": "^1.0.0",
     "sequelize": "^5.3.1",
     "sequelize-cli": "^5.4.0",
+    "shx": "^0.3.2",
     "sqlite3": "^4.1.0",
     "supertest": "^4.0.2",
     "uuid": "^3.3.2",
