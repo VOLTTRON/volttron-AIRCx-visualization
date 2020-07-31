@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const auth = require("../auth");
 const axios = require("axios");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const validation = require("../../data/validation");
 const _ = require("lodash");
 const { loggers } = require("winston");
@@ -22,12 +22,40 @@ const authenticate = () => {
       token = response.data;
     })
     .catch((error) => {
-      logger.error(error);
+      logger.error(error.message);
     });
 };
 authenticate();
 
+const getTimezone = (body) => {
+  if (_.isEmpty(process.env.DEFAULT_TIMEZONE)) {
+    return undefined;
+  }
+  const { site, campus, building, device, unit, diagnostic, analysis } = body;
+  const path = [
+    diagnostic ? diagnostic : analysis,
+    site ? site : campus,
+    building,
+    device ? device : unit,
+  ];
+  let timezone = _.get(
+    validation,
+    [...path.slice(0, path.length), "timezone"],
+    process.env.DEFAULT_TIMEZONE
+  );
+  if (timezone) {
+    timezone = moment()
+      .tz(timezone)
+      .tz();
+  }
+  logger.debug(`Using timezone ${timezone} for ${JSON.stringify(path)}`);
+  return timezone;
+};
+
 const getUtcOffset = (body) => {
+  if (_.isEmpty(process.env.DEFAULT_UTC_OFFSET)) {
+    return undefined;
+  }
   const { site, campus, building, device, unit, diagnostic, analysis } = body;
   const path = [
     diagnostic ? diagnostic : analysis,
@@ -42,6 +70,16 @@ const getUtcOffset = (body) => {
   );
   logger.debug(`Using UTC offset of ${offset} for ${JSON.stringify(path)}`);
   return offset;
+};
+
+const createOffset = (timezone, utcOffset) => (v) => {
+  if (timezone) {
+    return v.tz(timezone);
+  } else if (utcOffset) {
+    return v.utcOffset(utcOffset);
+  } else {
+    return v;
+  }
 };
 
 // get data sources
@@ -114,7 +152,7 @@ router.get("/sources", auth.optional, (req, res, next) => {
       })
     )
     .catch((error) => {
-      logger.error(error);
+      logger.error(error.message);
       return res.status(500).json(error.message);
     });
 });
@@ -122,7 +160,7 @@ router.get("/sources", auth.optional, (req, res, next) => {
 // get detailed historian data
 router.post("/detailed", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
-  const offset = getUtcOffset(req.body);
+  const offset = createOffset(getTimezone(req.body), getUtcOffset(req.body));
   const range = moment(end).diff(moment(start), "hours");
   const chunks = range <= 6 ? 1 : Math.ceil(range / 6);
   const span = Math.ceil(range / chunks);
@@ -140,18 +178,20 @@ router.post("/detailed", auth.optional, (req, res, next) => {
       _.range(0, chunks).map((v) => {
         // the historian doesn't seem to handle time zones
         const range = {
-          start: moment
-            .min(moment(start).add(v * span, "hours"), moment(end))
-            .utcOffset(offset)
+          start: offset(
+            moment.min(moment(start).add(v * span, "hours"), moment(end))
+          )
             .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
-          end: moment
-            .min(moment(start).add((v + 1) * span, "hours"), moment(end))
-            .utcOffset(offset)
+          end: offset(
+            moment.min(moment(start).add((v + 1) * span, "hours"), moment(end))
+          )
             .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
         };
-        logger.debug(range);
+        logger.debug(
+          `Submitting query for the UTC date range: ${JSON.stringify(range)}`
+        );
         return axios.post(
           `${process.env.HISTORIAN_ADDRESS}/${process.env.HISTORIAN_API}`,
           {
@@ -184,10 +224,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
           ).forEach(([k, v]) => {
             const key = _.get(pattern_detailed.exec(k), "1");
             v.forEach(
-              (e) =>
-                (e[0] = moment(e[0])
-                  .utcOffset(offset)
-                  .format("YYYY-MM-DD HH:mm:ss"))
+              (e) => (e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss"))
             );
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
@@ -196,7 +233,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
       })
     )
     .catch((error) => {
-      logger.error(error);
+      logger.error(error.message);
       return res.status(500).json(error.message);
     });
 });
@@ -204,7 +241,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
 // get diagnostics historian data
 router.post("/diagnostics", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
-  const offset = getUtcOffset(req.body);
+  const offset = createOffset(getTimezone(req.body), getUtcOffset(req.body));
   const range = moment(end)
     .endOf("day")
     .diff(moment(start), "days");
@@ -224,21 +261,26 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
       _.range(0, chunks).map((v) => {
         // the historian doesn't seem to handle time zones
         const range = {
-          start: moment
-            .min(moment(start).add(v * span, "days"), moment(end).endOf("day"))
-            .utcOffset(offset)
+          start: offset(
+            moment.min(
+              moment(start).add(v * span, "days"),
+              moment(end).endOf("day")
+            )
+          )
             .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
-          end: moment
-            .min(
+          end: offset(
+            moment.min(
               moment(start).add((v + 1) * span, "days"),
               moment(end).endOf("day")
             )
-            .utcOffset(offset)
+          )
             .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
         };
-        logger.debug(range);
+        logger.debug(
+          `Submitting query for the UTC date range: ${JSON.stringify(range)}`
+        );
         return axios.post(
           `${process.env.HISTORIAN_ADDRESS}/${process.env.HISTORIAN_API}`,
           {
@@ -271,10 +313,7 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
           ).forEach(([k, v]) => {
             const key = _.slice(pattern_diagnostics.exec(k), 5);
             v.forEach(
-              (e) =>
-                (e[0] = moment(e[0])
-                  .utcOffset(offset)
-                  .format("YYYY-MM-DD HH:mm:ss"))
+              (e) => (e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss"))
             );
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
@@ -283,7 +322,7 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
       })
     )
     .catch((error) => {
-      logger.error(error);
+      logger.error(error.message);
       return res.status(500).json(error.message);
     });
 });
