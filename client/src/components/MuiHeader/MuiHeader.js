@@ -2,6 +2,7 @@ import {
   AppBar,
   Menu,
   MenuItem,
+  Slide,
   Snackbar,
   Toolbar,
   Typography,
@@ -343,36 +344,58 @@ class MuiHeader extends React.Component {
 
   renderNavigation() {
     const { classes, page, user } = this.props;
-    const temp = routes
-      .filter(
-        (route) =>
-          !route.hidden &&
-          (!route.admin ||
-            (route.admin && _.get(user, "scope", "").includes("admin")))
-      )
-      .filter((route) => route.name !== page.name);
+    const temp = routes.filter(
+      (route) =>
+        !route.hidden &&
+        (!route.admin ||
+          (route.admin && _.get(user, "scope", "").includes("admin")))
+    );
     return (
       <div className={clsx(classes.row, classes.navigation)}>
+        {temp
+          .filter((route) => route.name === page.name)
+          .map((r) => {
+            const MuiIcon = r.icon;
+            return (
+              <Slide direction="left" in={true} mountOnEnter unmountOnExit>
+                <div key={`link-${r.name}`} className={classes.current}>
+                  <MuiIcon
+                    key={`icon-${r.name}`}
+                    className={classes.linkIcon}
+                  />
+                  <Typography
+                    key={`text-${r.name}`}
+                    className={classes.current}
+                    variant="h6"
+                  >
+                    <strong>{r.label}</strong>
+                  </Typography>
+                </div>
+              </Slide>
+            );
+          })}
         <div className={classes.spacer} />
-        {temp.map((r) => {
-          const MuiIcon = r.icon;
-          return (
-            <MuiLink
-              key={`link-${r.name}`}
-              className={classes.link}
-              to={r.path}
-            >
-              <MuiIcon
-                key={`icon-${r.name}`}
-                className={classes.linkIcon}
-                color="primary"
-              />
-              <Typography key={`text-${r.name}`} variant="h6" color="primary">
-                <strong>{r.label}</strong>
-              </Typography>
-            </MuiLink>
-          );
-        })}
+        {temp
+          .filter((route) => route.name !== page.name)
+          .map((r) => {
+            const MuiIcon = r.icon;
+            return (
+              <MuiLink
+                key={`link-${r.name}`}
+                className={clsx(classes.link, classes.linkPad)}
+                to={r.path}
+              >
+                <MuiIcon
+                  key={`icon-${r.name}`}
+                  className={classes.linkIcon}
+                  color="primary"
+                />
+                <Typography key={`text-${r.name}`} variant="h6" color="primary">
+                  <strong>{r.label}</strong>
+                </Typography>
+              </MuiLink>
+            );
+          })}
       </div>
     );
   }

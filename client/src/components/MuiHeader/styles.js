@@ -53,9 +53,16 @@ const styles = (theme) => ({
     paddingRight: "90px",
     background: white,
   },
+  current: {
+    display: "inline-flex",
+    alignItems: "center",
+    color: black,
+  },
   link: {
-    marginLeft: "40px",
     textTransform: "none",
+  },
+  linkPad: {
+    marginLeft: "40px",
   },
   linkIcon: {
     marginRight: "7px",
