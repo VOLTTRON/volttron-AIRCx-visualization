@@ -55,8 +55,8 @@ class Dashboard extends React.Component {
   }
 
   renderCard(item, label) {
-    const { classes, current } = this.props;
-    const { group, sensitivity } = current ? current : {};
+    const { classes, form } = this.props;
+    const { group, sensitivity } = form ? form : {};
     const fault = filters.parse("fault");
     const okay = filters.parse("okay");
     const values = _.concat(
