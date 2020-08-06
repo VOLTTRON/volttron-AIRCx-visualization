@@ -14,24 +14,20 @@ const pattern_detailed = /^(?:[a-zA-Z0-9 _-]+\/)*([a-zA-Z0-9 _-]+)$/i;
 const pattern_clean_data = /[\"']*{(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)}[\"']*/i;
 
 let cleanData = (clean) => (value) => {
-  if (clean) {
+  if (clean && _.isString(value)) {
     try {
-      if (_.isObject(value)) {
-        return value;
-      }
       logger.info(value);
       const r = pattern_clean_data.exec(value);
       const t = JSON.parse(
-        `{"${r[1]}": ${r[2]}, "${r[3]}": ${r[4]}"${r[5]}": ${r[6]}}`
+        `{"${r[1]}": ${r[2]}, "${r[3]}": ${r[4]}, "${r[5]}": ${r[6]}}`
       );
       logger.info(JSON.stringify(t));
       return t;
     } catch (e) {
       logger.warn(`[${e.message}] Unable to parse the value: ${value}`);
     }
-  } else {
-    return value;
   }
+  return value;
 };
 cleanData = cleanData(util.parseBoolean(process.env.CLEAN_DATA));
 
