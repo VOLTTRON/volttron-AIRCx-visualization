@@ -16,15 +16,13 @@ const pattern_clean_data = /[\"']*{(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(
 let cleanData = (clean) => (value) => {
   if (clean && _.isString(value)) {
     try {
-      logger.info(value);
       const r = pattern_clean_data.exec(value);
       const t = JSON.parse(
         `{"${r[1]}": ${r[2]}, "${r[3]}": ${r[4]}, "${r[5]}": ${r[6]}}`
       );
-      logger.info(JSON.stringify(t));
       return t;
     } catch (e) {
-      logger.warn(`[${e.message}] Unable to parse the value: ${value}`);
+      logger.info(`[${e.message}] Unable to parse the value: ${value}`);
     }
   }
   return value;
