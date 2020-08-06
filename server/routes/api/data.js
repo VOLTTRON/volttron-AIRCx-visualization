@@ -3,6 +3,7 @@ const auth = require("../auth");
 const axios = require("axios");
 const moment = require("moment-timezone");
 const validation = require("../../data/validation");
+const util = require("../../utils/util");
 const _ = require("lodash");
 const { loggers } = require("winston");
 const logger = loggers.get("default");
@@ -10,6 +11,29 @@ require("dotenv").config();
 
 const pattern_diagnostics = /^(?:(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
 const pattern_detailed = /^(?:[a-zA-Z0-9 _-]+\/)*([a-zA-Z0-9 _-]+)$/i;
+const pattern_clean_data = /[\"']*{(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)}[\"']*/i;
+
+let cleanData = (clean) => (value) => {
+  if (clean) {
+    try {
+      if (_.isObject(value)) {
+        return value;
+      }
+      logger.info(value);
+      const r = pattern_clean_data.exec(value);
+      const t = JSON.parse(
+        `{"${r[1]}": ${r[2]}, "${r[3]}": ${r[4]}"${r[5]}": ${r[6]}}`
+      );
+      logger.info(JSON.stringify(t));
+      return t;
+    } catch (e) {
+      logger.warn(`[${e.message}] Unable to parse the value: ${value}`);
+    }
+  } else {
+    return value;
+  }
+};
+cleanData = cleanData(util.parseBoolean(process.env.CLEAN_DATA));
 
 var token = null;
 const authenticate = () => {
@@ -164,13 +188,15 @@ router.post("/detailed", auth.optional, (req, res, next) => {
   const range = moment(end).diff(moment(start), "hours");
   const chunks = range <= 6 ? 1 : Math.ceil(range / 6);
   const span = Math.ceil(range / chunks);
-  logger.debug(JSON.stringify({ range, chunks, span: `${span} hours`, topic }));
+  logger.debug(
+    JSON.stringify({ start, end, range, chunks, span: `${span} hours`, topic })
+  );
   if (span > 25) {
     return res
       .status(400)
       .json("Request time span cannot be greater than a day.");
   }
-  if (span <= 0) {
+  if (span < 0) {
     return res.status(400).json("Request end time must be after start time.");
   }
   axios
@@ -223,9 +249,10 @@ router.post("/detailed", auth.optional, (req, res, next) => {
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
             const key = _.get(pattern_detailed.exec(k), "1");
-            v.forEach(
-              (e) => (e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss"))
-            );
+            v.forEach((e) => {
+              e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss");
+              e[1] = cleanData(e[1]);
+            });
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
         });
@@ -242,18 +269,18 @@ router.post("/detailed", auth.optional, (req, res, next) => {
 router.post("/diagnostics", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
   const offset = createOffset(getTimezone(req.body), getUtcOffset(req.body));
-  const range = moment(end)
-    .endOf("day")
-    .diff(moment(start), "days");
+  const range = moment(end).diff(moment(start), "days") + 1;
   const chunks = range <= 7 ? 1 : Math.ceil(range / 7);
   const span = Math.ceil(range / chunks);
-  logger.debug(JSON.stringify({ range, chunks, span: `${span} days`, topic }));
-  if (range > 366) {
+  logger.debug(
+    JSON.stringify({ start, end, range, chunks, span: `${span} days`, topic })
+  );
+  if (range > 367) {
     return res
       .status(400)
       .json("Request time span cannot be greater than a year.");
   }
-  if (span <= 0) {
+  if (span < 0) {
     return res.status(400).json("Request end time must be after start time.");
   }
   axios
@@ -261,19 +288,11 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
       _.range(0, chunks).map((v) => {
         // the historian doesn't seem to handle time zones
         const range = {
-          start: offset(
-            moment.min(
-              moment(start).add(v * span, "days"),
-              moment(end).endOf("day")
-            )
-          )
+          start: offset(moment(start).add(v * span, "days"))
             .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
           end: offset(
-            moment.min(
-              moment(start).add((v + 1) * span, "days"),
-              moment(end).endOf("day")
-            )
+            moment.min(moment(start).add((v + 1) * span, "days"), moment(end))
           )
             .utc()
             .format("YYYY-MM-DD HH:mm:ss"),
@@ -312,9 +331,10 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
             const key = _.slice(pattern_diagnostics.exec(k), 5);
-            v.forEach(
-              (e) => (e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss"))
-            );
+            v.forEach((e) => {
+              e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss");
+              e[1] = cleanData(e[1]);
+            });
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
         });

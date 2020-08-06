@@ -152,7 +152,7 @@ class MuiHeader extends React.Component {
                 moment(form.start).diff(moment(start), "day", true),
                 "day"
               ),
-              moment().startOf("day")
+              moment().endOf("day")
             )
             .format();
           this.setState(form);
@@ -357,7 +357,13 @@ class MuiHeader extends React.Component {
           .map((r) => {
             const MuiIcon = r.icon;
             return (
-              <Slide direction="left" in={true} mountOnEnter unmountOnExit>
+              <Slide
+                key={`slide-${r.name}`}
+                direction="left"
+                in={true}
+                mountOnEnter
+                unmountOnExit
+              >
                 <div key={`link-${r.name}`} className={classes.current}>
                   <MuiIcon
                     key={`icon-${r.name}`}
@@ -547,12 +553,15 @@ class MuiHeader extends React.Component {
               maxDate={moment.min(
                 moment(start)
                   .add(1, "year")
-                  .subtract(1, "day"),
-                moment()
+                  .endOf("day"),
+                moment().endOf("day")
               )}
               value={moment(end)}
               onChange={(v) =>
-                this.handleChange("end")(null, _.isEmpty(v) ? "" : v.format())
+                this.handleChange("end")(
+                  null,
+                  _.isEmpty(v) ? "" : v.endOf("day").format()
+                )
               }
             />
           </div>

@@ -57,6 +57,18 @@ const incon = {
     _.includes(["inconclusive", "no-data", "outside-range"], _.get(f, "name")),
 };
 
+const off = {
+  name: "unit-off",
+  label: "Unit Off Only",
+  alt: "Off Time",
+  single: "Unit Off",
+  abbr: "Unit Off",
+  color: unitOff,
+  isType: (v) => _.get(getType(v), "name") === "unit-off",
+  show: (f) =>
+    _.includes(["unit-off", "no-data", "outside-range"], _.get(f, "name")),
+};
+
 const okay = {
   name: "okay",
   label: "Okay Only",
@@ -72,19 +84,10 @@ const okay = {
 const values = [
   fault,
   incon,
-  {
-    name: "unit-off",
-    label: "Unit Off Only",
-    alt: "Off Time",
-    single: "Unit Off",
-    abbr: "Unit Off",
-    color: unitOff,
-    isType: (v) => _.get(getType(v), "name") === "unit-off",
-    show: (f) =>
-      _.includes(["unit-off", "no-data", "outside-range"], _.get(f, "name")),
-  },
+  off,
   // uncomment to view and filter okay messages if available
   okay,
+  // combined states
   {
     name: "aggregate",
     label: "Likely State",
@@ -92,7 +95,7 @@ const values = [
     single: "Likely",
     abbr: "Likely",
     color: likely,
-    isType: (v) => getType(v) !== null,
+    isType: (v) => _.includes(["faults", "okay"], _.get(getType(v), "name")),
     show: (f) =>
       _.includes(
         ["faults", "inconclusive", "okay", "outside-range"],
@@ -131,8 +134,8 @@ const getType = (value) => {
     s = value.toFixed(1);
   }
   switch (s) {
-    case "-99":
-      return values[1];
+    case "-99.0":
+      return incon;
     default:
     // continue
   }
@@ -141,12 +144,13 @@ const getType = (value) => {
     case "0":
       return okay;
     case "1":
-      return values[0];
+      return fault;
     case "2":
-      return values[1];
+      return incon;
     case "3":
-      return values[2];
+      return off;
     default:
+      console.log(`Unable to determine type of value: ${value}`);
       return null;
   }
 };

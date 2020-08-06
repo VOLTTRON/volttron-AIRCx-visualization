@@ -108,10 +108,13 @@ class Graph extends React.Component {
       this.setState({ show: value });
       this.props.fetchDetailed(
         _.merge({}, current, {
-          start: value.date.format(),
+          start: value.date
+            .clone()
+            .startOf("day")
+            .format(),
           end: value.date
             .clone()
-            .add("day", 1)
+            .endOf("day")
             .format(),
           topic: topic,
         })
@@ -135,10 +138,13 @@ class Graph extends React.Component {
       this.setState({ show: mark });
       this.props.fetchDetailed(
         _.merge({}, current, {
-          start: date.format(),
+          start: date
+            .clone()
+            .startOf("day")
+            .format(),
           end: date
             .clone()
-            .add("day", 1)
+            .endOf("day")
             .format(),
           topic: topic,
         })
@@ -162,10 +168,13 @@ class Graph extends React.Component {
       this.setState({ show: mark });
       this.props.fetchDetailed(
         _.merge({}, current, {
-          start: date.format(),
+          start: date
+            .clone()
+            .startOf("day")
+            .format(),
           end: date
             .clone()
-            .add("day", 1)
+            .endOf("day")
             .format(),
           topic: topic,
         })
