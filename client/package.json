@@ -1,6 +1,6 @@
 {
   "name": "aircx",
-  "version": "0.9.2",
+  "version": "1.0.0",
   "description": "Automatic Identification of Retro-commissioning Measures",
   "private": true,
   "dependencies": {
