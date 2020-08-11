@@ -4,10 +4,10 @@ import { getTimestamp, isActionType, isResetType } from "../util";
 import { DATA_FORM, key } from "./action";
 
 const initialState = (function() {
-  const end = moment(getTimestamp().getTime()).startOf("day");
+  const end = moment(getTimestamp().getTime()).endOf("day");
   const start = moment(end)
     .subtract(1, "year")
-    .add(1, "day");
+    .startOf("day");
   return {
     data: {
       form: {

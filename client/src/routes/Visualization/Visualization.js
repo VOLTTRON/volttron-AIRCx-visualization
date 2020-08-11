@@ -63,7 +63,7 @@ class Visualization extends React.Component {
     return (
       <div className={classes.content}>
         {/* <XAxis label="Month" /> */}
-        <Legend />
+        <Legend form={form} />
         <div className={classes.flex}>
           <YAxis label="Day" values={_.range(31)} />
           {Object.keys(data).map((k) => (

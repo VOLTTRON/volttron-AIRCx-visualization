@@ -59,29 +59,30 @@ export const transformDiagnostics = (data) => {
         _.setWith(result, path, values, Object);
       });
     });
-    const fault = filters.parse("fault");
-    const okay = filters.parse("okay");
-    Object.keys(result).forEach((d) =>
-      Object.keys(result[d]).forEach((y) =>
-        Object.keys(result[d][y]).forEach((m) =>
-          Object.keys(result[d][y][m]).forEach((t) => {
-            const values = _.concat(...Object.values(result[d][y][m][t]));
-            const aggregate = ["low", "normal", "high"].reduce(
-              (c, k) =>
-                _.merge(c, {
-                  [k]: filters.aggregate(
-                    values.map((v) => v[k]).filter((v) => fault.isType(v)),
-                    values.map((v) => v[k]).filter((v) => okay.isType(v))
-                  ),
-                }),
-              {}
-            );
-            // TODO store the aggregate values somewhere
-            // _.merge(result[d][y][m][t], { aggregate: aggregate });
-          })
-        )
-      )
-    );
+    // this section of code will build aggregate states
+    // const fault = filters.parse("fault");
+    // const okay = filters.parse("okay");
+    // Object.keys(result).forEach((d) =>
+    //   Object.keys(result[d]).forEach((y) =>
+    //     Object.keys(result[d][y]).forEach((m) =>
+    //       Object.keys(result[d][y][m]).forEach((t) => {
+    //         const values = _.concat(...Object.values(result[d][y][m][t]));
+    //         const aggregate = ["low", "normal", "high"].reduce(
+    //           (c, k) =>
+    //             _.merge(c, {
+    //               [k]: filters.aggregate(
+    //                 values.map((v) => v[k]).filter((v) => fault.isType(v)),
+    //                 values.map((v) => v[k]).filter((v) => okay.isType(v))
+    //               ),
+    //             }),
+    //           {}
+    //         );
+    //         // TODO store the aggregate values somewhere
+    //         _.merge(result[d][y][m][t], { aggregate: aggregate });
+    //       })
+    //     )
+    //   )
+    // );
   }
   return result;
 };

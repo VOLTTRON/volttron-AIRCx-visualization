@@ -7,26 +7,26 @@ const values = [
     label: "Low",
     description: "Prioritizes high impact faults/measures",
     color: error,
-    isType: (v) => Boolean(_.get(v, "low")),
+    isType: (v) => !_.isUndefined(_.get(v, "low")),
   },
   {
     name: "normal",
     label: "Normal",
     description: "Shows likely faults/measures",
     color: warning,
-    isType: (v) => Boolean(_.get(v, "normal")),
+    isType: (v) => !_.isUndefined(_.get(v, "normal")),
   },
   {
     name: "high",
     label: "High",
     description: "Shows borderline faults",
     color: info,
-    isType: (v) => Boolean(_.get(v, "high")),
+    isType: (v) => !_.isUndefined(_.get(v, "high")),
   },
 ];
 
 const getType = (value) => {
-  return Boolean(values.find((v) => v.isType(value)));
+  return !_.isUndefined(values.find((v) => v.isType(value)));
 };
 
 const parse = function(value) {

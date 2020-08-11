@@ -1,20 +1,20 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add cache-manager-memory
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add moment-timezone-with-data
 
 PATH: 
-  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\Yarn\bin\;C:\PostgreSQL\pg11\bin;C:\HashiCorp\Vagrant\bin;C:\Program Files\PuTTY\;C:\Program Files\Liquid Technologies\Liquid Studio 2019\XmlDataBinder17\Redist17\cpp\win32\bin;C:\Program Files\Liquid Technologies\Liquid Studio 2019\XmlDataBinder17\Redist17\cpp\win64\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Python27;C:\Python27\Scripts;C:\Users\D3X573\AppData\Local\Programs\Python\Python37-32\;C:\Users\D3X573\AppData\Local\Programs\Python\Python37-32\Scripts\;C:\Ruby25-x64\bin;C:\Users\D3X573\AppData\Local\Microsoft\WindowsApps;C:\Users\D3X573\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Apache Software Foundation\apache-maven-3.5.4\bin;C:\Users\D3X573\AppData\Local\Yarn\bin;C:\Users\D3X573\AppData\Roaming\npm;C:\Users\D3X573\AppData\Roaming\ffmpeg-4.2\bin;C:\Users\D3X573\AppData\Roaming\sqlite;C:\Program Files\PostgreSQL\9.6\bin;
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\Yarn\bin\;C:\PostgreSQL\pg11\bin;C:\HashiCorp\Vagrant\bin;C:\Program Files\Liquid Technologies\Liquid Studio 2019\XmlDataBinder17\Redist17\cpp\win32\bin;C:\Program Files\Liquid Technologies\Liquid Studio 2019\XmlDataBinder17\Redist17\cpp\win64\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Program Files\PuTTY\;C:\Python27;C:\Python27\Scripts;C:\Users\D3X573\AppData\Local\Programs\Python\Python37-32\;C:\Users\D3X573\AppData\Local\Programs\Python\Python37-32\Scripts\;C:\Ruby25-x64\bin;C:\Users\D3X573\AppData\Local\Microsoft\WindowsApps;C:\Users\D3X573\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Apache Software Foundation\apache-maven-3.5.4\bin;C:\Users\D3X573\AppData\Local\Yarn\bin;C:\Users\D3X573\AppData\Roaming\npm;C:\Users\D3X573\AppData\Roaming\ffmpeg-4.2\bin;C:\Users\D3X573\AppData\Roaming\sqlite;C:\Program Files\PostgreSQL\9.6\bin;
 
 Yarn version: 
   1.10.1
 
 Node version: 
-  12.18.0
+  12.18.2
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/cache-manager-memory: Not found
+  Error: https://registry.yarnpkg.com/moment-timezone-with-data: Not found
       at Request.params.callback [as _callback] (C:\Program Files (x86)\Yarn\lib\cli.js:60182:18)
       at Request.self.callback (C:\Program Files (x86)\Yarn\lib\cli.js:120166:22)
       at Request.emit (events.js:315:20)
@@ -29,7 +29,7 @@ Trace:
 npm manifest: 
   {
     "name": "aircx-backend",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "description": "Automatic Identification of Retro-commissioning Measures",
     "main": "index.js",
     "scripts": {
@@ -42,12 +42,14 @@ npm manifest:
       "seed-all": "npx sequelize-cli db:seed:all --debug",
       "db-init": "node db-init.js",
       "db-del": "trash db.development.sqlite",
-      "reset": "yarn db-del && yarn db-init && yarn seed-all"
+      "reset": "yarn db-del && yarn db-init && yarn seed-all",
+      "clean": "shx rm -rf ./cache"
     },
     "dependencies": {
       "@mapbox/mbtiles": "^0.11.0",
       "axios": "^0.19.2",
       "cache-manager": "^3.3.0",
+      "cache-manager-fs": "^1.0.8",
       "cors": "^2.8.5",
       "crypto": "^1.0.1",
       "dotenv": "^8.2.0",
@@ -60,10 +62,12 @@ npm manifest:
       "jsonwebtoken": "^8.4.0",
       "lodash": "^4.17.15",
       "moment": "^2.24.0",
+      "moment-timezone": "^0.5.31",
       "passport": "^0.4.0",
       "passport-local": "^1.0.0",
       "sequelize": "^5.3.1",
       "sequelize-cli": "^5.4.0",
+      "shx": "^0.3.2",
       "sqlite3": "^4.1.0",
       "supertest": "^4.0.2",
       "uuid": "^3.3.2",
@@ -831,6 +835,11 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
     integrity sha1-q8av7tzqUugJzcA3au0845Y10X8=
   
+  any-promise@~0.1.0:
+    version "0.1.0"
+    resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-0.1.0.tgz#830b680aa7e56f33451d4b049f3bd8044498ee27"
+    integrity sha1-gwtoCqflbzNFHUsEnzvYBESY7ic=
+  
   anymatch@^2.0.0:
     version "2.0.0"
     resolved "https://registry.yarnpkg.com/anymatch/-/anymatch-2.0.0.tgz#bcb24b4f37934d9aa7ac17b4adaf89e7c76ef2eb"
@@ -944,7 +953,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
     integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
   
-  async@1.5.2, async@^1.5.0:
+  async@1.5.2, async@^1.4.2, async@^1.5.0, async@^1.5.2:
     version "1.5.2"
     resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
     integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
@@ -1194,6 +1203,25 @@ Lockfile:
       to-object-path "^0.3.0"
       union-value "^1.0.0"
       unset-value "^1.0.0"
+  
+  cache-manager-fs@^1.0.8:
+    version "1.0.8"
+    resolved "https://registry.yarnpkg.com/cache-manager-fs/-/cache-manager-fs-1.0.8.tgz#30d766cc10a4c80b988ad2144977bb279034a69c"
+    integrity sha512-Rrvd5N5DC9Gh6SPSB9A8f/FfPOuHkDL1ig+oSut8iAcYPda8xHqf9OEr3v4vKNYI3svYSoZ+uBqDJctLMRvqiA==
+    dependencies:
+      async "^1.4.2"
+      cache-manager "^1.1.0"
+      extend "^3.0.0"
+      fs-promise "^0.3.1"
+      uuid "^2.0.1"
+  
+  cache-manager@^1.1.0:
+    version "1.5.0"
+    resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-1.5.0.tgz#529214bda57fa19514d106f070fabb16c3190811"
+    integrity sha1-UpIUvaV/oZUU0QbwcPq7FsMZCBE=
+    dependencies:
+      async "^1.5.2"
+      lru-cache "4.0.0"
   
   cache-manager@^3.3.0:
     version "3.3.0"
@@ -2001,6 +2029,11 @@ Lockfile:
       es5-ext "^0.10.35"
       es6-symbol "^3.1.1"
   
+  es6-object-assign@^1.0.3:
+    version "1.1.0"
+    resolved "https://registry.yarnpkg.com/es6-object-assign/-/es6-object-assign-1.1.0.tgz#c2c3582656247c39ea107cb1e6652b6f9f24523c"
+    integrity sha1-wsNYJlYkfDnqEHyx5mUrb58kUjw=
+  
   es6-symbol@^3.1.1, es6-symbol@~3.1.1:
     version "3.1.1"
     resolved "https://registry.yarnpkg.com/es6-symbol/-/es6-symbol-3.1.1.tgz#bf00ef4fdab6ba1b46ecb7b629b4c7ed5715cc77"
@@ -2635,6 +2668,13 @@ Lockfile:
     dependencies:
       minipass "^2.2.1"
   
+  fs-promise@^0.3.1:
+    version "0.3.1"
+    resolved "https://registry.yarnpkg.com/fs-promise/-/fs-promise-0.3.1.tgz#bf34050368f24d6dc9dfc6688ab5cead8f86842a"
+    integrity sha1-vzQFA2jyTW3J38ZoirXOrY+GhCo=
+    dependencies:
+      any-promise "~0.1.0"
+  
   fs.realpath@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
@@ -2725,7 +2765,7 @@ Lockfile:
     dependencies:
       assert-plus "^1.0.0"
   
-  glob@^7.1.1, glob@^7.1.4:
+  glob@^7.0.0, glob@^7.1.1, glob@^7.1.4:
     version "7.1.6"
     resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
     integrity sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
@@ -3037,6 +3077,11 @@ Lockfile:
       string-width "^2.1.0"
       strip-ansi "^4.0.0"
       through "^2.3.6"
+  
+  interpret@^1.0.0:
+    version "1.4.0"
+    resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.4.0.tgz#665ab8bc4da27a774a40584e812e3e0fa45b1a1e"
+    integrity sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==
   
   invert-kv@^2.0.0:
     version "2.0.0"
@@ -4353,6 +4398,13 @@ Lockfile:
     dependencies:
       moment ">= 2.9.0"
   
+  moment-timezone@^0.5.31:
+    version "0.5.31"
+    resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.31.tgz#9c40d8c5026f0c7ab46eda3d63e49c155148de05"
+    integrity sha512-+GgHNg8xRhMXfEbv81iDtrVeTcWt0kWmTEY1XQK14dICTXnWJnT0dxdlPspwqF3keKMVPXwayEsk1DI0AA/jdA==
+    dependencies:
+      moment ">= 2.9.0"
+  
   "moment@>= 2.9.0", moment@^2.24.0:
     version "2.24.0"
     resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
@@ -5216,6 +5268,13 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/realpath-native/-/realpath-native-2.0.0.tgz#7377ac429b6e1fd599dc38d08ed942d0d7beb866"
     integrity sha512-v1SEYUOXXdbBZK8ZuNgO4TBjamPsiSgcFr0aP+tEKpQZK8vooEUqV6nm6Cv502mX4NF2EfsnVqtNAHG+/6Ur1Q==
   
+  rechoir@^0.6.2:
+    version "0.6.2"
+    resolved "https://registry.yarnpkg.com/rechoir/-/rechoir-0.6.2.tgz#85204b54dba82d5742e28c96756ef43af50e3384"
+    integrity sha1-hSBLVNuoLVdC4oyWdW70OvUOM4Q=
+    dependencies:
+      resolve "^1.1.6"
+  
   redent@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/redent/-/redent-1.0.0.tgz#cf916ab1fd5f1f16dfb20822dd6ec7f730c2afde"
@@ -5396,6 +5455,13 @@ Lockfile:
     version "1.1.7"
     resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
     integrity sha1-IDEU2CrSxe2ejgQRs5ModeiJ6Xs=
+  
+  resolve@^1.1.6:
+    version "1.17.0"
+    resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.17.0.tgz#b25941b54968231cc2d1bb76a79cb7f2c0bf8444"
+    integrity sha512-ic+7JYiV8Vi2yzQGFWOkiZD5Z9z7O2Zhm9XMaTxdJExKasieFCr+yXZ/WmXsckHiKl12ar0y6XiXDx3m4RHn1w==
+    dependencies:
+      path-parse "^1.0.6"
   
   resolve@^1.10.0, resolve@^1.5.0:
     version "1.10.0"
@@ -5662,6 +5728,15 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
     integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
   
+  shelljs@^0.8.1:
+    version "0.8.4"
+    resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.4.tgz#de7684feeb767f8716b326078a8a00875890e3c2"
+    integrity sha512-7gk3UZ9kOfPLIAbslLzyWeGiEqx9e3rxwZM0KE6EL8GlGwjym9Mrlx5/p33bWTu9YG6vcS4MBxYZDHYr5lr8BQ==
+    dependencies:
+      glob "^7.0.0"
+      interpret "^1.0.0"
+      rechoir "^0.6.2"
+  
   shellwords@^0.1.1:
     version "0.1.1"
     resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
@@ -5671,6 +5746,15 @@ Lockfile:
     version "1.2.1"
     resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.1.tgz#610859f7de327b587efebf501fb43117f9aff337"
     integrity sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==
+  
+  shx@^0.3.2:
+    version "0.3.2"
+    resolved "https://registry.yarnpkg.com/shx/-/shx-0.3.2.tgz#40501ce14eb5e0cbcac7ddbd4b325563aad8c123"
+    integrity sha512-aS0mWtW3T2sHAenrSrip2XGv39O9dXIFUqxAEWHEOS1ePtGIBavdPJY1kE2IHl14V/4iCbUiNDPGdyYTtmhSoA==
+    dependencies:
+      es6-object-assign "^1.0.3"
+      minimist "^1.2.0"
+      shelljs "^0.8.1"
   
   sigmund@^1.0.1:
     version "1.0.1"
@@ -6428,6 +6512,11 @@ Lockfile:
     version "1.0.1"
     resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
     integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
+  
+  uuid@^2.0.1:
+    version "2.0.3"
+    resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
+    integrity sha1-Z+LoY3lyFVMN/zGOW/nc6/1Hsho=
   
   uuid@^3.2.1, uuid@^3.3.2:
     version "3.3.2"

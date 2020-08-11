@@ -2,6 +2,7 @@ import {
   AppBar,
   Menu,
   MenuItem,
+  Slide,
   Snackbar,
   Toolbar,
   Typography,
@@ -151,12 +152,14 @@ class MuiHeader extends React.Component {
                 moment(form.start).diff(moment(start), "day", true),
                 "day"
               ),
-              moment().startOf("day")
+              moment().endOf("day")
             )
             .format();
           this.setState(form);
         }
         this.setState({ changed: true });
+      // eslint-disable-next-line
+      case "update":
         this.props.setDataForm(form);
         break;
       default:
@@ -227,12 +230,18 @@ class MuiHeader extends React.Component {
 
   handleLoadData = () => {
     const { sources, form } = this.props;
-    const { site, building, device, diagnostic } = form;
+    const updated = _.merge(
+      {},
+      form,
+      _.pick(this.state, ["site", "building", "device", "diagnostic"])
+    );
+    const { site, building, device, diagnostic } = updated;
     const topic = Object.values(
       _.get(sources, [diagnostic, site, building, device], {})
     );
+    this.handleUpdate("update")();
     this.setState({ changed: false });
-    this.props.fetchDiagnostics(_.merge({}, form, { topic }));
+    this.props.fetchDiagnostics(_.merge({}, updated, { topic }));
   };
 
   renderNotice() {
@@ -335,24 +344,64 @@ class MuiHeader extends React.Component {
 
   renderNavigation() {
     const { classes, page, user } = this.props;
-    const temp = routes
-      .filter(
-        (route) =>
-          !route.hidden &&
-          (!route.admin ||
-            (route.admin && _.get(user, "scope", "").includes("admin")))
-      )
-      .find((route) => route.name !== page.name);
-    const MuiIcon = temp.icon;
+    const temp = routes.filter(
+      (route) =>
+        !route.hidden &&
+        (!route.admin ||
+          (route.admin && _.get(user, "scope", "").includes("admin")))
+    );
     return (
       <div className={clsx(classes.row, classes.navigation)}>
+        {temp
+          .filter((route) => route.name === page.name)
+          .map((r) => {
+            const MuiIcon = r.icon;
+            return (
+              <Slide
+                key={`slide-${r.name}`}
+                direction="left"
+                in={true}
+                mountOnEnter
+                unmountOnExit
+              >
+                <div key={`link-${r.name}`} className={classes.current}>
+                  <MuiIcon
+                    key={`icon-${r.name}`}
+                    className={classes.linkIcon}
+                  />
+                  <Typography
+                    key={`text-${r.name}`}
+                    className={classes.current}
+                    variant="h6"
+                  >
+                    <strong>{r.label}</strong>
+                  </Typography>
+                </div>
+              </Slide>
+            );
+          })}
         <div className={classes.spacer} />
-        <MuiLink className={classes.link} to={temp.path}>
-          <MuiIcon className={classes.linkIcon} color="primary" />
-          <Typography variant="h6" color="primary">
-            <strong>{temp.label}</strong>
-          </Typography>
-        </MuiLink>
+        {temp
+          .filter((route) => route.name !== page.name)
+          .map((r) => {
+            const MuiIcon = r.icon;
+            return (
+              <MuiLink
+                key={`link-${r.name}`}
+                className={clsx(classes.link, classes.linkPad)}
+                to={r.path}
+              >
+                <MuiIcon
+                  key={`icon-${r.name}`}
+                  className={classes.linkIcon}
+                  color="primary"
+                />
+                <Typography key={`text-${r.name}`} variant="h6" color="primary">
+                  <strong>{r.label}</strong>
+                </Typography>
+              </MuiLink>
+            );
+          })}
       </div>
     );
   }
@@ -504,16 +553,19 @@ class MuiHeader extends React.Component {
               maxDate={moment.min(
                 moment(start)
                   .add(1, "year")
-                  .subtract(1, "day"),
-                moment()
+                  .endOf("day"),
+                moment().endOf("day")
               )}
               value={moment(end)}
               onChange={(v) =>
-                this.handleChange("end")(null, _.isEmpty(v) ? "" : v.format())
+                this.handleChange("end")(
+                  null,
+                  _.isEmpty(v) ? "" : v.endOf("day").format()
+                )
               }
             />
           </div>
-          {page.name === "Dashboard" ? (
+          {page.name === "Dashboard" || page.name === "Detailed" ? (
             <div className={classes.group}>
               <MuiSelect
                 id="group"
@@ -528,11 +580,15 @@ class MuiHeader extends React.Component {
                   }
                 }}
               >
-                {groups.values.map((i) => (
-                  <MenuItem key={`group-${i.name}`} value={i.name}>
-                    {i.label}
-                  </MenuItem>
-                ))}
+                {groups.values
+                  .filter((v) =>
+                    page.name === "Dashboard" ? v.increment === "hour" : true
+                  )
+                  .map((i) => (
+                    <MenuItem key={`group-${i.name}`} value={i.name}>
+                      {i.label}
+                    </MenuItem>
+                  ))}
               </MuiSelect>
             </div>
           ) : null}

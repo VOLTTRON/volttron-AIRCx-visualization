@@ -12,7 +12,7 @@ const route = {
   user: false,
   admin: false,
   indent: true,
-  hidden: false,
+  hidden: true,
 };
 
 export default route;

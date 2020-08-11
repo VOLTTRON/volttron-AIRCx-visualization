@@ -4,7 +4,7 @@ import { MuiButton, MuiDialog, MuiLoading } from "components";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer } from "react-virtualized";
-import ChartPlotly from "./ChartPlotly";
+import Chart from "./Chart";
 import Clock from "./Clock";
 import styles from "./styles";
 
@@ -38,7 +38,7 @@ class Popup extends React.Component {
             ) : (
               <AutoSizer>
                 {({ width, height }) => (
-                  <ChartPlotly
+                  <Chart
                     form={form}
                     data={data}
                     request={request}

@@ -29,12 +29,17 @@ const validateResponse = async (response) => {
     default:
       if (!response.ok) {
         let message = response.statusText;
+        let result = null;
         try {
-          let result = await response.text();
+          result = await response.text();
           result = JSON.parse(result);
-          message = result && result.Message ? result.Message : message;
+          message = _.get(
+            result,
+            "Message",
+            _.isEmpty(result) ? message : result
+          );
         } catch {
-          // purposely ducked catch
+          // duck exception
         }
         throw Error(message);
       }
