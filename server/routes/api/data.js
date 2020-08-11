@@ -9,25 +9,36 @@ const { loggers } = require("winston");
 const logger = loggers.get("default");
 require("dotenv").config();
 
-const pattern_diagnostics = /^(?:(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
+const pattern_diagnostics = /^(?:(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
 const pattern_detailed = /^(?:[a-zA-Z0-9 _-]+\/)*([a-zA-Z0-9 _-]+)$/i;
 const pattern_clean_data = /[\"']*{(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)}[\"']*/i;
 
-let cleanData = (clean) => (value) => {
-  if (clean && _.isString(value)) {
-    try {
-      const r = pattern_clean_data.exec(value);
-      const t = JSON.parse(
-        `{"${r[1]}": ${r[2]}, "${r[3]}": ${r[4]}, "${r[5]}": ${r[6]}}`
-      );
-      return t;
-    } catch (e) {
-      logger.info(`[${e.message}] Unable to parse the value: ${value}`);
-    }
+let handleData = (clean, parse) => {
+  if (clean) {
+    return (value) => {
+      if (_.isString(value)) {
+        try {
+          const r = pattern_clean_data.exec(value);
+          const t = JSON.parse(
+            `{"${r[1]}": ${r[2]}, "${r[3]}": ${r[4]}, "${r[5]}": ${r[6]}}`
+          );
+          return t;
+        } catch (e) {
+          logger.info(`[${e.message}] Unable to parse the value: ${value}`);
+        }
+      }
+      return value;
+    };
+  } else if (parse) {
+    return (value) => JSON.parse(value);
+  } else {
+    return (value) => value;
   }
-  return value;
 };
-cleanData = cleanData(util.parseBoolean(process.env.CLEAN_DATA));
+handleData = handleData(
+  util.parseBoolean(process.env.CLEAN_DATA),
+  util.parseBoolean(process.env.PARSE_DATA)
+);
 
 var token = null;
 const authenticate = () => {
@@ -136,9 +147,22 @@ router.get("/sources", auth.optional, (req, res, next) => {
             throw Error(error.message);
           }
           _.get(response, ["data", "result"], []).forEach((d) => {
-            const path = _.slice(pattern_diagnostics.exec(d), 1);
+            let path = _.slice(pattern_diagnostics.exec(d), 1);
+            const type = path[path.length - 1];
+            path = _.slice(path, 0, path.length - 1);
             if (path.length === 5) {
-              _.set(result, [...path, "diagnostics"], d);
+              switch (type) {
+                case "diagnostic message":
+                  _.set(result, [...path, "diagnostics"], d);
+                  break;
+                case "energy impact":
+                  _.set(result, [...path, "energyImpact"], d);
+                  break;
+                default:
+                  logger.warn(
+                    `Unknown topic type found in sources data: ${type}`
+                  );
+              }
               _.set(
                 result,
                 [...path, "detailed"],
@@ -245,7 +269,7 @@ router.post("/detailed", auth.optional, (req, res, next) => {
             const key = _.get(pattern_detailed.exec(k), "1");
             v.forEach((e) => {
               e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss");
-              e[1] = cleanData(e[1]);
+              e[1] = handleData(e[1]);
             });
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });
@@ -324,10 +348,10 @@ router.post("/diagnostics", auth.optional, (req, res, next) => {
           Object.entries(
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
-            const key = _.slice(pattern_diagnostics.exec(k), 5);
+            const key = _.slice(pattern_diagnostics.exec(k), 5, 6);
             v.forEach((e) => {
               e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss");
-              e[1] = cleanData(e[1]);
+              e[1] = handleData(e[1]);
             });
             _.set(result, key, _.concat(_.get(result, key, []), v));
           });

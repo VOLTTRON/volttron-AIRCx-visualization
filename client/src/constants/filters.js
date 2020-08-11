@@ -150,7 +150,6 @@ const getType = (value) => {
     case "3":
       return off;
     default:
-      console.log(`Unable to determine type of value: ${value}`);
       return null;
   }
 };
