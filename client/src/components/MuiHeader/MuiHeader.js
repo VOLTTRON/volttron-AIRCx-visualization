@@ -580,11 +580,15 @@ class MuiHeader extends React.Component {
                   }
                 }}
               >
-                {groups.values.map((i) => (
-                  <MenuItem key={`group-${i.name}`} value={i.name}>
-                    {i.label}
-                  </MenuItem>
-                ))}
+                {groups.values
+                  .filter((v) =>
+                    page.name === "Dashboard" ? v.increment === "hour" : true
+                  )
+                  .map((i) => (
+                    <MenuItem key={`group-${i.name}`} value={i.name}>
+                      {i.label}
+                    </MenuItem>
+                  ))}
               </MuiSelect>
             </div>
           ) : null}

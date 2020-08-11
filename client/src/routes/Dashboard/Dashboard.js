@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from "@material-ui/core";
+import { Grid, Paper, Typography, withWidth } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { MuiLoading } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
@@ -34,13 +34,51 @@ class Dashboard extends React.Component {
     }
   };
 
+  getMinimum = () => {
+    const { width } = this.props;
+    switch (width) {
+      case "xs":
+        return 12;
+      case "sm":
+        return 6;
+      case "md":
+        return 4;
+      case "lg":
+        return 3;
+      case "xl":
+        return 2;
+      default:
+        return 4;
+    }
+  };
+
+  getValues = () => {
+    const min = this.getMinimum();
+    return [12, 6, 4, 3, 2].filter((v) => v >= min);
+  };
+
+  getSize = (count) => {
+    const values = this.getValues();
+    return _.head(
+      _.sortBy(
+        values.map((v) => ({
+          size: v,
+          rows: Math.ceil(count / (12 / v)),
+          extra: count % (12 / v),
+        })),
+        ["rows", "extra"]
+      )
+    ).size;
+  };
+
   renderCards() {
     const { data, aggregated } = this.props;
+    const keys = Object.keys(data);
     return (
       <React.Fragment>
-        {Object.keys(data).map((t) => {
+        {keys.map((t) => {
           return (
-            <Grid key={`grid-${t}`} item xs={4}>
+            <Grid key={`grid-${t}`} item xs={this.getSize(keys.length)}>
               <Grid container justify="center" alignItems="center">
                 {this.renderCard(
                   _.get(aggregated, t, {}),
@@ -68,7 +106,11 @@ class Dashboard extends React.Component {
     );
     return (
       <Paper className={classes.paper} elevation={3}>
-        <Typography style={{ height: "64px" }} variant="h6" align="center">
+        <Typography
+          style={{ height: "64px", overflow: "hidden" }}
+          variant="h6"
+          align="center"
+        >
           <strong>{label}</strong>
         </Typography>
         <Paper style={{ background: result.color }} elevation={1}>
@@ -155,4 +197,4 @@ const mapActionToProps = {};
 export default connect(
   mapStateToProps,
   mapActionToProps
-)(withStyles(styles)(Dashboard));
+)(withWidth()(withStyles(styles)(Dashboard)));

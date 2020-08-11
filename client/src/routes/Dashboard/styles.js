@@ -31,7 +31,7 @@ const styles = (theme) => ({
   },
   paper: {
     width: "300px",
-    height: "320px",
+    height: "220px",
     padding: "20px",
     background: white,
   },
