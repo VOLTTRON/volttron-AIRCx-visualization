@@ -205,6 +205,14 @@ class Chart extends React.Component {
               }}
               data={items}
             />
+            {detailed &&
+              _.isEmpty(
+                Object.values(detailed).reduce((a, v) => _.concat(a, v), [])
+              ) && (
+                <Typography className={classes.noData} variant="h5">
+                  <strong>No Data Available</strong>
+                </Typography>
+              )}
           </div>
           <div className={classes.chartXAxis}>
             <Typography className={classes.xHeader} variant="h5">
