@@ -1,5 +1,5 @@
 {
-  "name": "nbf-theme",
+  "name": "mui-theme",
   "version": "0.0.0",
   "private": true,
   "main": "./MuiTheme.js"

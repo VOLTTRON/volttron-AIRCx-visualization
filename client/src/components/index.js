@@ -1,5 +1,6 @@
 export { default as MuiBusy } from "./MuiBusy";
 export { default as MuiButton } from "./MuiButton";
+export { default as MuiDateRangePicker } from "./MuiDateRangePicker";
 export { default as MuiDialog } from "./MuiDialog";
 export { default as MuiFooter } from "./MuiFooter";
 export { default as MuiCheckbox } from "./MuiForm/MuiCheckbox";

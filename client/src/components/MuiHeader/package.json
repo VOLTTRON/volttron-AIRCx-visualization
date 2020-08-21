@@ -1,5 +1,5 @@
 {
-  "name": "nbf-header",
+  "name": "mui-header",
   "version": "0.0.0",
   "private": true,
   "main": "./MuiHeader.js"

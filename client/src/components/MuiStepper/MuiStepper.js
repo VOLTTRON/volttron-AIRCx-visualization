@@ -1,75 +1,132 @@
 import {
   Button,
   Step,
+  StepButton,
   StepLabel,
   Stepper,
   Toolbar,
-  withWidth
+  withWidth,
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import {
-  ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon
+  NavigateBefore as NavigateBeforeIcon,
+  NavigateNext as NavigateNextIcon,
 } from "@material-ui/icons";
+import clsx from "clsx";
+import _ from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
 import styles from "./styles";
 
 class MuiStepper extends React.Component {
   static defaultProps = {
-    disabled: []
+    disabled: [],
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      step: props.step
-    };
-  }
-
-  notifyStepChange = step => {
-    if (this.props.onStepChange != null) {
+  notifyStepChange = (step) => {
+    if (this.props.onStepChange) {
       this.props.onStepChange(step);
     }
   };
 
   handleNext = () => {
-    const step = this.state.step + 1;
-    this.setState({
-      step: step
-    });
-    this.notifyStepChange(step);
+    const { step } = this.props;
+    this.notifyStepChange(step + 1);
   };
 
   handleBack = () => {
-    const step = this.state.step - 1;
-    this.setState({
-      step: step
-    });
-    this.notifyStepChange(step);
+    const { step } = this.props;
+    this.notifyStepChange(step - 1);
   };
 
   handleReset = () => {
-    this.setState({
-      step: 0
-    });
     this.notifyStepChange(0);
   };
 
-  render() {
-    const { steps, disabled, classes, width } = this.props;
-    const { step } = this.state;
-    var icon = false;
+  handleStepChange = (step) => (event, value) => {
+    this.notifyStepChange(step);
+  };
+
+  useIcon = () => {
+    const { useIcon, width } = this.props;
+    if (useIcon) {
+      return true;
+    }
     switch (width) {
       case "xs":
       case "sm":
-        icon = true;
-        break;
+        return true;
       default:
-        icon = false;
+        return false;
     }
+  };
+
+  renderStepper() {
+    const {
+      steps,
+      step,
+      alternativeLabel,
+      nonLinear,
+      disableGutters,
+      classes,
+    } = this.props;
+    const { handleStepChange } = this;
     return (
-      <Toolbar>
+      <Stepper
+        className={clsx(
+          classes.stepper,
+          disableGutters && classes.disableGutters
+        )}
+        alternativeLabel={alternativeLabel}
+        nonLinear={nonLinear}
+        activeStep={step}
+      >
+        {steps.map(function(item, index) {
+          return (
+            <Step key={`step-${item.name}`}>
+              <StepButton
+                key={`step-button-${item.name}`}
+                completed={false}
+                onClick={nonLinear ? handleStepChange(index) : undefined}
+                optional={item.optional}
+                icon={item.icon}
+                disableRipple
+              >
+                <StepLabel
+                  className={clsx(_.isEmpty(item.name) && classes.stepLabel)}
+                  key={`step-label-${item.name}`}
+                  optional={item.optional}
+                  icon={item.icon}
+                >
+                  {item.name}
+                </StepLabel>
+              </StepButton>
+            </Step>
+          );
+        })}
+      </Stepper>
+    );
+  }
+
+  render() {
+    const {
+      steps,
+      step,
+      disabled,
+      disableGutters,
+      classes,
+      className,
+    } = this.props;
+    var icon = this.useIcon();
+    return (
+      <Toolbar
+        {..._.pick(this.props, ["style"])}
+        className={clsx(
+          className,
+          classes.toolbar,
+          disableGutters && classes.disableGutters
+        )}
+      >
         <Button
           style={{ minWidth: icon ? 16 : 64 }}
           disabled={step === 0 || disabled.indexOf(step - 1) !== -1}
@@ -77,17 +134,9 @@ class MuiStepper extends React.Component {
           color="secondary"
           variant="contained"
         >
-          {icon ? <ArrowBackIcon /> : "Back"}
+          {icon ? <NavigateBeforeIcon /> : "Back"}
         </Button>
-        <Stepper activeStep={step} className={classes.stepper}>
-          {steps.map(function(item, index) {
-            return (
-              <Step key={item.name}>
-                <StepLabel>{item.name}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
+        {this.renderStepper()}
         <Button
           style={{ minWidth: icon ? 16 : 64 }}
           disabled={
@@ -97,7 +146,7 @@ class MuiStepper extends React.Component {
           color="secondary"
           variant="contained"
         >
-          {icon ? <ArrowForwardIcon /> : "Next"}
+          {icon ? <NavigateNextIcon /> : "Next"}
         </Button>
       </Toolbar>
     );
@@ -108,11 +157,12 @@ MuiStepper.propTypes = {
   step: PropTypes.number.isRequired,
   steps: PropTypes.arrayOf(
     PropTypes.shape({
-      name: PropTypes.string.isRequired
+      name: PropTypes.string,
     })
   ).isRequired,
   disabled: PropTypes.arrayOf(PropTypes.number.isRequired),
-  onStepChange: PropTypes.func
+  nonLinear: PropTypes.bool,
+  onStepChange: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(MuiStepper));

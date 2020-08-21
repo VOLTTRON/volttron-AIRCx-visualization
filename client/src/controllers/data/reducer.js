@@ -20,6 +20,7 @@ const initialState = (function() {
         group: "day",
         filter: "all",
         sensitivity: "normal",
+        date: end.format(),
       },
     },
   };

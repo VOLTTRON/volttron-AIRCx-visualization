@@ -1,6 +1,6 @@
 import { Grid, Paper, Typography, withWidth } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { MuiLoading } from "components";
+import { MuiDateRangePicker, MuiLoading } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import { white } from "constants/palette";
@@ -23,6 +23,8 @@ class Dashboard extends React.Component {
     this.state = {
       sticky: null,
       selected: null,
+      step: 0,
+      sub: 0,
     };
     _.assign(this, mixin);
   }
@@ -70,6 +72,15 @@ class Dashboard extends React.Component {
       )
     ).size;
   };
+
+  renderDatePicker() {
+    const { classes, current } = this.props;
+    return (
+      <div className={classes.container}>
+        <MuiDateRangePicker start={current.start} end={current.end} />
+      </div>
+    );
+  }
 
   renderCards() {
     const { data, aggregated } = this.props;
@@ -169,16 +180,19 @@ class Dashboard extends React.Component {
       );
     }
     return (
-      <div className={classes.content}>
-        <Grid
-          container
-          justify="space-evenly"
-          alignItems="center"
-          alignContent="center"
-          spacing={4}
-        >
-          {this.renderCards()}
-        </Grid>
+      <div>
+        {this.renderDatePicker()}
+        <div className={classes.content}>
+          <Grid
+            container
+            justify="space-evenly"
+            alignItems="center"
+            alignContent="center"
+            spacing={4}
+          >
+            {this.renderCards()}
+          </Grid>
+        </div>
       </div>
     );
   }
