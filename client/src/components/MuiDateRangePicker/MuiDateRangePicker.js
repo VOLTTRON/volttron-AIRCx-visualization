@@ -88,7 +88,7 @@ class MuiDateRangePicker extends React.Component {
         days[key] = [];
         weeks[key] = [];
       }
-      if (temp.day() === 0 || newMonth) {
+      if (temp.day() === 0) {
         const first = moment.max(
           temp
             .clone()
@@ -152,16 +152,39 @@ class MuiDateRangePicker extends React.Component {
 
   handleMonthChange = (v) => {
     const { form } = this.props;
-    const { months, days, index } = this.state;
+    const { months, weeks, days, index } = this.state;
+    const group = _.get(form, "group", "month");
     const current = moment(_.get(form, "date", undefined));
     const month = months[v];
     const key = `${month.year}-${month.month}`;
+    const week = weeks[key];
     const day = days[key][days[key].length - 1];
-    const date = current
-      .year(month.year)
-      .month(month.month)
-      .date(v < index ? day.day : 1)
-      .format();
+    console.log({ v, group, current, month, key, day });
+    let date;
+    switch (group) {
+      case "month":
+        date = current
+          .year(month.year)
+          .month(month.month)
+          .date(1)
+          .format();
+        break;
+      case "week":
+        date = current
+          .year(month.year)
+          .month(month.month)
+          .date(v < index ? week[week.length - 1].start.day : week[0].start.day)
+          .format();
+        break;
+      case "day":
+        date = current
+          .year(month.year)
+          .month(month.month)
+          .date(v < index ? day.day : 1)
+          .format();
+        break;
+      default:
+    }
     this.setState({ index: v });
     this.props.setDataForm(_.merge({}, form, { date }));
   };
@@ -205,6 +228,7 @@ class MuiDateRangePicker extends React.Component {
     const dayIndex = _.findIndex(day, {
       day: date.date(),
     });
+    console.log({ date, key, monthIndex, weekIndex, dayIndex });
     return (
       <div className={classes.container}>
         <MuiStepper
@@ -225,6 +249,10 @@ class MuiDateRangePicker extends React.Component {
             step={weekIndex}
             steps={week}
             onStepChange={this.handleWeekChange}
+            isStepBelow={monthIndex > 0}
+            isStepAbove={monthIndex < months.length - 1}
+            onStepBelow={() => this.handleMonthChange(monthIndex - 1)}
+            onStepAbove={() => this.handleMonthChange(monthIndex + 1)}
           />
         )}
         {group === "day" && (
@@ -236,6 +264,10 @@ class MuiDateRangePicker extends React.Component {
             step={dayIndex}
             steps={day}
             onStepChange={this.handleDateChange}
+            isStepBelow={monthIndex > 0}
+            isStepAbove={monthIndex < months.length - 1}
+            onStepBelow={() => this.handleMonthChange(monthIndex - 1)}
+            onStepAbove={() => this.handleMonthChange(monthIndex + 1)}
           />
         )}
       </div>

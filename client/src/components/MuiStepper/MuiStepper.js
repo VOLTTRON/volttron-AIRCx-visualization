@@ -30,13 +30,21 @@ class MuiStepper extends React.Component {
   };
 
   handleNext = () => {
-    const { step } = this.props;
-    this.notifyStepChange(step + 1);
+    const { steps, step, isStepAbove } = this.props;
+    if (step < steps.length - 1) {
+      this.notifyStepChange(step + 1);
+    } else if (isStepAbove) {
+      this.props.onStepAbove();
+    }
   };
 
   handleBack = () => {
-    const { step } = this.props;
-    this.notifyStepChange(step - 1);
+    const { step, isStepBelow } = this.props;
+    if (step > 0) {
+      this.notifyStepChange(step - 1);
+    } else if (isStepBelow) {
+      this.props.onStepBelow();
+    }
   };
 
   handleReset = () => {
@@ -116,8 +124,13 @@ class MuiStepper extends React.Component {
       disableGutters,
       classes,
       className,
+      isStepBelow,
+      isStepAbove,
     } = this.props;
-    var icon = this.useIcon();
+    const icon = this.useIcon();
+    const stepBelow = step === 0 || disabled.indexOf(step - 1) !== -1;
+    const stepAbove =
+      step === steps.length - 1 || disabled.indexOf(step + 1) !== -1;
     return (
       <Toolbar
         {..._.pick(this.props, ["style"])}
@@ -129,7 +142,7 @@ class MuiStepper extends React.Component {
       >
         <Button
           style={{ minWidth: icon ? 16 : 64 }}
-          disabled={step === 0 || disabled.indexOf(step - 1) !== -1}
+          disabled={!isStepBelow && stepBelow}
           onClick={this.handleBack.bind(this)}
           color="secondary"
           variant="contained"
@@ -139,9 +152,7 @@ class MuiStepper extends React.Component {
         {this.renderStepper()}
         <Button
           style={{ minWidth: icon ? 16 : 64 }}
-          disabled={
-            step === steps.length - 1 || disabled.indexOf(step + 1) !== -1
-          }
+          disabled={!isStepAbove && stepAbove}
           onClick={this.handleNext.bind(this)}
           color="secondary"
           variant="contained"
@@ -163,6 +174,10 @@ MuiStepper.propTypes = {
   disabled: PropTypes.arrayOf(PropTypes.number.isRequired),
   nonLinear: PropTypes.bool,
   onStepChange: PropTypes.func,
+  isStepBelow: PropTypes.bool,
+  isStepAbove: PropTypes.bool,
+  onStepBelow: PropTypes.func,
+  onStepAbove: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(MuiStepper));
