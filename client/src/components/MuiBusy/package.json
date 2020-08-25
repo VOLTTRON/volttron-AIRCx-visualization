@@ -1,5 +1,5 @@
 {
-  "name": "nbf-busy",
+  "name": "mui-busy",
   "version": "0.0.0",
   "private": true,
   "main": "./MuiBusy.js"

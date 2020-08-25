@@ -155,6 +155,13 @@ const styles = (theme) => ({
   chartPlot: {
     flex: 1,
   },
+  noData: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    marginLeft: "-100px",
+    marginTop: "-16px",
+  },
 });
 
 export default styles;

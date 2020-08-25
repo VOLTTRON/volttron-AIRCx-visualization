@@ -123,6 +123,7 @@ class MuiHeader extends React.Component {
       "group",
       "filter",
       "sensitivity",
+      "date",
     ]);
     switch (key) {
       case "site":

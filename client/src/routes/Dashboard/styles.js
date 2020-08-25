@@ -1,4 +1,4 @@
-import { white } from "constants/palette";
+import { gray, white } from "constants/palette";
 
 const styles = (theme) => ({
   container: {
@@ -13,6 +13,10 @@ const styles = (theme) => ({
     paddingRight: "140px",
     paddingTop: "60px",
     paddingBottom: "60px",
+  },
+  message: {
+    color: gray,
+    textAlign: "center",
   },
   left: {
     display: "flex",
