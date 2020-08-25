@@ -159,7 +159,6 @@ class MuiDateRangePicker extends React.Component {
     const key = `${month.year}-${month.month}`;
     const week = weeks[key];
     const day = days[key][days[key].length - 1];
-    console.log({ v, group, current, month, key, day });
     let date;
     switch (group) {
       case "month":
@@ -228,7 +227,6 @@ class MuiDateRangePicker extends React.Component {
     const dayIndex = _.findIndex(day, {
       day: date.date(),
     });
-    console.log({ date, key, monthIndex, weekIndex, dayIndex });
     return (
       <div className={classes.container}>
         <MuiStepper

@@ -5,13 +5,13 @@ import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import { white } from "constants/palette";
 import {
-  selectAggregated,
   selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
   selectDiagnosticsRequest,
 } from "controllers/data/action";
 import _ from "lodash";
+import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import mixin from "utils/mixin";
@@ -83,7 +83,7 @@ class Dashboard extends React.Component {
   }
 
   renderCards() {
-    const { data, aggregated } = this.props;
+    const { data } = this.props;
     const keys = Object.keys(data);
     return (
       <React.Fragment>
@@ -91,10 +91,7 @@ class Dashboard extends React.Component {
           return (
             <Grid key={`grid-${t}`} item xs={this.getSize(keys.length)}>
               <Grid container justify="center" alignItems="center">
-                {this.renderCard(
-                  _.get(aggregated, t, {}),
-                  _.replace(t, / Dx$/i, "")
-                )}
+                {this.renderCard(_.get(data, t, {}), _.replace(t, / Dx$/i, ""))}
               </Grid>
             </Grid>
           );
@@ -105,12 +102,41 @@ class Dashboard extends React.Component {
 
   renderCard(item, label) {
     const { classes, form } = this.props;
-    const { group, sensitivity } = form ? form : {};
+    const { group, sensitivity, date } = form ? form : {};
     const fault = filters.parse("fault");
     const okay = filters.parse("okay");
-    const values = _.concat(
-      ...Object.values(_.get(item, [group, sensitivity, "aggregate"], {}))
-    );
+    const time = moment(date);
+    let values = [];
+    switch (group) {
+      case "month":
+        _.range(1, time.daysInMonth() + 1).forEach((day) => {
+          values = _.concat(
+            values,
+            ...Object.values(_.get(item, [time.year(), time.month(), day], {}))
+          );
+        });
+        break;
+      case "week":
+        _.range(0, 6).forEach((day) => {
+          const temp = time.clone().day(day);
+          values = _.concat(
+            values,
+            ...Object.values(
+              _.get(item, [temp.year(), temp.month(), temp.date()], {})
+            )
+          );
+        });
+        break;
+      case "day":
+        values = _.concat(
+          values,
+          ...Object.values(
+            _.get(item, [time.year(), time.month(), time.date()], {})
+          )
+        );
+        break;
+      default:
+    }
     const result = filters.aggregate(
       values.filter((v) => fault.isType(_.get(v, sensitivity))).length,
       values.filter((v) => okay.isType(_.get(v, sensitivity))).length
@@ -202,7 +228,6 @@ const mapStateToProps = (state) => ({
   form: selectDataForm(state),
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
-  aggregated: selectAggregated(state),
   current: selectDiagnosticsRequest(state),
 });
 
