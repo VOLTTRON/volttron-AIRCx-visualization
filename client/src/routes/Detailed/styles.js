@@ -21,6 +21,7 @@ const styles = (theme) => ({
     textAlign: "center",
   },
   content: {
+    width: "min-content",
     flex: "1 0 auto",
     paddingTop: "30px",
     paddingLeft: "140px",

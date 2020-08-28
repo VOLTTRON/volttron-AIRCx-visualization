@@ -21,13 +21,13 @@ import { getMessage } from "constants/messages";
 import { gray, lighter } from "constants/palette";
 import sensitivities from "constants/sensitivities";
 import {
-  selectAggregated,
   selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
   selectDiagnosticsRequest,
 } from "controllers/data/action";
 import _ from "lodash";
+import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import { ArcSeries, LabelSeries, MarkSeries, XYPlot } from "react-vis/dist";
@@ -107,17 +107,75 @@ class Detailed extends React.Component {
   }
 
   renderCard(type) {
-    const { classes, aggregated, form } = this.props;
+    const { classes, data, form, current } = this.props;
     const { tab, sticky } = this.state;
     const domain = 100;
     const sensitivity = sensitivities.parse(
       _.get(form, "sensitivity", "normal")
     );
     const group = groups.parse(_.get(form, "group", "day"));
-    const entries = Object.entries(
-      _.get(aggregated, [tab, group.name, sensitivity.name, type.name], {})
-    );
-    const max = _.get(aggregated, [tab, group.name, "max"], entries.length);
+    const time = moment(_.get(form, "date"));
+    const item = _.get(data, tab, {});
+    let values = [];
+    let max = 0;
+    switch (group.name) {
+      case "month":
+        _.range(1, time.daysInMonth() + 1).forEach((day) => {
+          values = _.concat(
+            values,
+            ...Object.values(_.get(item, [time.year(), time.month(), day], {}))
+          );
+        });
+        max = Math.ceil(
+          moment
+            .min(
+              time.clone().date(time.daysInMonth()),
+              moment(_.get(current, "end"))
+            )
+            .diff(
+              moment.max(time.clone().date(1), moment(_.get(current, "start"))),
+              group.increment
+            )
+        );
+        break;
+      case "week":
+        _.range(0, 6).forEach((day) => {
+          const temp = time.clone().day(day);
+          values = _.concat(
+            values,
+            ...Object.values(
+              _.get(item, [temp.year(), temp.month(), temp.date()], {})
+            )
+          );
+        });
+        max = Math.ceil(
+          moment
+            .min(time.clone().day(6), moment(_.get(current, "end")))
+            .diff(
+              moment.max(time.clone().day(0), moment(_.get(current, "start"))),
+              group.increment
+            )
+        );
+        break;
+      case "day":
+        values = _.concat(
+          values,
+          ...Object.values(
+            _.get(item, [time.year(), time.month(), time.date()], {})
+          )
+        );
+        max = 24;
+        break;
+      default:
+    }
+    const bins = {};
+    values.forEach((v) => {
+      if (type.isType(_.get(v, sensitivity.name))) {
+        const bin = group.buildBin(v.timestamp);
+        _.set(bins, bin, _.concat(_.get(bins, bin, []), [v]));
+      }
+    });
+    const entries = Object.entries(bins);
     return (
       <div>
         <Paper className={classes.paperTop} elevation={3}>
@@ -381,7 +439,6 @@ const mapStateToProps = (state) => ({
   form: selectDataForm(state),
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
-  aggregated: selectAggregated(state),
   current: selectDiagnosticsRequest(state),
 });
 
