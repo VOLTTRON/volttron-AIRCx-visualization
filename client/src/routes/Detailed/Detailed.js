@@ -12,7 +12,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { MuiLoading } from "components";
+import clsx from "clsx";
+import { MuiDateRangePicker, MuiLoading } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import groups from "constants/groups";
@@ -66,6 +67,15 @@ class Detailed extends React.Component {
     }
   };
 
+  renderDatePicker() {
+    const { classes, current } = this.props;
+    return (
+      <div className={clsx(classes.container, classes.picker)}>
+        <MuiDateRangePicker start={current.start} end={current.end} />
+      </div>
+    );
+  }
+
   renderTabs() {
     const { classes, data } = this.props;
     const { tab } = this.state;
@@ -74,6 +84,7 @@ class Detailed extends React.Component {
         <Tabs
           value={tab}
           onChange={this.handleChange("tab")}
+          orientation="vertical"
           scrollButtons="auto"
           variant="scrollable"
           indicatorColor="primary"
@@ -336,30 +347,31 @@ class Detailed extends React.Component {
       );
     }
     return (
-      <div className={classes.content}>
-        <Grid container spacing={0}>
-          <Grid item xs={12}>
-            {this.renderTabs()}
+      <div className={classes.flex}>
+        {this.renderDatePicker()}
+        {this.renderTabs()}
+        <div className={classes.content}>
+          <Grid container spacing={0}>
+            <Grid item xs={4}>
+              <div className={classes.left}>
+                {this.renderCard(filters.values[0])}
+              </div>
+            </Grid>
+            <Grid item xs={4}>
+              <div className={classes.middle}>
+                {this.renderCard(filters.values[2])}
+              </div>
+            </Grid>
+            <Grid item xs={4}>
+              <div className={classes.right}>
+                {this.renderCard(filters.values[1])}
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              {this.renderDetails()}
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <div className={classes.left}>
-              {this.renderCard(filters.values[0])}
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div className={classes.middle}>
-              {this.renderCard(filters.values[2])}
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div className={classes.right}>
-              {this.renderCard(filters.values[1])}
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            {this.renderDetails()}
-          </Grid>
-        </Grid>
+        </div>
       </div>
     );
   }
