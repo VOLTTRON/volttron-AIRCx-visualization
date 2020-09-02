@@ -8,11 +8,25 @@ const styles = (theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  flex: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  picker: {
+    flex: "1 0 auto",
+    flexBasis: "100%",
+  },
   message: {
     color: gray,
     textAlign: "center",
   },
-  content: { paddingLeft: "140px", paddingRight: "140px" },
+  content: {
+    width: "min-content",
+    flex: "1 0 auto",
+    paddingTop: "30px",
+    paddingLeft: "140px",
+    paddingRight: "140px",
+  },
   left: {
     display: "flex",
     flexWrap: "wrap",
@@ -29,8 +43,21 @@ const styles = (theme) => ({
     justifyContent: "flex-end",
   },
   details: { paddingTop: "60px", paddingBottom: "60px" },
-  tabs: { paddingTop: "30px", paddingBottom: "30px" },
+  tabs: {
+    flex: "0 0 auto",
+    width: "fit-content",
+    paddingLeft: "10px",
+    paddingTop: "30px",
+    paddingBottom: "30px",
+  },
   tab: { textTransform: "none", fontSize: "1.2em" },
+  paperTabs: {
+    display: "block",
+    position: "relative",
+    width: "300px",
+    padding: "40px",
+    background: white,
+  },
   paperTop: {
     display: "block",
     position: "relative",

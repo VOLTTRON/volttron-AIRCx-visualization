@@ -101,7 +101,8 @@ export function* readDiagnosticsSaga(action) {
     const response = yield call(readDiagnostics, temp);
     const result = yield call(transformDiagnostics, response);
     yield put(fetchDiagnosticsSuccess(result));
-    yield call(readAggregatedSaga);
+    // not currently being used
+    // yield call(readAggregatedSaga);
   } catch (error) {
     yield put(fetchDiagnosticsError(error.message));
   } finally {

@@ -23,8 +23,6 @@ class Dashboard extends React.Component {
     this.state = {
       sticky: null,
       selected: null,
-      step: 0,
-      sub: 0,
     };
     _.assign(this, mixin);
   }

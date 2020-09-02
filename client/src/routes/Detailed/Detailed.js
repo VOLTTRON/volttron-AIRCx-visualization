@@ -12,7 +12,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { MuiLoading } from "components";
+import clsx from "clsx";
+import { MuiDateRangePicker, MuiLoading } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
 import groups from "constants/groups";
@@ -20,13 +21,13 @@ import { getMessage } from "constants/messages";
 import { gray, lighter } from "constants/palette";
 import sensitivities from "constants/sensitivities";
 import {
-  selectAggregated,
   selectDataForm,
   selectDiagnostics,
   selectDiagnosticsBusy,
   selectDiagnosticsRequest,
 } from "controllers/data/action";
 import _ from "lodash";
+import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import { ArcSeries, LabelSeries, MarkSeries, XYPlot } from "react-vis/dist";
@@ -66,14 +67,24 @@ class Detailed extends React.Component {
     }
   };
 
+  renderDatePicker() {
+    const { classes, current } = this.props;
+    return (
+      <div className={clsx(classes.container, classes.picker)}>
+        <MuiDateRangePicker start={current.start} end={current.end} />
+      </div>
+    );
+  }
+
   renderTabs() {
     const { classes, data } = this.props;
     const { tab } = this.state;
     return (
-      <div className={classes.tabs}>
+      <Paper className={classes.paperTabs} elevation={3}>
         <Tabs
           value={tab}
           onChange={this.handleChange("tab")}
+          orientation="vertical"
           scrollButtons="auto"
           variant="scrollable"
           indicatorColor="primary"
@@ -91,22 +102,80 @@ class Detailed extends React.Component {
             );
           })}
         </Tabs>
-      </div>
+      </Paper>
     );
   }
 
   renderCard(type) {
-    const { classes, aggregated, form } = this.props;
+    const { classes, data, form, current } = this.props;
     const { tab, sticky } = this.state;
     const domain = 100;
     const sensitivity = sensitivities.parse(
       _.get(form, "sensitivity", "normal")
     );
     const group = groups.parse(_.get(form, "group", "day"));
-    const entries = Object.entries(
-      _.get(aggregated, [tab, group.name, sensitivity.name, type.name], {})
-    );
-    const max = _.get(aggregated, [tab, group.name, "max"], entries.length);
+    const time = moment(_.get(form, "date"));
+    const item = _.get(data, tab, {});
+    let values = [];
+    let max = 0;
+    switch (group.name) {
+      case "month":
+        _.range(1, time.daysInMonth() + 1).forEach((day) => {
+          values = _.concat(
+            values,
+            ...Object.values(_.get(item, [time.year(), time.month(), day], {}))
+          );
+        });
+        max = Math.ceil(
+          moment
+            .min(
+              time.clone().date(time.daysInMonth()),
+              moment(_.get(current, "end"))
+            )
+            .diff(
+              moment.max(time.clone().date(1), moment(_.get(current, "start"))),
+              group.increment
+            )
+        );
+        break;
+      case "week":
+        _.range(0, 7).forEach((day) => {
+          const temp = time.clone().day(day);
+          values = _.concat(
+            values,
+            ...Object.values(
+              _.get(item, [temp.year(), temp.month(), temp.date()], {})
+            )
+          );
+        });
+        max = Math.ceil(
+          moment
+            .min(time.clone().day(6), moment(_.get(current, "end")))
+            .diff(
+              moment.max(time.clone().day(0), moment(_.get(current, "start"))),
+              group.increment
+            )
+        );
+        break;
+      case "day":
+        values = _.concat(
+          values,
+          ...Object.values(
+            _.get(item, [time.year(), time.month(), time.date()], {})
+          )
+        );
+        max = 24;
+        break;
+      default:
+    }
+    const bins = {};
+    values.forEach((v) => {
+      if (type.isType(_.get(v, sensitivity.name))) {
+        const bin = group.buildBin(v.timestamp);
+        _.set(bins, bin, _.concat(_.get(bins, bin, []), [v]));
+      }
+    });
+    const entries = Object.entries(bins);
     return (
       <div>
         <Paper className={classes.paperTop} elevation={3}>
@@ -336,30 +405,34 @@ class Detailed extends React.Component {
       );
     }
     return (
-      <div className={classes.content}>
-        <Grid container spacing={0}>
-          <Grid item xs={12}>
-            {this.renderTabs()}
+      <div className={classes.flex}>
+        {this.renderDatePicker()}
+        {/* <div className={classes.tabs}>{this.renderTabs()}</div> */}
+        <div className={classes.content}>
+          <Grid container spacing={0}>
+            <Grid item xs={3}>
+              <div className={classes.left}>{this.renderTabs()}</div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className={classes.left}>
+                {this.renderCard(filters.values[0])}
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className={classes.middle}>
+                {this.renderCard(filters.values[2])}
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className={classes.right}>
+                {this.renderCard(filters.values[1])}
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              {this.renderDetails()}
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <div className={classes.left}>
-              {this.renderCard(filters.values[0])}
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div className={classes.middle}>
-              {this.renderCard(filters.values[2])}
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div className={classes.right}>
-              {this.renderCard(filters.values[1])}
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            {this.renderDetails()}
-          </Grid>
-        </Grid>
+        </div>
       </div>
     );
   }
@@ -369,7 +442,6 @@ const mapStateToProps = (state) => ({
   form: selectDataForm(state),
   data: selectDiagnostics(state),
   busy: selectDiagnosticsBusy(state),
-  aggregated: selectAggregated(state),
   current: selectDiagnosticsRequest(state),
 });
 

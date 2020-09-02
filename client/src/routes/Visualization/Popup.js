@@ -9,8 +9,21 @@ import Clock from "./Clock";
 import styles from "./styles";
 
 class Popup extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hour: undefined,
+    };
+  }
+
+  handleHover = (event) => {
+    const { hour } = event;
+    this.setState({ hour });
+  };
+
   render() {
     const { classes, form, current, request, data } = this.props;
+    const { hour } = this.state;
     return (
       <MuiDialog
         title={data.date.format("MMM Do, YYYY")}
@@ -30,7 +43,13 @@ class Popup extends React.Component {
             </MuiButton>
           </div>
           <div className={classes.popupClock}>
-            <Clock form={form} current={current} data={data} size={200} />
+            <Clock
+              form={form}
+              current={current}
+              data={data}
+              size={200}
+              hour={hour}
+            />
           </div>
           <div className={classes.popupChart}>
             {data.busy ? (
@@ -39,6 +58,7 @@ class Popup extends React.Component {
               <AutoSizer>
                 {({ width, height }) => (
                   <Chart
+                    onHover={this.handleHover}
                     form={form}
                     data={data}
                     request={request}
