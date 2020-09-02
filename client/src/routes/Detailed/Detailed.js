@@ -80,7 +80,7 @@ class Detailed extends React.Component {
     const { classes, data } = this.props;
     const { tab } = this.state;
     return (
-      <div className={classes.tabs}>
+      <Paper className={classes.paperTabs} elevation={3}>
         <Tabs
           value={tab}
           onChange={this.handleChange("tab")}
@@ -102,7 +102,7 @@ class Detailed extends React.Component {
             );
           })}
         </Tabs>
-      </div>
+      </Paper>
     );
   }
 
@@ -139,7 +139,7 @@ class Detailed extends React.Component {
         );
         break;
       case "week":
-        _.range(0, 6).forEach((day) => {
+        _.range(0, 7).forEach((day) => {
           const temp = time.clone().day(day);
           values = _.concat(
             values,
@@ -407,20 +407,23 @@ class Detailed extends React.Component {
     return (
       <div className={classes.flex}>
         {this.renderDatePicker()}
-        {this.renderTabs()}
+        {/* <div className={classes.tabs}>{this.renderTabs()}</div> */}
         <div className={classes.content}>
           <Grid container spacing={0}>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
+              <div className={classes.left}>{this.renderTabs()}</div>
+            </Grid>
+            <Grid item xs={3}>
               <div className={classes.left}>
                 {this.renderCard(filters.values[0])}
               </div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <div className={classes.middle}>
                 {this.renderCard(filters.values[2])}
               </div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <div className={classes.right}>
                 {this.renderCard(filters.values[1])}
               </div>

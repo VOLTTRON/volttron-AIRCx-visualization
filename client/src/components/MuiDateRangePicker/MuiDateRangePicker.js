@@ -169,10 +169,14 @@ class MuiDateRangePicker extends React.Component {
           .format();
         break;
       case "week":
+        const d =
+          v < index
+            ? _.get(week, [week.length - 1, "start", "day"], 1)
+            : _.get(week, [0, "start", "day"], 1);
         date = current
           .year(month.year)
           .month(month.month)
-          .date(v < index ? week[week.length - 1].start.day : week[0].start.day)
+          .date(d)
           .format();
         break;
       case "day":

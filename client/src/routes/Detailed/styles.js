@@ -51,6 +51,13 @@ const styles = (theme) => ({
     paddingBottom: "30px",
   },
   tab: { textTransform: "none", fontSize: "1.2em" },
+  paperTabs: {
+    display: "block",
+    position: "relative",
+    width: "300px",
+    padding: "40px",
+    background: white,
+  },
   paperTop: {
     display: "block",
     position: "relative",
