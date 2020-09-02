@@ -22,17 +22,19 @@ import styles from "./styles";
 const colors = [primary, verified, info, warning, error, "purple", gray, black];
 
 class Chart extends React.Component {
-  state = {
-    sticky: null,
-    selected: null,
-  };
-
-  handleHover = (item) => {
-    this.setState({ selected: item });
-  };
-
-  handleClick = (item) => {
-    this.setState({ sticky: item });
+  handleHover = (event) => {
+    const { request } = this.props;
+    const time = moment(_.get(request, "time"));
+    const ms = _.get(event, ["xvals", 0]);
+    if (ms > 0) {
+      const hour = moment(ms)
+        .utcOffset(time.utcOffset())
+        .utc()
+        .hour();
+      this.props.onHover({ hour: hour });
+    } else {
+      this.props.onHover({ hour: undefined });
+    }
   };
 
   render() {
@@ -141,8 +143,9 @@ class Chart extends React.Component {
               <strong>Temperature ({"\xB0"}F)</strong>
             </Typography>
           </div>
-          <div className={classes.chartPlot}>
+          <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
             <Plot
+              onHover={this.handleHover}
               layout={{
                 width: width,
                 height: height,

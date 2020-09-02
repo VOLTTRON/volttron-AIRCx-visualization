@@ -53,13 +53,10 @@ class Clock extends React.Component {
   };
 
   render() {
-    const { classes, form, current, data, size } = this.props;
+    const { classes, form, current, data, size, hour } = this.props;
     const { selected } = this.state;
     const diagnostic = _.get(data, "diagnostic");
     const sensitivity = _.get(form, "sensitivity", "normal");
-    const item = selected;
-    // using sticky can cause confusion with what's being viewed
-    // const item = selected ? selected : sticky;
     const domain = Math.max(0, size / 2 - 20);
     const items = Object.entries(diagnostic)
       .map(([k, v]) => {
@@ -85,17 +82,17 @@ class Clock extends React.Component {
           }
         });
         const filter = _.get(temp, ["filters", "0"]);
-        const hour = parseInt(k);
+        const hr = parseInt(k);
         return {
           label: _.get(filter, ["single"], "Unk"),
           abbr: _.get(filter, ["abbr"], "Unk"),
           labels: temp.filters.map((f) => f.single),
           messages: temp.messages,
-          hour: hour,
+          hour: hr,
           time: 1,
           color: _.get(filter, ["color"], primary),
-          angle0: ((hour + 1) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
-          angle: ((hour + 1) / 24) * 2 * Math.PI,
+          angle0: ((hr + 1) / 24) * 2 * Math.PI - (1 / 24) * 2 * Math.PI,
+          angle: ((hr + 1) / 24) * 2 * Math.PI,
           radius0: 25,
           radius: 35,
         };
@@ -117,6 +114,9 @@ class Clock extends React.Component {
     _.range(prev.index, items.length)
       .map((i) => items[i])
       .forEach((v) => (v.time = items.length - prev.index));
+    const item = _.isNumber(hour) ? _.find(items, { hour }) : selected;
+    // using sticky can cause confusion with what's being viewed
+    // const item = selected ? selected : sticky;
     return (
       <div className={classes.clockContent}>
         <XYPlot
