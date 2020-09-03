@@ -113,18 +113,21 @@ class MuiHeader extends React.Component {
   }
 
   handleUpdate = (key) => () => {
-    const form = _.pick(this.state, [
-      "site",
-      "building",
-      "device",
-      "diagnostic",
-      "start",
-      "end",
-      "group",
-      "filter",
-      "sensitivity",
-      "date",
-    ]);
+    const form = _.merge(
+      {},
+      this.props.form,
+      _.pick(this.state, [
+        "site",
+        "building",
+        "device",
+        "diagnostic",
+        "start",
+        "end",
+        "group",
+        "filter",
+        "sensitivity",
+      ])
+    );
     switch (key) {
       case "site":
         form.building = "";
