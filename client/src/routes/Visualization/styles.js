@@ -1,4 +1,4 @@
-import { background, gray, primary, white } from "constants/palette";
+import { background, gray, light, primary, white } from "constants/palette";
 
 const styles = (theme) => ({
   container: {
@@ -32,29 +32,37 @@ const styles = (theme) => ({
   },
   chart: {
     minWidth: "227px",
-    height: "648px",
+    height: "668px",
     position: "relative",
     overflow: "hidden",
   },
   mark: {
     background: primary,
-    width: "16px",
-    height: "16px",
-    border: `3px solid ${background}`,
+    width: "12px",
+    height: "12px",
     position: "absolute",
   },
+  selected: {
+    background: light,
+    width: "24px",
+    height: "24px",
+    position: "absolute",
+    borderRadius: "12px",
+  },
   hover: {
+    border: `1px solid ${background}`,
     transition: "all .2s ease-in-out",
     "&:hover": {
       background: gray,
-      transform: "scale(1.8)",
+      transform: "scale(2.0)",
+      zIndex: "+1",
     },
   },
   monthsTitle: { width: "100%", textAlign: "center", paddingBottom: "6px" },
-  months: { display: "flex", textAlign: "center" },
+  months: { display: "flex", textAlign: "center", paddingLeft: "4px" },
   month: { flex: 1, color: gray },
   yAxis: {
-    height: "648px",
+    height: "638px",
     width: "90px",
     textAlign: "right",
     display: "inline-block",

@@ -1,7 +1,8 @@
-import { Paper, Tooltip, Typography } from "@material-ui/core";
+import { ButtonBase, Paper, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import filters from "constants/filters";
+import groups from "constants/groups";
 import { white } from "constants/palette";
 import {
   fetchDetailed,
@@ -20,10 +21,57 @@ import styles from "./styles";
 class Graph extends React.Component {
   constructor(props) {
     super(props);
+    const { form } = props;
+    const group = groups.parse(_.get(form, "group", "day"));
+    const time = moment(_.get(form, "date"));
     const noData = filters.parse("no-data");
     const outsideRange = filters.parse("outside-range");
     const start = moment(props.start);
     const end = moment(props.end);
+    const range = {
+      start: start.clone(),
+      end: end.clone(),
+    };
+    switch (group.name) {
+      case "month":
+        range.start = moment.max(
+          range.start,
+          time
+            .clone()
+            .startOf("month")
+            .startOf("day")
+        );
+        range.end = moment.min(
+          range.end,
+          time
+            .clone()
+            .endOf("month")
+            .endOf("day")
+        );
+        break;
+      case "week":
+        range.start = moment.max(
+          range.start,
+          time
+            .clone()
+            .startOf("week")
+            .startOf("day")
+        );
+        range.end = moment.min(
+          range.end,
+          time
+            .clone()
+            .endOf("week")
+            .endOf("day")
+        );
+        break;
+      case "day":
+        range.start = time.clone().startOf("day");
+        range.end = time.clone().endOf("day");
+        break;
+      default:
+      // no need to handle all cases
+    }
     const pad = moment.min(
       end
         .clone()
@@ -53,6 +101,8 @@ class Graph extends React.Component {
         size: 10,
         color: pad.isBefore(start) ? outsideRange.color : noData.color,
         date: pad.isBefore(start) ? null : pad.clone(),
+        selected: pad.isBetween(range.start, range.end, "hour", true),
+        tooltip: pad.format("MMMM Do YYYY"),
       });
       pad.add(1, "day");
       if (months[months.length - 1].month !== pad.month()) {
@@ -73,6 +123,8 @@ class Graph extends React.Component {
       size: 10,
       color: pad.isBefore(start) ? outsideRange.color : noData.color,
       date: pad.clone(),
+      selected: pad.isBetween(range.start, range.end, "hour", true),
+      tooltip: pad.format("MMMM Do YYYY"),
     });
     this.state = {
       start: moment(props.start),
@@ -258,17 +310,43 @@ class Graph extends React.Component {
     });
     return (
       <div className={classes.chart} style={{ width: months.length * 19 + 4 }}>
-        {marks.map((mark) => (
-          <div
-            key={`mark-${mark.x}-${mark.y}`}
-            className={clsx(classes.mark, Boolean(mark.date) && classes.hover)}
-            style={{
-              left: mark.x * 19 - 18,
-              top: mark.y * 21 - 19,
-              background: mark.color,
-            }}
-            onMouseDown={() => this.handleValueClick(mark)}
-          />
+        {marks.map((mark, index) => (
+          <React.Fragment>
+            {mark.selected && (
+              <div
+                key={`selected-${mark.x}-${mark.y}`}
+                className={classes.selected}
+                style={{
+                  left: mark.x * 19 - 20,
+                  top: mark.y * 21 - 20,
+                  height:
+                    _.get(marks, [index + 1, "selected"], false) &&
+                    _.get(marks, [index + 1, "path", "1"]) === mark.path[1]
+                      ? "44px"
+                      : "24px",
+                }}
+              />
+            )}
+            <Tooltip
+              key={`tooltip-${mark.tooltip}`}
+              title={mark.tooltip}
+              placement="top"
+            >
+              <ButtonBase
+                key={`mark-${mark.x}-${mark.y}`}
+                className={clsx(
+                  classes.mark,
+                  Boolean(mark.date) && classes.hover
+                )}
+                style={{
+                  left: mark.x * 19 - 14,
+                  top: mark.y * 21 - 14,
+                  background: mark.color,
+                }}
+                onClick={() => this.handleValueClick(mark)}
+              />
+            </Tooltip>
+          </React.Fragment>
         ))}
       </div>
     );
@@ -288,7 +366,7 @@ class Graph extends React.Component {
 
   renderFooter() {
     const { classes } = this.props;
-    return <div className={classes.footer} style={{ height: "45px" }} />;
+    return <div className={classes.footer} style={{ height: "25px" }} />;
   }
 
   render() {

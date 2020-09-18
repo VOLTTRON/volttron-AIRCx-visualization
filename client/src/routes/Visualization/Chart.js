@@ -39,7 +39,8 @@ class Chart extends React.Component {
 
   render() {
     const { classes, width, height, data, request, form } = this.props;
-    const { start, end } = request ? request : {};
+    const { start, end, topic } = request ? request : {};
+    const conversion = _.get(topic, ["0", "conversion"], []);
     const sensitivity = _.get(form, "sensitivity", "normal");
     const diagnostic = _.get(data, "diagnostic");
     const detailed = _.get(data, "detailed");
@@ -80,10 +81,11 @@ class Chart extends React.Component {
               line: { shape: "spline", color: colors[i], size: 3, width: 3 },
             };
           }),
-          Object.values(detailed).map((d, i) => {
+          Object.entries(detailed).map(([k, d], i) => {
+            const multiplier = conversion.includes(k) ? 10.0 : 1.0;
             return {
               x: d.map((v) => v[0]),
-              y: d.map((v) => v[1]),
+              y: d.map((v) => v[1] * multiplier),
               legendgroup: labels[i].acronym,
               showlegend: false,
               name: labels[i].label,
