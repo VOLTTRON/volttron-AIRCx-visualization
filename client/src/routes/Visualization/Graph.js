@@ -1,4 +1,4 @@
-import { Paper, Tooltip, Typography } from "@material-ui/core";
+import { ButtonBase, Paper, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import filters from "constants/filters";
@@ -102,6 +102,7 @@ class Graph extends React.Component {
         color: pad.isBefore(start) ? outsideRange.color : noData.color,
         date: pad.isBefore(start) ? null : pad.clone(),
         selected: pad.isBetween(range.start, range.end, "hour", true),
+        tooltip: pad.format("MMMM Do YYYY"),
       });
       pad.add(1, "day");
       if (months[months.length - 1].month !== pad.month()) {
@@ -123,6 +124,7 @@ class Graph extends React.Component {
       color: pad.isBefore(start) ? outsideRange.color : noData.color,
       date: pad.clone(),
       selected: pad.isBetween(range.start, range.end, "hour", true),
+      tooltip: pad.format("MMMM Do YYYY"),
     });
     this.state = {
       start: moment(props.start),
@@ -325,19 +327,25 @@ class Graph extends React.Component {
                 }}
               />
             )}
-            <div
-              key={`mark-${mark.x}-${mark.y}`}
-              className={clsx(
-                classes.mark,
-                Boolean(mark.date) && classes.hover
-              )}
-              style={{
-                left: mark.x * 19 - 14,
-                top: mark.y * 21 - 14,
-                background: mark.color,
-              }}
-              onMouseDown={() => this.handleValueClick(mark)}
-            />
+            <Tooltip
+              key={`tooltip-${mark.tooltip}`}
+              title={mark.tooltip}
+              placement="top"
+            >
+              <ButtonBase
+                key={`mark-${mark.x}-${mark.y}`}
+                className={clsx(
+                  classes.mark,
+                  Boolean(mark.date) && classes.hover
+                )}
+                style={{
+                  left: mark.x * 19 - 14,
+                  top: mark.y * 21 - 14,
+                  background: mark.color,
+                }}
+                onMouseDown={() => this.handleValueClick(mark)}
+              />
+            </Tooltip>
           </React.Fragment>
         ))}
       </div>
