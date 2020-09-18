@@ -343,7 +343,7 @@ class Graph extends React.Component {
                   top: mark.y * 21 - 14,
                   background: mark.color,
                 }}
-                onMouseDown={() => this.handleValueClick(mark)}
+                onClick={() => this.handleValueClick(mark)}
               />
             </Tooltip>
           </React.Fragment>

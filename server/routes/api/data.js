@@ -178,6 +178,28 @@ router.get("/sources", auth.optional, (req, res, next) => {
                   )
                 ).map((t) => `${path[1]}/${path[2]}/${path[3]}/${t}`)
               );
+              const conversion = new RegExp(
+                process.env.POINT_MAPPING_CONVERSION_REGEX
+              );
+              _.set(
+                result,
+                [...path, "conversion"],
+                Object.entries(
+                  _.get(
+                    validation,
+                    [
+                      ...path.slice(0, path.length - 1),
+                      "arguments",
+                      "point_mapping",
+                    ],
+                    {}
+                  )
+                )
+                  .filter(
+                    ([k, t]) => k.match(conversion) || t.match(conversion)
+                  )
+                  .map(([k, t]) => t)
+              );
               _.set(
                 result,
                 [...path, "utcOffset"],
