@@ -117,7 +117,10 @@ export function* readDetailedSaga(action) {
     yield put(fetchDetailedError());
     const temp = _.merge(
       {
-        topic: _.get(payload, ["topic", "0", "detailed"], []),
+        topic: _.concat(
+          _.get(payload, ["topic", "0", "detailed"], []),
+          ...Object.values(_.get(payload, ["topic", "0", "subdevices"], {}))
+        ),
       },
       _.omit(payload, ["topic"])
     );

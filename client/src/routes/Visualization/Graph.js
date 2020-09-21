@@ -311,7 +311,7 @@ class Graph extends React.Component {
     return (
       <div className={classes.chart} style={{ width: months.length * 19 + 4 }}>
         {marks.map((mark, index) => (
-          <React.Fragment>
+          <React.Fragment key={`fragment-${mark.x}-${mark.y}`}>
             {mark.selected && (
               <div
                 key={`selected-${mark.x}-${mark.y}`}

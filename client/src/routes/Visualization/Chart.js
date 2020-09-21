@@ -43,7 +43,7 @@ class Chart extends React.Component {
     const conversion = _.get(topic, ["0", "conversion"], []);
     const sensitivity = _.get(form, "sensitivity", "normal");
     const diagnostic = _.get(data, "diagnostic");
-    const detailed = _.get(data, "detailed");
+    const detailed = _.get(data, ["detailed", "detailed"]);
     const values = detailed
       ? _.concat(...Object.values(detailed)).map((v) => v[1])
       : [];
