@@ -58,6 +58,7 @@ class Popup extends React.Component {
               <AutoSizer>
                 {({ width, height }) => (
                   <Chart
+                    type=""
                     onHover={this.handleHover}
                     form={form}
                     data={data}
