@@ -30,7 +30,7 @@ const charts = [
   },
   {
     name: "secondary",
-    label: "Sub-Device Data",
+    label: "Subdevice Data",
     icon: BarChart,
     show: (data) =>
       Object.keys(_.get(data, ["detailed", "subdevices"], {})).length > 0,
@@ -151,6 +151,7 @@ class Popup extends React.Component {
           control={
             <MuiCheckbox
               key={"checkbox-all"}
+              style={{ marginRight: "5px" }}
               aria-label={"Select All"}
               indeterminate={
                 filter.length > 0 && filter.length < subdevices.length
@@ -174,6 +175,7 @@ class Popup extends React.Component {
             control={
               <MuiCheckbox
                 key={`checkbox-${s}`}
+                style={{ marginRight: "5px" }}
                 aria-label={s}
                 checked={!filter.includes(s)}
                 onChange={() => this.handleFilter(s)}
