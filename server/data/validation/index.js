@@ -50,6 +50,10 @@ const temp = {};
       }
     }
   }
+  fs.writeFileSync(
+    path.join(process.cwd(), "validation.json"),
+    JSON.stringify(temp, null, 2)
+  );
 })();
 
 module.exports = temp;

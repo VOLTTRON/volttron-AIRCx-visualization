@@ -10,8 +10,9 @@ const logger = loggers.get("default");
 require("dotenv").config();
 
 const pattern_diagnostics = /^(?:(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
-const pattern_detailed = /^(?:[a-zA-Z0-9 _-]+\/)*([a-zA-Z0-9 _-]+)$/i;
+const pattern_detailed = /^(?:[a-zA-Z0-9 _-]+\/){3}(?:([a-zA-Z0-9 _-]+)|([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+))$/i;
 const pattern_clean_data = /[\"']*{(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)}[\"']*/i;
+const conversion = new RegExp(process.env.POINT_MAPPING_CONVERSION_REGEX);
 
 let handleData = (clean, parse) => {
   if (clean) {
@@ -163,38 +164,45 @@ router.get("/sources", auth.optional, (req, res, next) => {
                     `Unknown topic type found in sources data: ${type}`
                   );
               }
+              const points = Object.entries(
+                _.get(
+                  validation,
+                  [
+                    ...path.slice(0, path.length - 1),
+                    "arguments",
+                    "point_mapping",
+                  ],
+                  {}
+                )
+              );
               _.set(
                 result,
                 [...path, "detailed"],
-                Object.values(
-                  _.get(
-                    validation,
-                    [
-                      ...path.slice(0, path.length - 1),
-                      "arguments",
-                      "point_mapping",
-                    ],
-                    {}
+                points.map(([k, t]) => `${path[1]}/${path[2]}/${path[3]}/${t}`)
+              );
+              _.get(
+                validation,
+                [
+                  ...path.slice(0, path.length - 1),
+                  "device",
+                  "unit",
+                  path[3],
+                  "subdevices",
+                ],
+                []
+              ).forEach((d) => {
+                _.set(
+                  result,
+                  [...path, "subdevices", d],
+                  points.map(
+                    ([k, t]) => `${path[1]}/${path[2]}/${path[3]}/${d}/${t}`
                   )
-                ).map((t) => `${path[1]}/${path[2]}/${path[3]}/${t}`)
-              );
-              const conversion = new RegExp(
-                process.env.POINT_MAPPING_CONVERSION_REGEX
-              );
+                );
+              });
               _.set(
                 result,
                 [...path, "conversion"],
-                Object.entries(
-                  _.get(
-                    validation,
-                    [
-                      ...path.slice(0, path.length - 1),
-                      "arguments",
-                      "point_mapping",
-                    ],
-                    {}
-                  )
-                )
+                points
                   .filter(
                     ([k, t]) => k.match(conversion) || t.match(conversion)
                   )
@@ -226,17 +234,17 @@ router.post("/detailed", auth.optional, (req, res, next) => {
   const { topic, start, end } = req.body;
   const offset = createOffset(getTimezone(req.body), getUtcOffset(req.body));
   const range = moment(end).diff(moment(start), "hours");
-  const chunks = range <= 6 ? 1 : Math.ceil(range / 6);
+  const chunks = topic.length <= 6 ? 6 : 24;
   const span = Math.ceil(range / chunks);
   logger.debug(
     JSON.stringify({ start, end, range, chunks, span: `${span} hours`, topic })
   );
-  if (span > 25) {
+  if (range > 25) {
     return res
       .status(400)
       .json("Request time span cannot be greater than a day.");
   }
-  if (span < 0) {
+  if (range < 0) {
     return res.status(400).json("Request end time must be after start time.");
   }
   axios
@@ -288,7 +296,10 @@ router.post("/detailed", auth.optional, (req, res, next) => {
           Object.entries(
             _.get(response, ["data", "result", "values"], {})
           ).forEach(([k, v]) => {
-            const key = _.get(pattern_detailed.exec(k), "1");
+            const groups = pattern_detailed.exec(k);
+            const key = groups[1]
+              ? ["detailed", groups[1]]
+              : ["subdevices", groups[3], groups[2]];
             v.forEach((e) => {
               e[0] = offset(moment(e[0])).format("YYYY-MM-DD HH:mm:ss");
               e[1] = handleData(e[1]);
