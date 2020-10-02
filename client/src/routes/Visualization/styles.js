@@ -1,4 +1,11 @@
-import { background, gray, light, primary, white } from "constants/palette";
+import {
+  background,
+  black,
+  gray,
+  light,
+  primary,
+  white,
+} from "constants/palette";
 
 const styles = (theme) => ({
   container: {
@@ -120,9 +127,9 @@ const styles = (theme) => ({
     height: `${document.documentElement.clientHeight - 100}px`,
     maxHeight: "500px",
   },
-  popupClock: {
+  popupLeft: {
     flex: 0,
-    height: "100px",
+    height: "100%",
   },
   popupChart: {
     display: "inline-block",
@@ -141,6 +148,22 @@ const styles = (theme) => ({
     flex: 0,
     height: "100%",
     padding: "8px",
+  },
+  subdevicesContent: {
+    width: "200px",
+    background: white,
+    overflowY: "auto",
+    paddingTop: "10px",
+  },
+  subdevicesLabel: {
+    display: "flex",
+    width: "auto",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    marginLeft: 0,
+    paddingLeft: "8px",
+    paddingBottom: "4px",
   },
   clockContent: { width: "min-content", background: white },
   chartContent: { display: "flex" },
@@ -169,6 +192,33 @@ const styles = (theme) => ({
     top: "50%",
     marginLeft: "-100px",
     marginTop: "-16px",
+  },
+  navigation: {
+    width: "100%",
+    maxHeight: "32px",
+  },
+  row: {
+    display: "flex",
+    width: "100%",
+    paddingLeft: "40px",
+    paddingRight: "40px",
+    marginBottom: "10px",
+    background: white,
+  },
+  current: {
+    display: "inline-flex",
+    flex: 1,
+    alignItems: "center",
+    color: black,
+  },
+  link: {
+    textTransform: "none",
+  },
+  linkPad: {
+    marginLeft: "40px",
+  },
+  linkIcon: {
+    marginRight: "7px",
   },
 });
 

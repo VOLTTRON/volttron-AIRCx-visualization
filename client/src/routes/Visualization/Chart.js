@@ -13,6 +13,7 @@ import {
 } from "constants/palette";
 import _ from "lodash";
 import moment from "moment";
+import PropTypes from "prop-types";
 import React from "react";
 import Plot from "react-plotly.js";
 import { connect } from "react-redux";
@@ -24,7 +25,7 @@ const colors = [primary, verified, info, warning, error, "purple", gray, black];
 class Chart extends React.Component {
   constructor(props) {
     super(props);
-    const { data, request, form } = props;
+    const { data, request, form, filter } = props;
     const { start, end, topic } = request ? request : {};
     const conversion = _.get(topic, ["0", "conversion"], []);
     const sensitivity = _.get(form, "sensitivity", "normal");
@@ -84,7 +85,10 @@ class Chart extends React.Component {
           y: [_.get(d, ["0", "1"])],
           legendgroup: labels[i].acronym,
           showlegend: true,
-          name: labels[i].acronym,
+          name:
+            object.keys.detailed.length > 2
+              ? labels[i].acronym
+              : labels[i].label,
           type: "scatter",
           mode: "lines",
           line: { shape: "spline", color: colors[i], size: 3, width: 3 },
@@ -107,17 +111,20 @@ class Chart extends React.Component {
     );
     const box = _.concat(
       ...object.values.subdevices.map((d, i) => {
+        const l = labels[object.keys.detailed.length + i];
+        const c = colors[object.keys.detailed.length + i];
         return {
-          x: labels[object.values.detailed.keys.length + i].acronym,
+          x: l.acronym,
           y: [0],
-          legendgroup: labels[object.values.detailed.keys.length + i].acronym,
+          legendgroup: l.acronym,
           showlegend: true,
-          name: labels[object.values.detailed.keys.length + i].label,
+          name: object.keys.subdevices.length > 2 ? l.acronym : l.label,
           type: "scatter",
           mode: "lines",
+          // visible: i > 0 ? "legendonly" : true,
           marker: {
             shape: "spline",
-            color: colors[object.keys.detailed.length + i],
+            color: c,
             size: 3,
             width: 3,
           },
@@ -126,23 +133,29 @@ class Chart extends React.Component {
       ..._.range(0, 24).map((r) =>
         object.values.subdevices.map((d, i) => {
           const k = object.keys.subdevices[i];
+          const l = labels[object.keys.detailed.length + i];
+          const c = colors[object.keys.detailed.length + i];
           const multiplier = conversion.includes(k) ? 10.0 : 1.0;
-          const ds = _.concat(...Object.values(d));
+          const ds = _.concat(
+            ...Object.entries(d)
+              .filter(([k, v]) => (filter ? !filter.includes(k) : true))
+              .map(([k, v]) => v)
+          );
           return {
-            x: labels[object.values.detailed.keys.length + i].acronym,
+            x: l.acronym,
             y: ds
               .filter((v) => {
                 const h = moment(v[0]).hour();
                 return r === 0 ? h === 0 || h === 24 : r === h;
               })
               .map((v) => v[1] * multiplier),
-            legendgroup: labels[object.values.detailed.keys.length + i].acronym,
+            legendgroup: l.acronym,
             showlegend: false,
-            name: `${
-              labels[object.values.detailed.keys.length + i].label
-            } ${r}:00 - ${r + 1}:00`,
+            name: `${r}:00 - ${r + 1}:00`,
             type: "box",
-            marker: { color: colors[object.keys.detailed.length + i] },
+            boxmean: "sd",
+            // visible: i > 0 ? "legendonly" : true,
+            marker: { color: c },
           };
         })
       )
@@ -201,7 +214,6 @@ class Chart extends React.Component {
       box,
       ranges,
     };
-    console.log(this.state);
   }
 
   handleHover = (event) => {
@@ -217,6 +229,13 @@ class Chart extends React.Component {
     } else {
       this.props.onHover({ hour: undefined });
     }
+  };
+
+  handleClick = (event) => {
+    const { labels } = this.state;
+    const t = _.get(event, ["node", "textContent"]);
+    const l = _.find(labels, (l) => l.acronym === t || l.label === t);
+    console.log(l);
   };
 
   renderScatter() {
@@ -236,6 +255,7 @@ class Chart extends React.Component {
       <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
         <Plot
           onHover={this.handleHover}
+          onLegendClick={this.handleClick}
           layout={{
             width: width,
             height: height,
@@ -313,6 +333,7 @@ class Chart extends React.Component {
     return (
       <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
         <Plot
+          onLegendClick={this.handleClick}
           layout={{
             width: width,
             height: height,
@@ -378,6 +399,11 @@ class Chart extends React.Component {
     );
   }
 }
+
+Chart.propTypes = {
+  type: PropTypes.oneOf(["primary", "secondary"]).isRequired,
+  filter: PropTypes.arrayOf(PropTypes.string),
+};
 
 const mapStateToProps = (state) => ({});
 
