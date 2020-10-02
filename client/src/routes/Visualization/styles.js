@@ -151,6 +151,7 @@ const styles = (theme) => ({
   },
   subdevicesContent: {
     width: "200px",
+    height: "100%",
     background: white,
     overflowY: "auto",
     paddingTop: "10px",

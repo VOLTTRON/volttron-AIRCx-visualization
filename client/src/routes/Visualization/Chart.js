@@ -144,9 +144,8 @@ const createRangesUpdate = (props, state) => {
   const { data, form } = props;
   const { start, min, max } = state;
   const sensitivity = _.get(form, "sensitivity", "normal");
-  const detailed = _.get(data, ["detailed", "detailed"], {});
   const diagnostic = _.get(data, "diagnostic", {});
-  const keys = Object.keys(detailed);
+  const keys = Object.keys(diagnostic);
   const values = Object.values(diagnostic);
   const ranges = values
     .map((v, i) => {
@@ -194,13 +193,18 @@ const createRangesUpdate = (props, state) => {
 };
 
 class Chart extends React.Component {
-  static getDerivedStateFromProps(props, state) {
-    return createBoxUpdate(props, state);
-  }
+  // static getDerivedStateFromProps(props, state) {
+  //   switch (type) {
+  //     case "secondary":
+  //       return createBoxUpdate(props, state);
+  //     default:
+  //       return {};
+  //   }
+  // }
 
   constructor(props) {
     super(props);
-    const { data, request } = props;
+    const { data, request, type } = props;
     const { start, end } = request ? request : {};
     const detailed = _.get(data, ["detailed", "detailed"], {});
     const subdevices = _.get(data, ["detailed", "subdevices"], {});
@@ -217,7 +221,9 @@ class Chart extends React.Component {
     );
     const labels = _.concat(keys.detailed, keys.subdevices).map((l, i) => {
       const y =
-        i < keys.detailed.length ? detailed[l][detailed[l].length - 1][1] : 0;
+        i < keys.detailed.length
+          ? _.get(detailed[l].slice(-1).pop(), "1", 0)
+          : 0;
       const v = i < keys.detailed.length ? detailed[l].length > 0 : false;
       return {
         i: i,
@@ -229,8 +235,9 @@ class Chart extends React.Component {
         valid: v,
       };
     });
-    const min = (!_.isEmpty(values) ? _.min(values) : 0) - 10;
-    const max = (!_.isEmpty(values) ? _.max(values) : 0) + 10;
+    const show = !_.isEmpty(values);
+    const min = (show ? _.min(values) : 0) - 10;
+    const max = (show ? _.max(values) : 0) + 10;
     const padding = (max - min) / 30;
     const ys = createPadding(
       labels.map((v) => v.y),
@@ -247,10 +254,18 @@ class Chart extends React.Component {
       padding,
       labels,
       offset,
+      show,
     };
-    _.merge(this.state, createScatterUpdate(props, this.state));
-    _.merge(this.state, createBoxUpdate(props, this.state));
-    _.merge(this.state, createRangesUpdate(props, this.state));
+    switch (type) {
+      case "primary":
+        _.merge(this.state, createScatterUpdate(props, this.state));
+        _.merge(this.state, createRangesUpdate(props, this.state));
+        break;
+      case "secondary":
+        _.merge(this.state, createBoxUpdate(props, this.state));
+        break;
+      default:
+    }
   }
 
   handleHover = (event) => {
@@ -268,15 +283,15 @@ class Chart extends React.Component {
     }
   };
 
-  handleClick = (event) => {
-    const { labels } = this.state;
-    const t = _.get(event, ["node", "textContent"]);
-    const l = _.find(labels, (l) => l.acronym === t || l.label === t);
-    console.log(l);
-  };
+  // handleClick = (event) => {
+  //   const { labels } = this.state;
+  //   const t = _.get(event, ["node", "textContent"]);
+  //   const l = _.find(labels, (l) => l.acronym === t || l.label === t);
+  //   console.log(l);
+  // };
 
   renderScatter() {
-    const { classes, width, height, type } = this.props;
+    const { classes, width, height } = this.props;
     const {
       start,
       end,
@@ -287,16 +302,13 @@ class Chart extends React.Component {
       labels,
       scatter,
       ranges,
+      show,
     } = this.state;
     return (
-      <div
-        style={type !== "primary" ? { display: "none" } : {}}
-        className={classes.chartPlot}
-        onMouseLeave={this.handleHover}
-      >
+      <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
         <Plot
           onHover={this.handleHover}
-          onLegendClick={this.handleClick}
+          // onLegendClick={this.handleClick}
           layout={{
             width: width,
             height: height,
@@ -359,7 +371,7 @@ class Chart extends React.Component {
           }}
           data={scatter}
         />
-        {_.isEmpty(scatter) && (
+        {!show && (
           <Typography className={classes.noData} variant="h5">
             <strong>No Data Available</strong>
           </Typography>
@@ -369,16 +381,12 @@ class Chart extends React.Component {
   }
 
   renderBox() {
-    const { classes, width, height, type } = this.props;
-    const { min, max, box } = this.state;
+    const { classes, width, height } = this.props;
+    const { min, max, box, show } = this.state;
     return (
-      <div
-        style={type !== "secondary" ? { display: "none" } : {}}
-        className={classes.chartPlot}
-        onMouseLeave={this.handleHover}
-      >
+      <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
         <Plot
-          onLegendClick={this.handleClick}
+          // onLegendClick={this.handleClick}
           layout={{
             width: width,
             height: height,
@@ -414,7 +422,7 @@ class Chart extends React.Component {
           }}
           data={box}
         />
-        {_.isEmpty(box) && (
+        {!show && (
           <Typography className={classes.noData} variant="h5">
             <strong>No Data Available</strong>
           </Typography>
@@ -424,7 +432,7 @@ class Chart extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, type } = this.props;
     return (
       <div className={classes.chartContent}>
         <div className={classes.chartFlex}>
@@ -433,8 +441,8 @@ class Chart extends React.Component {
               <strong>Temperature ({"\xB0"}F)</strong>
             </Typography>
           </div>
-          {this.renderScatter()}
-          {this.renderBox()}
+          {type === "primary" && this.renderScatter()}
+          {type === "secondary" && this.renderBox()}
           <div className={classes.chartXAxis}>
             <Typography className={classes.xHeader} variant="h5">
               <strong>Time</strong>

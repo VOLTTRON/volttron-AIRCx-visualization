@@ -2,14 +2,14 @@ import {
   ButtonBase,
   FormControlLabel,
   Slide,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import {
   ArrowBackIos,
   ArrowForwardIos,
   BarChart,
-  ShowChart,
+  ShowChart
 } from "@material-ui/icons";
 import clsx from "clsx";
 import { MuiButton, MuiCheckbox, MuiDialog, MuiLoading } from "components";
@@ -231,7 +231,7 @@ class Popup extends React.Component {
                 <AutoSizer>
                   {({ width, height }) => (
                     <Chart
-                      key={`chart-${JSON.stringify(filter)}`}
+                      key={`chart-${chart.name}-${JSON.stringify(filter)}`}
                       type={chart.name}
                       onHover={this.handleHover}
                       form={form}
