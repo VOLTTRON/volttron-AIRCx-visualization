@@ -62,6 +62,24 @@ export const [
   selectDetailedRequest,
 ] = generateSelectors(FETCH_DETAILED);
 
+// transmogrify detailed
+export const TRANSMOGRIFY_DETAILED = generateTypes(key, "transmogrify");
+export const [
+  transmogrifyDetailed,
+  transmogrifyDetailedSuccess,
+  transmogrifyDetailedError,
+  transmogrifyDetailedBusy,
+  ,
+  transmogrifyDetailedPerformance,
+] = generateActions(TRANSMOGRIFY_DETAILED);
+export const [
+  selectTransmogrifyDetailed,
+  selectTransmogrifyDetailedError,
+  selectTransmogrifyDetailedBusy,
+  ,
+  selectTransmogrifyDetailedRequest,
+] = generateSelectors(TRANSMOGRIFY_DETAILED);
+
 // fetch aggregated
 export const FETCH_AGGREGATED = generateTypes(key, "aggregated");
 export const [

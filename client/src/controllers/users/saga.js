@@ -1,29 +1,30 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import { readUsers, readUser, createUser, updateUser, removeUser } from "./api";
-import {
-  CREATE_USER,
-  createUserBusy,
-  createUserSuccess,
-  createUserError,
-  FETCH_USERS,
-  fetchUsersBusy,
-  fetchUsersSuccess,
-  fetchUsersError,
-  FETCH_USER,
-  fetchUserBusy,
-  fetchUserSuccess,
-  fetchUserError,
-  UPDATE_USER,
-  updateUserBusy,
-  updateUserSuccess,
-  updateUserError,
-  REMOVE_USER,
-  removeUserBusy,
-  removeUserSuccess,
-  removeUserError
-} from "./action";
-import { ActionTypes } from "../util";
+import { logError } from "utils/utils";
 import { BUSY_GLOBAL } from "../busy/action";
+import { ActionTypes } from "../util";
+import {
+  createUserBusy,
+  createUserError,
+  createUserSuccess,
+  CREATE_USER,
+  fetchUserBusy,
+  fetchUserError,
+  fetchUsersBusy,
+  fetchUsersError,
+  fetchUsersSuccess,
+  fetchUserSuccess,
+  FETCH_USER,
+  FETCH_USERS,
+  removeUserBusy,
+  removeUserError,
+  removeUserSuccess,
+  REMOVE_USER,
+  updateUserBusy,
+  updateUserError,
+  updateUserSuccess,
+  UPDATE_USER,
+} from "./action";
+import { createUser, readUser, readUsers, removeUser, updateUser } from "./api";
 const { REQUEST } = ActionTypes;
 
 export function* createUserSaga(action) {
@@ -34,6 +35,7 @@ export function* createUserSaga(action) {
     const response = yield call(createUser, email, password, organization);
     yield put(createUserSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(createUserError(error.message));
   } finally {
     yield put(createUserBusy(false));
@@ -48,6 +50,7 @@ export function* readUserSaga(action) {
     const response = yield call(readUser, id);
     yield put(fetchUserSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(fetchUserError(error.message));
   } finally {
     yield put(fetchUserBusy(false));
@@ -62,6 +65,7 @@ export function* removeUserSaga(action) {
     yield call(removeUser, id);
     yield put(removeUserSuccess(true));
   } catch (error) {
+    logError(error);
     yield put(removeUserError(error.message));
   } finally {
     yield put(removeUserBusy(false));
@@ -83,6 +87,7 @@ export function* updateUserSaga(action) {
     );
     yield put(updateUserSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(updateUserError(error.message));
   } finally {
     yield put(updateUserBusy(false));
@@ -96,6 +101,7 @@ export function* readUsersSaga() {
     const response = yield call(readUsers);
     yield put(fetchUsersSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(fetchUsersError(error.message));
   } finally {
     yield put(fetchUsersBusy(false));
