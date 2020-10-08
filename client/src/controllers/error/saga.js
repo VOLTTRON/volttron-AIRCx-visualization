@@ -1,26 +1,27 @@
-import { select, call, put, takeEvery } from "redux-saga/effects";
+import _ from "lodash";
+import { call, put, select, takeEvery } from "redux-saga/effects";
+import { logError } from "utils/utils";
+import { reset } from "../action";
+import { ActionTypes, generateAction } from "../util";
 import {
+  clearErrorBusy,
+  clearErrorError,
+  clearErrorSuccess,
+  CLEAR_ERROR,
   errorTokens,
   selectErrorTokens,
-  CLEAR_ERROR,
-  clearErrorError,
-  clearErrorBusy,
-  clearErrorSuccess
 } from "./action";
-import { reset } from "../action";
-import _ from "lodash";
-import { ActionTypes, generateAction } from "../util";
 const { REQUEST, ERROR } = ActionTypes;
 
 const modifyErrorToken = (action, tokens) => {
   const { type, payload } = action;
   tokens[type] = _.assign({}, tokens[type], payload, {
-    cleared: !Boolean(payload)
+    cleared: !Boolean(payload),
   });
   return tokens;
 };
 
-const isUnauthorized = action => {
+const isUnauthorized = (action) => {
   const { payload } = action;
   return /unauthorized|expired|session is invalid/im.test(
     _.get(payload, "error", "")
@@ -36,7 +37,7 @@ export function* isErrorSaga(action) {
   yield put(errorTokens(tokens));
 }
 
-const isErrorAction = action => {
+const isErrorAction = (action) => {
   const types = action.type.split("/");
   return types[types.length - 1] === ERROR;
 };
@@ -54,6 +55,7 @@ export function* clearErrorSaga(action) {
     yield call(modifyErrorToken, errorAction(), tokens);
     yield put(clearErrorSuccess("successfully cleared error"));
   } catch (error) {
+    logError(error);
     yield put(clearErrorError(error.message));
   } finally {
     yield put(clearErrorBusy(false));

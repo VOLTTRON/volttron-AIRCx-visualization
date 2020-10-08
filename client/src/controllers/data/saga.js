@@ -4,6 +4,7 @@ import sensitivities from "constants/sensitivities";
 import _ from "lodash";
 import moment from "moment";
 import { call, put, select, takeLatest } from "redux-saga/effects";
+import { logError } from "utils/utils";
 import { ActionTypes } from "../util";
 import {
   fetchAggregatedBusy,
@@ -23,9 +24,18 @@ import {
   FETCH_DIAGNOSTICS,
   FETCH_SOURCES,
   selectDataForm,
+  selectDetailed,
+  selectDetailedRequest,
   selectDiagnostics,
+  selectTransmogrifyDetailedRequest,
+  transmogrifyDetailed,
+  transmogrifyDetailedBusy,
+  transmogrifyDetailedError,
+  transmogrifyDetailedSuccess,
+  TRANSMOGRIFY_DETAILED,
 } from "./action";
 import { readDetailed, readDiagnostics, readSources } from "./api";
+import { transmogrifyDetailedUtil } from "./transmogrify";
 const { REQUEST } = ActionTypes;
 
 export function* readSourcesSaga() {
@@ -35,6 +45,7 @@ export function* readSourcesSaga() {
     const response = yield call(readSources);
     yield put(fetchSourcesSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(fetchSourcesError(error.message));
   } finally {
     yield put(fetchSourcesBusy(false));
@@ -104,6 +115,7 @@ export function* readDiagnosticsSaga(action) {
     // not currently being used
     // yield call(readAggregatedSaga);
   } catch (error) {
+    logError(error);
     yield put(fetchDiagnosticsError(error.message));
   } finally {
     yield put(fetchDiagnosticsBusy(false));
@@ -126,10 +138,42 @@ export function* readDetailedSaga(action) {
     );
     const response = yield call(readDetailed, temp);
     yield put(fetchDetailedSuccess(response));
+    const request = yield select(selectTransmogrifyDetailedRequest);
+    yield call(transmogrifyDetailedSaga, transmogrifyDetailed(request));
   } catch (error) {
+    logError(error);
     yield put(fetchDetailedError(error.message));
   } finally {
     yield put(fetchDetailedBusy(false));
+  }
+}
+
+export function* transmogrifyDetailedSaga(action) {
+  const { payload } = action;
+  const { type, filter, path } = payload;
+  try {
+    yield put(transmogrifyDetailedBusy(true));
+    yield put(transmogrifyDetailedError());
+    const form = yield select(selectDataForm);
+    const diagnostics = yield select(selectDiagnostics);
+    const request = yield select(selectDetailedRequest);
+    const detailed = yield select(selectDetailed);
+    const response = yield call(
+      transmogrifyDetailedUtil,
+      diagnostics,
+      detailed,
+      form,
+      request,
+      type,
+      filter,
+      path
+    );
+    yield put(transmogrifyDetailedSuccess(response));
+  } catch (error) {
+    logError(error);
+    yield put(transmogrifyDetailedError(error.message));
+  } finally {
+    yield put(transmogrifyDetailedBusy(false));
   }
 }
 
@@ -211,6 +255,7 @@ export function* readAggregatedSaga() {
     const response = yield call(transformAggregated, diagnostics, form);
     yield put(fetchAggregatedSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(fetchAggregatedError(error.message));
   } finally {
     yield put(fetchAggregatedBusy(false));
@@ -221,5 +266,6 @@ export default function* dataSaga() {
   yield takeLatest(FETCH_SOURCES[REQUEST], readSourcesSaga);
   yield takeLatest(FETCH_DIAGNOSTICS[REQUEST], readDiagnosticsSaga);
   yield takeLatest(FETCH_DETAILED[REQUEST], readDetailedSaga);
+  yield takeLatest(TRANSMOGRIFY_DETAILED[REQUEST], transmogrifyDetailedSaga);
   yield takeLatest(FETCH_AGGREGATED[REQUEST], readAggregatedSaga);
 }

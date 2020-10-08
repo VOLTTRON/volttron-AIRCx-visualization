@@ -1,5 +1,6 @@
 import CsvParser from "csv-parser";
 import { Readable } from "stream";
+import { logError } from "utils/utils";
 import { create, doMocked, isMocked, read } from "../api";
 import { key } from "./action";
 export const UNIQUE_KEY_UPLOAD_SAMPLE = "sample/upload";
@@ -62,6 +63,7 @@ const readConfig = (file) => {
         const result = JSON.parse(event.target.result);
         resolve(result);
       } catch (error) {
+        logError(error);
         reject(error);
       }
     };

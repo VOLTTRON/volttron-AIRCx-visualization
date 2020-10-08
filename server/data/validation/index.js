@@ -42,6 +42,7 @@ const temp = {};
           _.set(temp, path, data);
         });
       } catch (error) {
+        logError(error);
         logger.warn(
           `Could not process validation file "${file}" because of "${
             error.message

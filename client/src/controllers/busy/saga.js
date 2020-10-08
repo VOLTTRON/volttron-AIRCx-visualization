@@ -1,21 +1,22 @@
 import {
-  select,
   call,
-  put,
   delay,
+  put,
+  select,
   takeEvery,
-  takeLatest
+  takeLatest,
 } from "redux-saga/effects";
+import { logError } from "utils/utils";
+import { ActionTypes } from "../util";
 import {
   busyTokens,
-  selectBusyTokens,
-  MAKE_BUSY,
   BUSY_GLOBAL,
-  makeBusyError,
   makeBusyBusy,
-  makeBusySuccess
+  makeBusyError,
+  makeBusySuccess,
+  MAKE_BUSY,
+  selectBusyTokens,
 } from "./action";
-import { ActionTypes } from "../util";
 const { REQUEST, BUSY } = ActionTypes;
 
 const modifyBusyToken = (action, tokens) => {
@@ -34,7 +35,7 @@ export function* isBusySaga(action) {
   yield put(busyTokens(tokens));
 }
 
-const isBusyAction = action => {
+const isBusyAction = (action) => {
   const types = action.type.split("/");
   return types[types.length - 1] === BUSY;
 };
@@ -46,6 +47,7 @@ export function* makeBusySaga() {
     yield delay(5000);
     yield put(makeBusySuccess("successfully busied"));
   } catch (error) {
+    logError(error);
     yield put(makeBusyError(error.message));
   } finally {
     yield put(makeBusyBusy(false));

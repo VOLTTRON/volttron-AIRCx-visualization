@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { call, put, takeLatest } from "redux-saga/effects";
+import { logError } from "utils/utils";
 import { reset } from "../action";
 import { getAuthorization, setAuthorization } from "../api";
 import { BUSY_GLOBAL } from "../busy/action";
@@ -47,6 +48,7 @@ export function* readUserSaga() {
     response = yield call(defaultPreferences, response);
     yield put(fetchUserSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(fetchUserError(error.message));
   } finally {
     yield put(fetchUserBusy(false));
@@ -60,6 +62,7 @@ export function* removeUserSaga() {
     yield call(removeUser);
     yield put(removeUserSuccess(true));
   } catch (error) {
+    logError(error);
     yield put(removeUserError(error.message));
   } finally {
     yield put(removeUserBusy(false));
@@ -74,6 +77,7 @@ export function* updateUserSaga(action) {
     const response = yield call(updateUser, email, password, preferences);
     yield put(updateUserSuccess(response));
   } catch (error) {
+    logError(error);
     yield put(updateUserError(error.message));
   } finally {
     yield put(updateUserBusy(false));
@@ -90,6 +94,7 @@ export function* loginSaga(action) {
     yield put(loginUserSuccess(response && response.token));
     yield call(readUserSaga);
   } catch (error) {
+    logError(error);
     yield call(setAuthorization, null);
     yield put(loginUserError(error.message));
   } finally {
@@ -105,6 +110,7 @@ export function* logoutSaga() {
     yield put(reset());
     yield put(logoutUserSuccess(true));
   } catch (error) {
+    logError(error);
     yield put(logoutUserError(error.message));
   } finally {
     yield put(logoutUserBusy(false));
@@ -124,6 +130,7 @@ export function* continueSaga() {
       yield call(setAuthorization, null);
     }
   } catch (error) {
+    logError(error);
     yield call(setAuthorization, null);
     yield put(continueUserError(error.message));
   } finally {
