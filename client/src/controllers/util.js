@@ -6,10 +6,10 @@ export var getTimestamp = () => new Date();
 /**
  * Override this function within testing to return a static timestamp.
  */
-export const timestampGenerator = generator => (getTimestamp = generator);
+export const timestampGenerator = (generator) => (getTimestamp = generator);
 
 export const ResetType = {
-  RESET: "reset"
+  RESET: "reset",
 };
 const { RESET } = ResetType;
 
@@ -18,9 +18,10 @@ export const ActionTypes = {
   BUSY: "busy",
   SUCCESS: "success",
   ERROR: "error",
-  POLL: "poll"
+  POLL: "poll",
+  PERFORMANCE: "performance",
 };
-const { REQUEST, BUSY, SUCCESS, ERROR, POLL } = ActionTypes;
+const { REQUEST, BUSY, SUCCESS, ERROR, POLL, PERFORMANCE } = ActionTypes;
 
 /**
  * Get the key used to create this type.
@@ -28,7 +29,7 @@ const { REQUEST, BUSY, SUCCESS, ERROR, POLL } = ActionTypes;
  * @param {String} type
  * @returns {String}
  */
-export const getKeyType = type => {
+export const getKeyType = (type) => {
   const types = type.split("/");
   if (types.length < 2) {
     return "";
@@ -43,7 +44,7 @@ export const getKeyType = type => {
  * @param {String} type
  * @returns {String}
  */
-export const getActionType = type => {
+export const getActionType = (type) => {
   const types = type.split("/");
   if (types.length < 2) {
     return "";
@@ -85,6 +86,7 @@ export const isActionType = (key, type) => {
     case BUSY:
     case SUCCESS:
     case ERROR:
+    case PERFORMANCE:
       return true;
     default:
       return false;
@@ -98,13 +100,13 @@ export const isActionType = (key, type) => {
  * @param {*} payload
  * @returns {*}
  */
-export const createSuccessPayload = payload => {
+export const createSuccessPayload = (payload) => {
   if (payload === null) {
     return null;
   } else if (_.isBoolean(payload)) {
     const timestamp = getTimestamp();
     return {
-      timestamp: timestamp
+      timestamp: timestamp,
     };
   } else {
     return payload;
@@ -118,12 +120,12 @@ export const createSuccessPayload = payload => {
  * @param {*} payload
  * @returns {*}
  */
-export const createErrorPayload = payload => {
+export const createErrorPayload = (payload) => {
   if (payload) {
     const timestamp = getTimestamp();
     return {
       timestamp: timestamp,
-      error: payload
+      error: payload,
     };
   } else {
     return null;
@@ -137,12 +139,12 @@ export const createErrorPayload = payload => {
  * @param {*} payload
  * @returns {*}
  */
-export const createBusyPayload = payload => {
+export const createBusyPayload = (payload) => {
   if (payload) {
     const timestamp = getTimestamp();
     return {
       timestamp: timestamp,
-      ...(!_.isBoolean(payload) && { type: payload })
+      ...(!_.isBoolean(payload) && { type: payload }),
     };
   } else {
     return null;
@@ -174,7 +176,8 @@ export const generateTypes = (key, name) => {
     [SUCCESS]: `${key}/${name}/${SUCCESS}`,
     [ERROR]: `${key}/${name}/${ERROR}`,
     [POLL]: `${key}/${name}/${POLL}`,
-    [RESET]: `${key}/${RESET}`
+    [PERFORMANCE]: `${key}/${name}/${PERFORMANCE}`,
+    [RESET]: `${key}/${RESET}`,
   };
   return obj;
 };
@@ -184,7 +187,7 @@ export const generateTypes = (key, name) => {
  *
  * @param {} action
  */
-export const createTypes = action => {
+export const createTypes = (action) => {
   const { type } = action;
   const types = type.split("/");
   const key = types[0];
@@ -192,14 +195,14 @@ export const createTypes = action => {
   return generateTypes(key, name);
 };
 
-export const createToJSSelector = input => {
-  return createSelector(input, value =>
+export const createToJSSelector = (input) => {
+  return createSelector(input, (value) =>
     value && value.toJS ? value.toJS() : value
   );
 };
 
 export const generateSelector = (key, type) => {
-  return createToJSSelector(state => {
+  return createToJSSelector((state) => {
     if (!state) {
       throw new Error(`Selector missing state for: ${key}/${type}`);
     }
@@ -214,37 +217,39 @@ export const generateSelector = (key, type) => {
  * @param {*} types
  * @returns {Array} [SUCCESS, ERROR, BUSY, POLL, REQUEST]
  */
-export const generateSelectors = types => {
+export const generateSelectors = (types) => {
   return [
     generateSelector(types.key, types[SUCCESS]),
     generateSelector(types.key, types[ERROR]),
     generateSelector(types.key, types[BUSY]),
     generateSelector(types.key, types[POLL]),
-    generateSelector(types.key, types[REQUEST])
+    generateSelector(types.key, types[REQUEST]),
+    generateSelector(types.key, types[PERFORMANCE]),
   ];
 };
 
-export const generateAction = type => {
+export const generateAction = (type) => {
   const t = getActionType(type);
   switch (t) {
     case BUSY:
-      return payload => ({
+      return (payload) => ({
         type,
-        payload: createBusyPayload(payload)
+        payload: createBusyPayload(payload),
       });
     case ERROR:
-      return payload => ({
+      return (payload) => ({
         type,
-        payload: createErrorPayload(payload)
+        payload: createErrorPayload(payload),
       });
     case SUCCESS:
-      return payload => ({
+      return (payload) => ({
         type,
-        payload: createSuccessPayload(payload)
+        payload: createSuccessPayload(payload),
       });
     case REQUEST:
+    case PERFORMANCE:
     default:
-      return payload => ({ type, payload });
+      return (payload) => ({ type, payload });
   }
 };
 
@@ -255,12 +260,13 @@ export const generateAction = type => {
  * @param {*} types
  * @returns {Array} [REQUEST, SUCCESS, ERROR, BUSY, POLL]
  */
-export const generateActions = types => {
+export const generateActions = (types) => {
   return [
     generateAction(types[REQUEST]),
     generateAction(types[SUCCESS]),
     generateAction(types[ERROR]),
     generateAction(types[BUSY]),
-    generateAction(types[POLL])
+    generateAction(types[POLL]),
+    generateAction(types[PERFORMANCE]),
   ];
 };

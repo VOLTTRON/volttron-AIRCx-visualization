@@ -2,17 +2,22 @@ import {
   ButtonBase,
   FormControlLabel,
   Slide,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import {
   ArrowBackIos,
   ArrowForwardIos,
   BarChart,
-  ShowChart
+  ShowChart,
 } from "@material-ui/icons";
 import clsx from "clsx";
 import { MuiButton, MuiCheckbox, MuiDialog, MuiLoading } from "components";
+import {
+  selectTransmogrifyDetailed,
+  selectTransmogrifyDetailedBusy,
+  transmogrifyDetailed,
+} from "controllers/data/action";
 import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
@@ -47,24 +52,35 @@ class Popup extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.updateData();
+  }
+
   handleHover = (event) => {
     const { hour } = event;
     this.setState({ hour });
   };
 
   handleNavigation = (value) => {
-    this.setState({ chart: value });
+    this.setState({ chart: value }, this.updateData);
   };
 
   handleFilter = (value) => {
     const { filter } = this.state;
     if (_.isArray(value)) {
-      this.setState({ filter: value });
+      this.setState({ filter: value }, this.updateData);
     } else if (filter.includes(value)) {
-      this.setState({ filter: _.difference(filter, [value]) });
+      this.setState({ filter: _.difference(filter, [value]) }, this.updateData);
     } else {
-      this.setState({ filter: _.concat(filter, [value]) });
+      this.setState({ filter: _.concat(filter, [value]) }, this.updateData);
     }
+  };
+
+  updateData = () => {
+    const { path } = this.props;
+    const { chart, filter } = this.state;
+    const type = chart.name;
+    this.props.transmogrifyDetailed({ type, filter, path });
   };
 
   renderNavigation = () => {
@@ -168,28 +184,38 @@ class Popup extends React.Component {
             filter.length === subdevices.length ? "Select All" : "Deselect All"
           }
         />
-        {subdevices.map((s) => (
-          <FormControlLabel
-            key={`form-control-label-${s}`}
-            className={classes.subdevicesLabel}
-            control={
-              <MuiCheckbox
-                key={`checkbox-${s}`}
-                style={{ marginRight: "5px" }}
-                aria-label={s}
-                checked={!filter.includes(s)}
-                onChange={() => this.handleFilter(s)}
-              />
-            }
-            label={s}
-          />
-        ))}
+        {subdevices
+          .sort((a, b) => a.localeCompare(b))
+          .map((s) => (
+            <FormControlLabel
+              key={`form-control-label-${s}`}
+              className={classes.subdevicesLabel}
+              control={
+                <MuiCheckbox
+                  key={`checkbox-${s}`}
+                  style={{ marginRight: "5px" }}
+                  aria-label={s}
+                  checked={!filter.includes(s)}
+                  onChange={() => this.handleFilter(s)}
+                />
+              }
+              label={s}
+            />
+          ))}
       </div>
     );
   }
 
   render() {
-    const { classes, form, current, request, data } = this.props;
+    const {
+      classes,
+      form,
+      current,
+      request,
+      data,
+      busy,
+      transmogrify,
+    } = this.props;
     const { hour, chart, filter } = this.state;
     return (
       <MuiDialog
@@ -225,17 +251,17 @@ class Popup extends React.Component {
               )}
             </div>
             <div className={classes.popupChart}>
-              {data.busy ? (
+              {data.busy || busy || !transmogrify ? (
                 <MuiLoading />
               ) : (
                 <AutoSizer>
                   {({ width, height }) => (
                     <Chart
-                      key={`chart-${chart.name}-${JSON.stringify(filter)}`}
+                      key={`chart-${chart.name}`}
                       type={chart.name}
                       onHover={this.handleHover}
                       form={form}
-                      data={data}
+                      data={transmogrify}
                       request={request}
                       width={width}
                       height={height}
@@ -261,9 +287,12 @@ class Popup extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  transmogrify: selectTransmogrifyDetailed(state),
+  busy: selectTransmogrifyDetailedBusy(state),
+});
 
-const mapActionToProps = {};
+const mapActionToProps = { transmogrifyDetailed };
 
 export default connect(
   mapStateToProps,

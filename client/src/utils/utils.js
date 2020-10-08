@@ -32,6 +32,16 @@ export function getDocumentHeight() {
 export const parseBoolean = (value) => /^\s*true|yes|t|y\s*$/i.test(value);
 
 /**
+ * Log the error stack to console if running in development environment.
+ * @param {Error} error
+ */
+export const logError = (error) => {
+  if (error && process.env.NODE_ENV === "development") {
+    console.log(`[${error.message}]: ${error.stack}`);
+  }
+};
+
+/**
  * Wraps the child component(s) only if the condition is met.
  * Requires three props: condition, wrapper, and children.
  * The condition is a boolean which determines if the wrapper should be utilized.

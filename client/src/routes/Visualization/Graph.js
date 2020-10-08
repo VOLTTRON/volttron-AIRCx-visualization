@@ -378,6 +378,7 @@ class Graph extends React.Component {
       detailed,
       busy,
       request,
+      label,
     } = this.props;
     const { show } = this.state;
     return (
@@ -390,6 +391,7 @@ class Graph extends React.Component {
           <Popup
             form={form}
             current={current}
+            path={_.concat([label], show.path)}
             data={_.merge({}, show, {
               diagnostic: _.get(data, show.path, {}),
               detailed: detailed,
