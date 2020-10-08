@@ -31,6 +31,7 @@ import {
   transmogrifyDetailed,
   transmogrifyDetailedBusy,
   transmogrifyDetailedError,
+  transmogrifyDetailedPerformance,
   transmogrifyDetailedSuccess,
   TRANSMOGRIFY_DETAILED,
 } from "./action";
@@ -154,6 +155,8 @@ export function* transmogrifyDetailedSaga(action) {
   try {
     yield put(transmogrifyDetailedBusy(true));
     yield put(transmogrifyDetailedError());
+    yield put(transmogrifyDetailedPerformance());
+    const start = moment();
     const form = yield select(selectDataForm);
     const diagnostics = yield select(selectDiagnostics);
     const request = yield select(selectDetailedRequest);
@@ -169,6 +172,14 @@ export function* transmogrifyDetailedSaga(action) {
       path
     );
     yield put(transmogrifyDetailedSuccess(response));
+    const end = moment();
+    yield put(
+      transmogrifyDetailedPerformance({
+        start: start.format(),
+        end: end.format(),
+        duration: `${end.diff(start, "second")} seconds`,
+      })
+    );
   } catch (error) {
     logError(error);
     yield put(transmogrifyDetailedError(error.message));

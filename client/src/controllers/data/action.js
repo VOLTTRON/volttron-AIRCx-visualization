@@ -69,6 +69,8 @@ export const [
   transmogrifyDetailedSuccess,
   transmogrifyDetailedError,
   transmogrifyDetailedBusy,
+  ,
+  transmogrifyDetailedPerformance,
 ] = generateActions(TRANSMOGRIFY_DETAILED);
 export const [
   selectTransmogrifyDetailed,

@@ -184,22 +184,24 @@ class Popup extends React.Component {
             filter.length === subdevices.length ? "Select All" : "Deselect All"
           }
         />
-        {subdevices.map((s) => (
-          <FormControlLabel
-            key={`form-control-label-${s}`}
-            className={classes.subdevicesLabel}
-            control={
-              <MuiCheckbox
-                key={`checkbox-${s}`}
-                style={{ marginRight: "5px" }}
-                aria-label={s}
-                checked={!filter.includes(s)}
-                onChange={() => this.handleFilter(s)}
-              />
-            }
-            label={s}
-          />
-        ))}
+        {subdevices
+          .sort((a, b) => a.localeCompare(b))
+          .map((s) => (
+            <FormControlLabel
+              key={`form-control-label-${s}`}
+              className={classes.subdevicesLabel}
+              control={
+                <MuiCheckbox
+                  key={`checkbox-${s}`}
+                  style={{ marginRight: "5px" }}
+                  aria-label={s}
+                  checked={!filter.includes(s)}
+                  onChange={() => this.handleFilter(s)}
+                />
+              }
+              label={s}
+            />
+          ))}
       </div>
     );
   }

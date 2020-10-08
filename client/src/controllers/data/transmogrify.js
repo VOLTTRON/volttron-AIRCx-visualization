@@ -75,6 +75,7 @@ const createBoxUpdate = (data, request, filter, result) => {
   const subdevices = _.get(data, ["subdevices"], {});
   const keys = Object.keys(subdevices);
   const values = Object.values(subdevices);
+  const map = {};
   const box = _.concat(
     ...values.map((d, i) => {
       const l = labels[offset + i];
@@ -102,20 +103,9 @@ const createBoxUpdate = (data, request, filter, result) => {
         const k = keys[i];
         const l = labels[offset + i];
         const c = colors[offset + i];
-        const multiplier = conversion.includes(k) ? 10.0 : 1.0;
-        const ds = _.concat(
-          ...Object.entries(d)
-            .filter(([k, v]) => (filter ? !filter.includes(k) : true))
-            .map(([k, v]) => v)
-        );
-        return {
+        const temp = {
           x: l.acronym,
-          y: ds
-            .filter((v) => {
-              const h = moment(v[0]).hour();
-              return r === 0 ? h === 0 || h === 24 : r === h;
-            })
-            .map((v) => v[1] * multiplier),
+          y: [],
           legendgroup: l.acronym,
           showlegend: false,
           name: `${r}:00 - ${r}:59`,
@@ -124,9 +114,24 @@ const createBoxUpdate = (data, request, filter, result) => {
           // visible: i > 0 ? "legendonly" : true,
           marker: { color: c },
         };
+        _.set(map, [k, r], temp);
+        return temp;
       })
     )
   );
+  values.forEach((d, i) => {
+    const k = keys[i];
+    const multiplier = conversion.includes(k) ? 10.0 : 1.0;
+    _.concat(
+      ...Object.entries(d)
+        .filter(([k, v]) => (filter ? !filter.includes(k) : true))
+        .map(([k, v]) => v)
+    ).forEach((v) => {
+      const h = moment(v[0]).hour();
+      const a = v[1] * multiplier;
+      _.get(map, [k, h, "y"]).push(a);
+    });
+  });
   return { box };
 };
 
