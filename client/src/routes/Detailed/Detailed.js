@@ -71,7 +71,11 @@ class Detailed extends React.Component {
     const { classes, current } = this.props;
     return (
       <div className={clsx(classes.container, classes.picker)}>
-        <MuiDateRangePicker start={current.start} end={current.end} />
+        <MuiDateRangePicker
+          variant="compact"
+          start={current.start}
+          end={current.end}
+        />
       </div>
     );
   }

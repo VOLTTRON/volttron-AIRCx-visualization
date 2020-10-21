@@ -9,9 +9,9 @@ import { ConditionalWrapper } from "utils/utils";
 import MuiLabel from "./MuiLabel";
 import styles from "./styles";
 
-const renderValue = (props) => (value) => {
+const handleRenderValue = (props) => (value) => {
   const { classes, header, placeholder, multiple, renderValue } = props;
-  if (_.isEmpty(value)) {
+  if ((_.isString(value) || _.isArray(value)) && _.isEmpty(value)) {
     if (!_.isEmpty(placeholder) && _.isEmpty(header)) {
       return (
         <div className={classes.value}>
@@ -35,6 +35,7 @@ const renderValue = (props) => (value) => {
       </div>
     );
   } else {
+    console.log(props);
     return (
       <div className={classes.value}>
         <Typography>{renderValue ? renderValue(value) : value}</Typography>
@@ -86,7 +87,7 @@ const MuiSelect = (props) => {
           onChange={onChange}
           displayEmpty
           multiple={multiple}
-          renderValue={renderValue(props)}
+          renderValue={handleRenderValue(props)}
           fullWidth
         >
           {children}

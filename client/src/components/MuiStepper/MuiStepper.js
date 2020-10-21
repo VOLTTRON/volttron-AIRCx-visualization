@@ -1,5 +1,6 @@
 import {
   Button,
+  MenuItem,
   Step,
   StepButton,
   StepLabel,
@@ -13,6 +14,7 @@ import {
   NavigateNext as NavigateNextIcon,
 } from "@material-ui/icons";
 import clsx from "clsx";
+import { MuiSelect } from "components";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
@@ -68,6 +70,33 @@ class MuiStepper extends React.Component {
         return false;
     }
   };
+
+  renderSelect() {
+    const { steps, step, header, classes } = this.props;
+    const { handleStepChange } = this;
+    return (
+      <div className={classes.select}>
+        <MuiSelect
+          id="select"
+          header={header}
+          value={step}
+          onChange={(e, v) => handleStepChange(_.get(e, "target.value", v))()}
+          renderValue={(v) => {
+            console.log(v);
+            return _.get(steps, [v, "label"], v);
+          }}
+        >
+          {steps.map(function(item, index) {
+            return (
+              <MenuItem key={`item-${item.label}`} value={index}>
+                {item.label}
+              </MenuItem>
+            );
+          })}
+        </MuiSelect>
+      </div>
+    );
+  }
 
   renderStepper() {
     const {
@@ -126,6 +155,7 @@ class MuiStepper extends React.Component {
       className,
       isStepBelow,
       isStepAbove,
+      variant,
     } = this.props;
     const icon = this.useIcon();
     const stepBelow = step === 0 || disabled.indexOf(step - 1) !== -1;
@@ -137,7 +167,8 @@ class MuiStepper extends React.Component {
         className={clsx(
           className,
           classes.toolbar,
-          disableGutters && classes.disableGutters
+          disableGutters && classes.disableGutters,
+          variant === "compact" && classes.compactToolbar
         )}
       >
         <Button
@@ -149,7 +180,7 @@ class MuiStepper extends React.Component {
         >
           {icon ? <NavigateBeforeIcon /> : "Back"}
         </Button>
-        {this.renderStepper()}
+        {variant === "compact" ? this.renderSelect() : this.renderStepper()}
         <Button
           style={{ minWidth: icon ? 16 : 64 }}
           disabled={!isStepAbove && stepAbove}
@@ -173,6 +204,8 @@ MuiStepper.propTypes = {
   ).isRequired,
   disabled: PropTypes.arrayOf(PropTypes.number.isRequired),
   nonLinear: PropTypes.bool,
+  header: PropTypes.string,
+  variant: PropTypes.oneOf(["compact", "default", undefined]),
   onStepChange: PropTypes.func,
   isStepBelow: PropTypes.bool,
   isStepAbove: PropTypes.bool,

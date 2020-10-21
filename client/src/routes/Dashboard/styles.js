@@ -3,6 +3,8 @@ import { gray, white } from "constants/palette";
 const styles = (theme) => ({
   container: {
     width: "100%",
+    paddingLeft: "140px",
+    paddingTop: "30px",
     height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     display: "flex",
     justifyContent: "center",
@@ -11,7 +13,7 @@ const styles = (theme) => ({
   content: {
     paddingLeft: "140px",
     paddingRight: "140px",
-    paddingTop: "60px",
+    paddingTop: "30px",
     paddingBottom: "60px",
   },
   message: {

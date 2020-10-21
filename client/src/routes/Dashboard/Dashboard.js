@@ -82,7 +82,11 @@ class Dashboard extends React.Component {
     const { classes, current } = this.props;
     return (
       <div className={classes.container}>
-        <MuiDateRangePicker start={current.start} end={current.end} />
+        <MuiDateRangePicker
+          variant="compact"
+          start={current.start}
+          end={current.end}
+        />
       </div>
     );
   }

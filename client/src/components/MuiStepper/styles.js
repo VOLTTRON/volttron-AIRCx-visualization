@@ -1,3 +1,5 @@
+import { gray } from "constants/palette";
+
 const styles = {
   toolbar: {
     flex: "1 0 auto",
@@ -14,6 +16,15 @@ const styles = {
     "& > span": {
       paddingRight: 0,
     },
+  },
+  compactToolbar: {
+    alignItems: "flex-end",
+  },
+  select: {
+    color: gray,
+    width: "140px",
+    marginLeft: "10px",
+    marginRight: "10px",
   },
 };
 

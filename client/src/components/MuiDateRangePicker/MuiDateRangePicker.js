@@ -17,6 +17,7 @@ class MuiDateRangePicker extends React.Component {
     const months = [
       {
         name: temp.format("MMM"),
+        label: temp.format("MMM YYYY"),
         icon: `${temp.month() + 1}`,
         month: temp.month(),
         year: temp.year(),
@@ -62,6 +63,7 @@ class MuiDateRangePicker extends React.Component {
       [`${months[0].year}-${months[0].month}`]: [
         {
           name: undefined,
+          label: `${temp.date()}`,
           icon: `${temp.date()}`,
           day: temp.date(),
           month: temp.month(),
@@ -78,6 +80,7 @@ class MuiDateRangePicker extends React.Component {
       if (newMonth) {
         months.push({
           name: temp.format("MMM"),
+          label: temp.format("MMM YYYY"),
           icon: `${temp.month() + 1}`,
           month: temp.month(),
           year: temp.year(),
@@ -107,6 +110,9 @@ class MuiDateRangePicker extends React.Component {
           name: `${first.format("MMM D")} to ${last.format(
             first.month() === last.month() ? "D" : "MMM D"
           )}`,
+          label: `${first.format("MMM D")} to ${last.format(
+            first.month() === last.month() ? "D" : "MMM D"
+          )}`,
           icon: weeks[key].length + 1,
           start: {
             date: first,
@@ -124,6 +130,7 @@ class MuiDateRangePicker extends React.Component {
       }
       days[key].push({
         name: undefined,
+        label: `${temp.date()}`,
         icon: `${temp.date()}`,
         day: temp.date(),
         month: temp.month(),
@@ -213,7 +220,7 @@ class MuiDateRangePicker extends React.Component {
   };
 
   render() {
-    const { classes, form } = this.props;
+    const { classes, form, variant } = this.props;
     const { months, weeks, days } = this.state;
     const group = _.get(form, "group", undefined);
     const date = moment(_.get(form, "date", undefined));
@@ -234,20 +241,24 @@ class MuiDateRangePicker extends React.Component {
     return (
       <div className={classes.container}>
         <MuiStepper
-          style={{ margin: "10px" }}
+          style={{ margin: "10px", flex: variant === "compact" ? 0 : 1 }}
           useIcon
           nonLinear
           disableGutters
+          header="Month"
+          variant={variant}
           step={monthIndex}
           steps={months}
           onStepChange={this.handleMonthChange}
         />
         {group === "week" && (
           <MuiStepper
-            style={{ margin: "10px" }}
+            style={{ margin: "10px", flex: variant === "compact" ? 0 : 1 }}
             useIcon
             nonLinear
             disableGutters
+            header="Week"
+            variant={variant}
             step={weekIndex}
             steps={week}
             onStepChange={this.handleWeekChange}
@@ -259,10 +270,12 @@ class MuiDateRangePicker extends React.Component {
         )}
         {group === "day" && (
           <MuiStepper
-            style={{ margin: "10px" }}
+            style={{ margin: "10px", flex: variant === "compact" ? 0 : 1 }}
             useIcon
             nonLinear
             disableGutters
+            header="Day"
+            variant={variant}
             step={dayIndex}
             steps={day}
             onStepChange={this.handleDateChange}
