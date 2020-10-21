@@ -1,9 +1,9 @@
 import { Grid, Paper, Typography, withWidth } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 import { MuiDateRangePicker, MuiLoading } from "components";
 import MuiLink from "components/MuiNavigation/MuiLink";
 import filters from "constants/filters";
-import { white } from "constants/palette";
 import {
   selectDataForm,
   selectDiagnostics,
@@ -58,17 +58,24 @@ class Dashboard extends React.Component {
   };
 
   getSize = (count) => {
-    const values = this.getValues();
-    return _.head(
-      _.sortBy(
-        values.map((v) => ({
-          size: v,
-          rows: Math.ceil(count / (12 / v)),
-          extra: count % (12 / v),
-        })),
-        ["rows", "extra"]
-      )
-    ).size;
+    const { orientation } = this.props;
+    switch (orientation) {
+      case "horizontal":
+        const values = this.getValues();
+        return _.head(
+          _.sortBy(
+            values.map((v) => ({
+              size: v,
+              rows: Math.ceil(count / (12 / v)),
+              extra: count % (12 / v),
+            })),
+            ["rows", "extra"]
+          )
+        ).size;
+      case "vertical":
+      default:
+        return 12;
+    }
   };
 
   renderDatePicker() {
@@ -139,18 +146,31 @@ class Dashboard extends React.Component {
       values.filter((v) => fault.isType(_.get(v, sensitivity))).length,
       values.filter((v) => okay.isType(_.get(v, sensitivity))).length
     );
+    const vertical = this.getSize() === 12;
     return (
-      <Paper className={classes.paper} elevation={3}>
+      <Paper
+        className={clsx(
+          classes.paper,
+          vertical ? classes.vertical : classes.horizontal
+        )}
+        elevation={3}
+      >
         <Typography
-          style={{ height: "64px", overflow: "hidden" }}
+          className={vertical ? classes.labelVertical : classes.labelHorizontal}
           variant="h6"
-          align="center"
+          align={vertical ? "left" : "center"}
         >
           <strong>{label}</strong>
         </Typography>
-        <Paper style={{ background: result.color }} elevation={1}>
+        <Paper
+          className={vertical ? classes.boxVertical : classes.boxHorizontal}
+          style={{ background: result.color }}
+          elevation={1}
+        >
           <Typography
-            style={{ color: white, margin: "10px" }}
+            className={
+              vertical ? classes.resultVertical : classes.resultHorizontal
+            }
             variant="h6"
             align="center"
           >

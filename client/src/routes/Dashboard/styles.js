@@ -34,10 +34,33 @@ const styles = (theme) => ({
     justifyContent: "flex-end",
   },
   paper: {
-    width: "300px",
-    height: "220px",
     padding: "20px",
     background: white,
+  },
+  horizontal: {
+    width: "300px",
+    height: "220px",
+  },
+  vertical: { width: "100%", display: "flex" },
+  labelHorizontal: {
+    height: "64px",
+    overflow: "hidden",
+  },
+  labelVertical: {
+    flex: 1,
+    overflow: "hidden",
+  },
+  resultHorizontal: {
+    color: white,
+    margin: "10px",
+  },
+  resultVertical: {
+    color: white,
+  },
+  boxHorizontal: {},
+  boxVertical: {
+    borderRadius: "10000px",
+    width: "340px",
   },
 });
 
