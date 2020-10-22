@@ -3,6 +3,8 @@ import { backgroundShade, gray, light, white } from "constants/palette";
 const styles = (theme) => ({
   container: {
     width: "100%",
+    paddingLeft: "140px",
+    paddingTop: "30px",
     height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     display: "flex",
     justifyContent: "center",

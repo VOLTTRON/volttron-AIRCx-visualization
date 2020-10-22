@@ -10,7 +10,7 @@ const styles = (theme) => ({
   },
   titleLabel: {
     flexGrow: 0,
-    color: black,
+    color: gray,
   },
   page: {
     flexGrow: 0,
@@ -35,20 +35,22 @@ const styles = (theme) => ({
     color: black,
   },
   toolbar: {
+    minHeight: "0px",
     paddingLeft: "90px",
     paddingRight: "90px",
     color: black,
     backgroundColor: white,
   },
   navigation: {
-    maxHeight: "32px",
+    maxHeight: "57px",
   },
   title: {
-    maxHeight: "32px",
+    maxHeight: "57px",
   },
   row: {
     display: "flex",
     width: "100%",
+    paddingTop: "25px",
     paddingLeft: "90px",
     paddingRight: "90px",
     background: white,
@@ -69,7 +71,6 @@ const styles = (theme) => ({
   },
   form: {
     height: "140px",
-    paddingTop: "25px",
   },
   site: {
     minWidth: "136px",
