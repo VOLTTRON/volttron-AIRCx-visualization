@@ -56,5 +56,6 @@
   },
   "proxy": "http://localhost:3001",
   "repository": "https://stash.pnnl.gov/scm/uwtechint/parking.git",
-  "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>"
+  "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>",
+  "license": "SEE LICENSE IN LICENSE"
 }
