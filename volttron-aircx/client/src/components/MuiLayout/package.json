@@ -1,0 +1,6 @@
+{
+  "name": "mui-layout",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MuiLayout.js"
+}
