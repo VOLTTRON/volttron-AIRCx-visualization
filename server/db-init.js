@@ -58,11 +58,6 @@
 // under Contract DE-AC05-76RL01830
 
 const models = require("./models");
-const { logger } = require("./logging")(
-  /* Create everything automatically with sequelize ORM */
-  async () => {
-    await models.sequelize
-      .sync({ alter: true })
-      .then(() => logger.info(`Finished initializing the database.`));
-  }
-)();
+
+/* Create everything automatically with sequelize ORM */
+models.sequelize.sync();

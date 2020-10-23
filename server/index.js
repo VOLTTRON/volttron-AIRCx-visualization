@@ -63,7 +63,7 @@ const session = require("express-session");
 const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
-require("winston");
+const winston = require("winston");
 const expressWinston = require("express-winston");
 const ExpressCache = require("express-cache-middleware");
 const cacheManager = require("cache-manager");
@@ -71,20 +71,42 @@ const fsCacheStore = require("cache-manager-fs");
 const models = require("./models");
 const path = require("path");
 const util = require("./utils/util");
-const { logger, options } = require("./logging");
-require("dotenv-flow").config({
-  silent: true,
-});
+require("dotenv").config();
 
 const publicKey = fs.readFileSync(
   path.join(process.cwd(), process.env.PUBLIC_KEY)
 );
 
+/* Make all variables from our .env file available in our process */
+require("dotenv").config();
+
 /* Init express */
 let app = express();
 
 /* Here we setup the middleware logging */
-app.use(expressWinston.logger(options));
+const desc = {
+  transports: [
+    new winston.transports.Console({ level: process.env.LOG_CONSOLE }),
+    new winston.transports.File({
+      filename: "server.log",
+      level: process.env.LOG_FILE,
+    }),
+  ],
+  format: winston.format.combine(
+    winston.format.json(),
+    winston.format.timestamp(),
+    winston.format.prettyPrint()
+  ),
+  meta: false, // optional: control whether you want to log the meta data about the request (default to true)
+  msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+  expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+  colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+  ignoreRoute: function(req, res) {
+    return false;
+  }, // optional: allows to skip some log messages based on request and/or response
+};
+winston.loggers.add("default", desc);
+app.use(expressWinston.logger(desc));
 // expressWinston.requestWhitelist.push("body"); // logging the body of messages should only be done during testing
 
 /* Here we setup the middlewares & configs */
@@ -127,22 +149,8 @@ const cacheMiddleware = new ExpressCache(
   ]),
   {
     getCacheKey: (req) => {
-      let key = undefined;
-      switch (req.method) {
-        case "GET":
-          // cache all get requests
-          key = `${req.url}`;
-          break;
-        case "POST":
-          // cache only specific post requests
-          const { topic, start, end } = req.body;
-          if (topic || start || end) {
-            key = `${req.url}|${start}|${end}|${JSON.stringify(topic)}`;
-          }
-          break;
-        default:
-        // don't cache
-      }
+      const { topic, start, end } = req.body;
+      const key = `${req.url}|${start}|${end}|${JSON.stringify(topic)}`;
       return key;
     },
   }
@@ -154,7 +162,7 @@ app.use(require("./routes"));
 
 /* Here we define the error handling */
 app.use(function(err, req, res, next) {
-  logger.error(err.stack);
+  console.error(err.stack);
   res
     .status(err.status ? err.status : 500)
     .send(err.message ? err.message : "Internal Server Error");
@@ -177,7 +185,7 @@ models.sequelize.sync().then(function() {
   const address = process.env.SERVER_ADDRESS || "127.0.0.1";
   app.listen(port, address, () => {
     if (process.env.NODE_ENV !== "test") {
-      logger.info(
+      console.log(
         `Server running on http${
           util.parseBoolean(process.env.HTTPS) ? "s" : ""
         }://${address}:${port}`

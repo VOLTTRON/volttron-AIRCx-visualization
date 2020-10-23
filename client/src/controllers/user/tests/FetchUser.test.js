@@ -57,10 +57,9 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import {
-  SERVICE_ENDPOINT,
-  SERVICE_ENDPOINT_READ_USER,
-} from "controllers/user/api";
+import { reset } from "controllers/action";
+import { SERVICE_URL } from "controllers/api";
+import configureStore from "controllers/store";
 import {
   fetchUser,
   fetchUserBusy,
@@ -68,15 +67,14 @@ import {
   fetchUserSuccess,
   selectUserRequest,
 } from "controllers/user/action";
-
-import { SERVICE_URL } from "controllers/api";
-import configureStore from "controllers/store";
-import { expectSaga } from "redux-saga-test-plan";
-import { fetchMock } from "fetch-mock";
+import {
+  SERVICE_ENDPOINT,
+  SERVICE_ENDPOINT_READ_USER,
+} from "controllers/user/api";
 import mock from "controllers/user/mock";
 import { readUserSaga } from "controllers/user/saga";
-import { reset } from "controllers/action";
-
+import { fetchMock } from "fetch-mock";
+import { expectSaga } from "redux-saga-test-plan";
 const data = mock[SERVICE_ENDPOINT_READ_USER];
 
 const reduxStore = configureStore({});
@@ -94,7 +92,7 @@ describe("user.fetchUser()", () => {
 
   it("read user saga should complete normally.", () => {
     const { result } = data;
-    fetchMock.post(`${SERVICE_URL}/${SERVICE_ENDPOINT}`, result);
+    fetchMock.get(`${SERVICE_URL}/${SERVICE_ENDPOINT}`, result);
     return expectSaga(readUserSaga, fetchUser())
       .put(fetchUserBusy(true))
       .put(fetchUserError())
@@ -107,7 +105,7 @@ describe("user.fetchUser()", () => {
   });
 
   it("read user saga should produce error.", () => {
-    fetchMock.post(`${SERVICE_URL}/${SERVICE_ENDPOINT}`, 401);
+    fetchMock.get(`${SERVICE_URL}/${SERVICE_ENDPOINT}`, 401);
     return expectSaga(readUserSaga, fetchUser())
       .put(fetchUserBusy(true))
       .put(fetchUserError())

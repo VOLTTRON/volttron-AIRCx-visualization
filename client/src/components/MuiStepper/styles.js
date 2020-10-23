@@ -22,7 +22,7 @@ const styles = {
   },
   select: {
     color: gray,
-    width: "160px",
+    width: "140px",
     marginLeft: "10px",
     marginRight: "10px",
   },

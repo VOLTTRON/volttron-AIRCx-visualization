@@ -58,12 +58,6 @@
 // under Contract DE-AC05-76RL01830
 
 import {
-  AccountCircle as AccountCircleIcon,
-  KeyboardArrowDown as KeyboardArrowDownIcon,
-  Remove,
-  Today as TodayIcon,
-} from "@material-ui/icons";
-import {
   AppBar,
   Menu,
   MenuItem,
@@ -73,8 +67,21 @@ import {
   Typography,
   withWidth,
 } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import {
+  AccountCircle as AccountCircleIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  Remove,
+  Today as TodayIcon,
+} from "@material-ui/icons";
+import clsx from "clsx";
 import { MuiButton, MuiDatePicker, MuiIconButton, MuiSelect } from "components";
+import MuiLink from "components/MuiNavigation/MuiLink";
+import filters from "constants/filters";
+import groups from "constants/groups";
 import { black, primary, white } from "constants/palette";
+import sensitivities from "constants/sensitivities";
+import { selectMode, setMode } from "controllers/common/action";
 import {
   fetchDiagnostics,
   fetchSources,
@@ -91,22 +98,14 @@ import {
   selectLoginUserRequest,
   selectUser,
 } from "controllers/user/action";
-import { selectMode, setMode } from "controllers/common/action";
-
-import { ConditionalWrapper } from "utils/utils";
-import MuiLink from "components/MuiNavigation/MuiLink";
-import React from "react";
 import _ from "lodash";
-import clsx from "clsx";
-import { connect } from "react-redux";
-import filters from "constants/filters";
-import groups from "constants/groups";
-import mixin from "utils/mixin";
 import moment from "moment";
+import React from "react";
+import { connect } from "react-redux";
 import { routes } from "routes";
-import sensitivities from "constants/sensitivities";
+import mixin from "utils/mixin";
+import { ConditionalWrapper } from "utils/utils";
 import styles from "./styles";
-import { withStyles } from "@material-ui/core/styles";
 
 const createFormUpdate = (state, sources) => {
   const items = sources ? _.merge({}, ...Object.values(sources)) : {};
@@ -172,13 +171,6 @@ class MuiHeader extends React.Component {
     this.setState(createFormUpdate(_.merge(this.state, form), sources));
   }
 
-  checkDate = (form) => {
-    const start = moment(form.start);
-    const end = moment(form.end);
-    const date = moment(form.date);
-    form.date = date < start ? start.format() : date > end ? end.format() : date.format();
-  }
-
   handleUpdate = (key) => () => {
     const form = _.merge(
       {},
@@ -212,7 +204,6 @@ class MuiHeader extends React.Component {
       case "group":
       case "filter":
       case "sensitivity":
-        this.checkDate(form);
         this.props.setDataForm(form);
         break;
       case "start":
@@ -232,7 +223,6 @@ class MuiHeader extends React.Component {
         this.setState({ changed: true });
       // eslint-disable-next-line
       case "update":
-        this.checkDate(form);
         this.props.setDataForm(form);
         break;
       default:
@@ -330,16 +320,18 @@ class MuiHeader extends React.Component {
           horizontal: "center",
         }}
         style={{ top: 0, width: "100%" }}
-        ContentProps={{
-          style: {
-            background: primary,
-            color: white,
-            width: "100%",
-            justifyContent: "center",
-            borderRadius: "0px",
-            padding: "0px",
-          },
-        }}
+        ContentProps={
+          !this.isLogin() && {
+            style: {
+              background: primary,
+              color: white,
+              width: "100%",
+              justifyContent: "center",
+              borderRadius: "0px",
+              padding: "0px",
+            },
+          }
+        }
         open={open}
         message={`Showing data for ${site}, ${building}, ${device}, ${diagnostic}, ${moment(
           start
@@ -353,43 +345,7 @@ class MuiHeader extends React.Component {
     const { anchorEl, type } = this.state;
     const username = user ? user.email : request ? request.email : "Unknown";
     return (
-      <Toolbar
-        variant="dense"
-        className={clsx(classes.row, classes.title, classes.toolbar)}
-      >
-        <Typography variant="h6" className={classes.titleLabel}>
-          <strong>{`Fault Detection & Diagnostic Visualization`}</strong>
-        </Typography>
-        {mode && (
-          <React.Fragment>
-            <Typography variant="h6" className={classes.mode}>
-              {mode.mode.label}
-            </Typography>
-            <MuiIconButton color={black} onClick={this.handleOpen("mode")}>
-              <KeyboardArrowDownIcon />
-            </MuiIconButton>
-            <Menu
-              id="mode-menu"
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-              open={type === "mode"}
-              onClose={this.handleClose}
-            >
-              {mode.modes.map((m) => (
-                <MenuItem
-                  key={`mode-${m.name}`}
-                  selected={m.name === mode.mode.name}
-                  onClick={() => this.handleMode(m)}
-                >
-                  {m.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          </React.Fragment>
-        )}
-        <div className={classes.spacer} />
+      <Toolbar variant="dense" className={classes.toolbar}>
         {this.isLogin() && (
           <React.Fragment>
             <AccountCircleIcon />
@@ -413,6 +369,36 @@ class MuiHeader extends React.Component {
                 Logout
               </MenuItem>
             </Menu>
+            <Typography className={classes.spacer} />
+            {mode && (
+              <React.Fragment>
+                <Typography variant="h6" className={classes.mode}>
+                  {mode.mode.label}
+                </Typography>
+                <MuiIconButton color={black} onClick={this.handleOpen("mode")}>
+                  <KeyboardArrowDownIcon />
+                </MuiIconButton>
+                <Menu
+                  id="mode-menu"
+                  anchorEl={anchorEl}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  open={type === "mode"}
+                  onClose={this.handleClose}
+                >
+                  {mode.modes.map((m) => (
+                    <MenuItem
+                      key={`mode-${m.name}`}
+                      selected={m.name === mode.mode.name}
+                      onClick={() => this.handleMode(m)}
+                    >
+                      {m.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </React.Fragment>
+            )}
           </React.Fragment>
         )}
       </Toolbar>
@@ -763,9 +749,9 @@ class MuiHeader extends React.Component {
     const { classes } = this.props;
     return (
       <AppBar position="fixed" className={classes.root}>
-        {this.renderNavigation()}
-        {/* {this.renderTitle()} */}
         {this.renderUser()}
+        {this.renderNavigation()}
+        {this.renderTitle()}
         {this.renderForm()}
         {this.renderNotice()}
       </AppBar>

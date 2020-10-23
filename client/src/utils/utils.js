@@ -57,9 +57,9 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import React from "react";
-import _ from "lodash";
 import jsonpath from "jsonpath";
+import _ from "lodash";
+import React from "react";
 
 export function getDocumentWidth() {
   // We always want the client width
@@ -82,20 +82,6 @@ export function getDocumentHeight() {
     document.documentElement.clientHeight
   );
 }
-
-/**
- * Turn the input value into an acronym.
- *
- * @param {String} value
- */
-export const acronymize = (value) => {
-  return value
-    .trim()
-    .replace(/[^\w\d\s]|[_]/gi, " ")
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/([a-z])[\w\d]*/gi, "$1")
-    .replace(/\s+/gi, "");
-};
 
 /**
  * Parse a string and return a boolean value.

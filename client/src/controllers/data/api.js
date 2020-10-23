@@ -59,7 +59,7 @@
 
 import CsvParser from "csv-parser";
 import { Readable } from "stream";
-import { logError, parseBoolean } from "utils/utils";
+import { logError } from "utils/utils";
 import { create, doMocked, isMocked, read } from "../api";
 import { key } from "./action";
 export const UNIQUE_KEY_UPLOAD_SAMPLE = "sample/upload";
@@ -137,29 +137,15 @@ export const uploadConfig = (file) => {
 
 export const readSources = () => {
   if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_SOURCES);
-  return read(
-    `${SERVICE_ENDPOINT_SOURCES}`,
-    null,
-    parseBoolean(process.env.REACT_APP_LOGIN)
-  );
+  return read(`${SERVICE_ENDPOINT_SOURCES}`, null, false);
 };
 
 export const readDiagnostics = (form) => {
   if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_DIAGNOSTICS);
-  return create(
-    `${SERVICE_ENDPOINT_DIAGNOSTICS}`,
-    form,
-    null,
-    parseBoolean(process.env.REACT_APP_LOGIN)
-  );
+  return create(`${SERVICE_ENDPOINT_DIAGNOSTICS}`, form, null, false);
 };
 
 export const readDetailed = (form) => {
   if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_DETAILED);
-  return create(
-    `${SERVICE_ENDPOINT_DETAILED}`,
-    form,
-    null,
-    parseBoolean(process.env.REACT_APP_LOGIN)
-  );
+  return create(`${SERVICE_ENDPOINT_DETAILED}`, form, null, false);
 };

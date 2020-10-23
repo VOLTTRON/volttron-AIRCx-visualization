@@ -94,15 +94,28 @@ class MuiNotice extends Component {
         buttons={this.buttons()}
       >
         <React.Fragment>
-          <Typography paragraph align="center">
-            **************************WARNING**************************
+          <Typography paragraph>
+            This is a Federal computer system and is the property of the United
+            States Government. This system is for authorized use only. All users
+            (authorized or unauthorized) have no explicit or implicit
+            expectation of privacy.
           </Typography>
-          <Typography paragraph align="center">
-            This is a U.S. General Services Administration Federal Government
-            computer system that is "FOR OFFICIAL USE ONLY." This system is
-            subject to monitoring. Therefore, no expectation of privacy is to be
-            assumed. Individuals found performing unauthorized activities are
-            subject to disciplinary action including criminal prosecution.
+          <Typography paragraph>
+            Any or all uses of this system and all files on this system may be
+            intercepted, monitored, recorded, copied, audited, inspected, and
+            disclosed to authorized site, Department of Energy, and law
+            enforcement personnel, as well as authorized officials of other
+            agencies, domestic and foreign. By using this system the user
+            consents to such interception, monitoring, recording, copying,
+            auditing, inspection, and disclosure at the discretion of authorized
+            site or Department of Energy personnel.
+          </Typography>
+          <Typography paragraph>
+            Unauthorized or improper use of this system may result in
+            administrative disciplinary action and civil and criminal penalties.
+            By continuing to use this system you indicate your awareness of and
+            consent to these terms and conditions of use. LOG OFF IMMEDIATELY if
+            you do not agree to the conditions stated in this warning.
           </Typography>
         </React.Fragment>
       </MuiDialog>

@@ -10,9 +10,7 @@
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
-require("dotenv-flow").config({
-  silent: true,
-});
+require("dotenv").config();
 
 const privateKey = fs.readFileSync(
   path.join(process.cwd(), process.env.PRIVATE_KEY)

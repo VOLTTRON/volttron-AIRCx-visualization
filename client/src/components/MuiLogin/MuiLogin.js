@@ -57,20 +57,18 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import { MuiDialog, MuiSection, MuiTextField } from "components";
-import React, { Component, Fragment } from "react";
 import { Tab, Tabs } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import { MuiDialog, MuiSection, MuiTextField } from "components";
 import {
   continueUser,
   loginUser,
   selectLoginUser,
 } from "controllers/user/action";
-
-import { MuiFooter } from "..";
-import _ from "lodash";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
+import { MuiFooter } from "..";
 import styles from "./styles";
-import { withStyles } from "@material-ui/core/styles";
 
 const TabPanel = (props) => {
   const { children, index, value } = props;
@@ -114,15 +112,7 @@ class MuiLogin extends Component {
   };
 
   handleNewAccount = () => {
-    const { email, name } = this.state;
-    const to = process.env.REACT_APP_ADMIN_EMAIL;
-    const subject = "?subject=AIRCx%20Account%20Request";
-    const body = `
-            &body=
-            Full%20Name:%20${name}%0A
-            Email%20Address:%20${email}
-            `;
-    window.location.href = `mailto:${to}${subject}${body}`;
+    // TODO handle new account
   };
 
   handleChange = (key) => (event) => {
@@ -142,7 +132,7 @@ class MuiLogin extends Component {
     } else if (this.state.value === 1) {
       return [
         {
-          label: "Request New Account",
+          label: "Create New Account",
           disabled: !this.validateField(),
           onClick: this.handleNewAccount,
           type: "primary",
@@ -154,7 +144,6 @@ class MuiLogin extends Component {
   render() {
     const { classes, auth, busy } = this.props;
     const { email, name, password } = this.state;
-    const to = process.env.REACT_APP_ADMIN_EMAIL;
     if (auth) {
       return null;
     }
@@ -175,7 +164,7 @@ class MuiLogin extends Component {
               indicatorColor="primary"
             >
               <Tab label="Login" />
-              {!_.isEmpty(to) && <Tab label="New Account" />}
+              <Tab label="New Account" />
             </Tabs>
             <TabPanel value={this.state.value} index={0}>
               <MuiSection>
@@ -194,24 +183,22 @@ class MuiLogin extends Component {
                 />
               </MuiSection>
             </TabPanel>
-            {!_.isEmpty(to) && (
-              <TabPanel value={this.state.value} index={1}>
-                <MuiSection>
-                  <MuiTextField
-                    id="name"
-                    placeholder="Full Name"
-                    value={name}
-                    onChange={this.handleChange("name")}
-                  />
-                  <MuiTextField
-                    id="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={this.handleChange("email")}
-                  />
-                </MuiSection>
-              </TabPanel>
-            )}
+            <TabPanel value={this.state.value} index={1}>
+              <MuiSection>
+                <MuiTextField
+                  id="name"
+                  placeholder="Full Name"
+                  value={name}
+                  onChange={this.handleChange("name")}
+                />
+                <MuiTextField
+                  id="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={this.handleChange("email")}
+                />
+              </MuiSection>
+            </TabPanel>
           </Fragment>
         </MuiDialog>
         <MuiFooter />

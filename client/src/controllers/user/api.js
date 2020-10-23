@@ -57,10 +57,8 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import { create, doMocked, isMocked, remove, update } from "../api";
-
+import { create, doMocked, isMocked, read, remove, update } from "../api";
 import { key } from "./action";
-
 export const SERVICE_ENDPOINT = "user";
 export const SERVICE_ENDPOINT_READ_USER = `${SERVICE_ENDPOINT}/get`;
 export const SERVICE_ENDPOINT_REMOVE_USER = `${SERVICE_ENDPOINT}/delete`;
@@ -69,7 +67,7 @@ export const SERVICE_ENDPOINT_LOGIN = `${SERVICE_ENDPOINT}/login`;
 
 export const readUser = () => {
   if (isMocked()) return doMocked(key, SERVICE_ENDPOINT_READ_USER);
-  return create(`${SERVICE_ENDPOINT}`, {}, null, true);
+  return read(`${SERVICE_ENDPOINT}`, null, true);
 };
 
 export const removeUser = () => {

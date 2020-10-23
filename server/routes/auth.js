@@ -60,9 +60,7 @@
 const jwt = require("express-jwt");
 const fs = require("fs");
 const path = require("path");
-require("dotenv-flow").config({
-  silent: true,
-});
+require("dotenv").config();
 
 const publicKey = fs.readFileSync(
   path.join(process.cwd(), process.env.PUBLIC_KEY)

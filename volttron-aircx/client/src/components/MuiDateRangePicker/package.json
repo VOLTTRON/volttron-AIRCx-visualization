@@ -1,6 +1,0 @@
-{
-  "name": "mui-date-range-picker",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./MuiDateRangePicker.js"
-}

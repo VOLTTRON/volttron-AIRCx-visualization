@@ -213,7 +213,9 @@ class Graph extends React.Component {
     const { current, sources } = this.props;
     if (value.date) {
       const { site, building, device, diagnostic } = current;
-      const topic = Object.values(_.get(sources, [diagnostic, site, building, device], {}));
+      const topic = Object.values(
+        _.get(sources, [diagnostic, site, building, device], {})
+      );
       this.setState({ show: value });
       this.props.fetchDetailed(
         _.merge({}, current, {
@@ -236,7 +238,9 @@ class Graph extends React.Component {
     const { base, months, show } = this.state;
     if (this.isPrevious()) {
       const { site, building, device, diagnostic } = current;
-      const topic = Object.values(_.get(sources, [diagnostic, site, building, device], {}));
+      const topic = Object.values(
+        _.get(sources, [diagnostic, site, building, device], {})
+      );
       const date = show.date.clone().subtract("day", 1);
       const mark = _.find(base, {
         x: _.findIndex(months, { month: date.month(), year: date.year() }) + 1,
@@ -264,7 +268,9 @@ class Graph extends React.Component {
     const { base, months, show } = this.state;
     if (this.isNext()) {
       const { site, building, device, diagnostic } = current;
-      const topic = Object.values(_.get(sources, [diagnostic, site, building, device], {}));
+      const topic = Object.values(
+        _.get(sources, [diagnostic, site, building, device], {})
+      );
       const date = show.date.clone().add("day", 1);
       const mark = _.find(base, {
         x: _.findIndex(months, { month: date.month(), year: date.year() }) + 1,
@@ -303,8 +309,15 @@ class Graph extends React.Component {
         </div>
         <div className={classes.months} style={{ width: months.length * 19 }}>
           {months.map((m) => (
-            <Tooltip key={`tooltip-${m.year}-${m.month}`} title={m.tooltip} placement="top">
-              <span key={`month-${m.year}-${m.month}`} className={classes.month}>
+            <Tooltip
+              key={`tooltip-${m.year}-${m.month}`}
+              title={m.tooltip}
+              placement="top"
+            >
+              <span
+                key={`month-${m.year}-${m.month}`}
+                className={classes.month}
+              >
                 <strong>{m.label}</strong>
               </span>
             </Tooltip>
@@ -335,9 +348,11 @@ class Graph extends React.Component {
             value: v[sensitivity],
           }));
         if (filter === likely) {
-          const errors = _.filter(values, { filter: filters.parse("fault") }).length;
-          const passed = _.filter(values, { filter: filters.parse("okay") }).length;
-          const aggregate = filters.aggregate(errors, passed, sensitivity);
+          const errors = _.filter(values, { filter: filters.parse("fault") })
+            .length;
+          const passed = _.filter(values, { filter: filters.parse("okay") })
+            .length;
+          const aggregate = filters.aggregate(errors, passed);
           temp = { color: aggregate.color, value: 0 };
         } else {
           for (let index = 0; index < filters.values.length; index++) {
@@ -371,10 +386,17 @@ class Graph extends React.Component {
                 }}
               />
             )}
-            <Tooltip key={`tooltip-${mark.tooltip}`} title={mark.tooltip} placement="top">
+            <Tooltip
+              key={`tooltip-${mark.tooltip}`}
+              title={mark.tooltip}
+              placement="top"
+            >
               <ButtonBase
                 key={`mark-${mark.x}-${mark.y}`}
-                className={clsx(classes.mark, Boolean(mark.date) && classes.hover)}
+                className={clsx(
+                  classes.mark,
+                  Boolean(mark.date) && classes.hover
+                )}
                 style={{
                   left: mark.x * 19 - 14,
                   top: mark.y * 21 - 14,
@@ -407,7 +429,16 @@ class Graph extends React.Component {
   }
 
   render() {
-    const { classes, form, current, data, detailed, busy, request, label } = this.props;
+    const {
+      classes,
+      form,
+      current,
+      data,
+      detailed,
+      busy,
+      request,
+      label,
+    } = this.props;
     const { show } = this.state;
     return (
       <Paper className={classes.paper} color={white} elevation={3}>
@@ -447,4 +478,7 @@ const mapStateToProps = (state) => ({
 
 const mapActionToProps = { fetchDetailed };
 
-export default connect(mapStateToProps, mapActionToProps)(withStyles(styles)(Graph));
+export default connect(
+  mapStateToProps,
+  mapActionToProps
+)(withStyles(styles)(Graph));

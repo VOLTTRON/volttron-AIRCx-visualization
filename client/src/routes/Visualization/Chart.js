@@ -1,3 +1,8 @@
+import { Typography } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import { white } from "constants/palette";
+import _ from "lodash";
+import moment from "moment";
 // Copyright (c) 2020, Battelle Memorial Institute
 // All rights reserved.
 // 1.  Battelle Memorial Institute (hereinafter Battelle) hereby grants
@@ -47,17 +52,11 @@
 // operated by
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
-
-import Plot from "react-plotly.js";
 import PropTypes from "prop-types";
 import React from "react";
-import { Typography } from "@material-ui/core";
-import _ from "lodash";
+import Plot from "react-plotly.js";
 import { connect } from "react-redux";
-import moment from "moment";
 import styles from "./styles";
-import { white } from "constants/palette";
-import { withStyles } from "@material-ui/core/styles";
 
 class Chart extends React.Component {
   handleHover = (event) => {
@@ -89,9 +88,6 @@ class Chart extends React.Component {
       scatter,
       ranges,
       show,
-      pmin,
-      pmax,
-      pshow,
     } = data;
     return (
       <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
@@ -104,7 +100,7 @@ class Chart extends React.Component {
             margin: {
               autoexpand: false,
               t: 20,
-              r: 90,
+              r: 60,
               b: 64,
               l: 20,
             },
@@ -116,23 +112,21 @@ class Chart extends React.Component {
               yanchor: "bottom",
               orientation: "h",
             },
-            ...(!pshow && {
-              annotations: labels
-                .filter((l) => l.valid)
-                .map((v, i) => ({
-                  x: v.x,
-                  y: ys[i],
-                  xanchor: "left",
-                  yanchor: "center",
-                  xshift: padding,
-                  text: `<b>${v.abbr}</b>`,
-                  showarrow: false,
-                  font: {
-                    size: 16,
-                    color: colors[i],
-                  },
-                })),
-            }),
+            annotations: labels
+              .filter((l) => l.valid)
+              .map((v, i) => ({
+                x: v.x,
+                y: ys[i],
+                xanchor: "left",
+                yanchor: "center",
+                xshift: padding,
+                text: `<b>${v.abbr}</b>`,
+                showarrow: false,
+                font: {
+                  size: 16,
+                  color: colors[i],
+                },
+              })),
             shapes: ranges,
             xaxis: {
               range: [start, end],
@@ -153,13 +147,6 @@ class Chart extends React.Component {
             yaxis: {
               range: [min, max],
             },
-            ...(pshow && {
-              yaxis2: {
-                overlaying: "y",
-                side: "right",
-                range: [pmin, pmax],
-              },
-            }),
             plot_bgcolor: white,
             paper_bgcolor: white,
           }}
@@ -168,7 +155,7 @@ class Chart extends React.Component {
           }}
           data={scatter}
         />
-        {!show && !pshow && (
+        {!show && (
           <Typography className={classes.noData} variant="h5">
             <strong>No Data Available</strong>
           </Typography>
@@ -179,7 +166,7 @@ class Chart extends React.Component {
 
   renderBox() {
     const { classes, width, height, data } = this.props;
-    const { min, max, box, show, pshow } = data;
+    const { min, max, box, show } = data;
     return (
       <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
         <Plot
@@ -190,7 +177,7 @@ class Chart extends React.Component {
             margin: {
               autoexpand: false,
               t: 20,
-              r: 50,
+              r: 60,
               b: 104,
               l: 20,
             },
@@ -218,7 +205,7 @@ class Chart extends React.Component {
           }}
           data={box}
         />
-        {!show && !pshow && (
+        {!show && (
           <Typography className={classes.noData} variant="h5">
             <strong>No Data Available</strong>
           </Typography>
@@ -233,21 +220,12 @@ class Chart extends React.Component {
       <div className={classes.chartContent}>
         <div className={classes.chartFlex}>
           <div className={classes.chartYAxis}>
-            <Typography className={classes.yHeaderPrimary} variant="h5">
-              <strong>Temperature ({"\xB0"}F) or %</strong>
+            <Typography className={classes.yHeader} variant="h5">
+              <strong>Temperature ({"\xB0"}F)</strong>
             </Typography>
           </div>
+          {type === "primary" && this.renderScatter()}
           {type === "secondary" && this.renderBox()}
-          {type === "primary" && (
-            <React.Fragment>
-              {this.renderScatter()}
-              <div className={classes.chartYAxis}>
-                <Typography className={classes.yHeaderSecondary} variant="h5">
-                  <strong>Inches (inAq)</strong>
-                </Typography>
-              </div>
-            </React.Fragment>
-          )}
           <div className={classes.chartXAxis}>
             <Typography className={classes.xHeader} variant="h5">
               <strong>Time</strong>

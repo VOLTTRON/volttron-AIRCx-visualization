@@ -57,12 +57,7 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import {
-  acronymize,
-  filter,
-  getDocumentHeight,
-  getDocumentWidth,
-} from "./utils";
+import { filter, getDocumentHeight, getDocumentWidth } from "./utils";
 
 describe("utils.getDocumentWidth()", () => {
   it("width should be 0 when no page is shown", () => {
@@ -73,33 +68,6 @@ describe("utils.getDocumentWidth()", () => {
 describe("utils.getDocumentHeight()", () => {
   it("height should be 0 when no page is shown", () => {
     expect(getDocumentHeight()).toEqual(0);
-  });
-});
-
-describe("utils.acronymize()", () => {
-  it("acronymize should handle: all lowercase letters", () => {
-    expect(acronymize("all lowercase letters")).toEqual("all");
-  });
-  it("acronymize should handle: All Normalcase Letters", () => {
-    expect(acronymize("All Normalcase Letters")).toEqual("ANL");
-  });
-  it("acronymize should handle: AllCamelcaseLetters", () => {
-    expect(acronymize("AllCamelcaseLetters")).toEqual("ACL");
-  });
-  it("acronymize should handle: ALL UPPERCASE LETTERS", () => {
-    expect(acronymize("ALL UPPERCASE LETTERS")).toEqual("AUL");
-  });
-  it("acronymize should handle: ALL_UNDERSCORE_SEPARATED", () => {
-    expect(acronymize("ALL_UNDERSCORE_SEPARATED")).toEqual("AUS");
-  });
-  it("acronymize should handle: all_underscore_separated", () => {
-    expect(acronymize("all_underscore_separated")).toEqual("aus");
-  });
-  it("acronymize should handle: all-hyphenated-separated", () => {
-    expect(acronymize("all-hyphenated-separated")).toEqual("ahs");
-  });
-  it("acronymize should handle: all\\slash/separated", () => {
-    expect(acronymize("all\\slash/separated")).toEqual("ass");
   });
 });
 
