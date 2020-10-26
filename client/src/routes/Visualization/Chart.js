@@ -1,8 +1,3 @@
-import { Typography } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import { white } from "constants/palette";
-import _ from "lodash";
-import moment from "moment";
 // Copyright (c) 2020, Battelle Memorial Institute
 // All rights reserved.
 // 1.  Battelle Memorial Institute (hereinafter Battelle) hereby grants
@@ -52,6 +47,11 @@ import moment from "moment";
 // operated by
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
+import { Typography } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import { white } from "constants/palette";
+import _ from "lodash";
+import moment from "moment";
 import PropTypes from "prop-types";
 import React from "react";
 import Plot from "react-plotly.js";
@@ -88,6 +88,9 @@ class Chart extends React.Component {
       scatter,
       ranges,
       show,
+      pmin,
+      pmax,
+      pshow,
     } = data;
     return (
       <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
@@ -112,21 +115,23 @@ class Chart extends React.Component {
               yanchor: "bottom",
               orientation: "h",
             },
-            annotations: labels
-              .filter((l) => l.valid)
-              .map((v, i) => ({
-                x: v.x,
-                y: ys[i],
-                xanchor: "left",
-                yanchor: "center",
-                xshift: padding,
-                text: `<b>${v.abbr}</b>`,
-                showarrow: false,
-                font: {
-                  size: 16,
-                  color: colors[i],
-                },
-              })),
+            ...(!pshow && {
+              annotations: labels
+                .filter((l) => l.valid)
+                .map((v, i) => ({
+                  x: v.x,
+                  y: ys[i],
+                  xanchor: "left",
+                  yanchor: "center",
+                  xshift: padding,
+                  text: `<b>${v.abbr}</b>`,
+                  showarrow: false,
+                  font: {
+                    size: 16,
+                    color: colors[i],
+                  },
+                })),
+            }),
             shapes: ranges,
             xaxis: {
               range: [start, end],
@@ -147,6 +152,13 @@ class Chart extends React.Component {
             yaxis: {
               range: [min, max],
             },
+            ...(pshow && {
+              yaxis2: {
+                overlaying: "y",
+                side: "right",
+                range: [pmin, pmax],
+              },
+            }),
             plot_bgcolor: white,
             paper_bgcolor: white,
           }}
