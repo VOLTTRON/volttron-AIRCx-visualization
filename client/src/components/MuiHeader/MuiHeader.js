@@ -320,18 +320,16 @@ class MuiHeader extends React.Component {
           horizontal: "center",
         }}
         style={{ top: 0, width: "100%" }}
-        ContentProps={
-          !this.isLogin() && {
-            style: {
-              background: primary,
-              color: white,
-              width: "100%",
-              justifyContent: "center",
-              borderRadius: "0px",
-              padding: "0px",
-            },
-          }
-        }
+        ContentProps={{
+          style: {
+            background: primary,
+            color: white,
+            width: "100%",
+            justifyContent: "center",
+            borderRadius: "0px",
+            padding: "0px",
+          },
+        }}
         open={open}
         message={`Showing data for ${site}, ${building}, ${device}, ${diagnostic}, ${moment(
           start
@@ -345,7 +343,43 @@ class MuiHeader extends React.Component {
     const { anchorEl, type } = this.state;
     const username = user ? user.email : request ? request.email : "Unknown";
     return (
-      <Toolbar variant="dense" className={classes.toolbar}>
+      <Toolbar
+        variant="dense"
+        className={clsx(classes.row, classes.title, classes.toolbar)}
+      >
+        <Typography variant="h6" className={classes.titleLabel}>
+          <strong>{`Fault Detection & Diagnostic Visualization`}</strong>
+        </Typography>
+        {mode && (
+          <React.Fragment>
+            <Typography variant="h6" className={classes.mode}>
+              {mode.mode.label}
+            </Typography>
+            <MuiIconButton color={black} onClick={this.handleOpen("mode")}>
+              <KeyboardArrowDownIcon />
+            </MuiIconButton>
+            <Menu
+              id="mode-menu"
+              anchorEl={anchorEl}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+              open={type === "mode"}
+              onClose={this.handleClose}
+            >
+              {mode.modes.map((m) => (
+                <MenuItem
+                  key={`mode-${m.name}`}
+                  selected={m.name === mode.mode.name}
+                  onClick={() => this.handleMode(m)}
+                >
+                  {m.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </React.Fragment>
+        )}
+        <div className={classes.spacer} />
         {this.isLogin() && (
           <React.Fragment>
             <AccountCircleIcon />
@@ -369,36 +403,6 @@ class MuiHeader extends React.Component {
                 Logout
               </MenuItem>
             </Menu>
-            <Typography className={classes.spacer} />
-            {mode && (
-              <React.Fragment>
-                <Typography variant="h6" className={classes.mode}>
-                  {mode.mode.label}
-                </Typography>
-                <MuiIconButton color={black} onClick={this.handleOpen("mode")}>
-                  <KeyboardArrowDownIcon />
-                </MuiIconButton>
-                <Menu
-                  id="mode-menu"
-                  anchorEl={anchorEl}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  transformOrigin={{ vertical: "top", horizontal: "right" }}
-                  open={type === "mode"}
-                  onClose={this.handleClose}
-                >
-                  {mode.modes.map((m) => (
-                    <MenuItem
-                      key={`mode-${m.name}`}
-                      selected={m.name === mode.mode.name}
-                      onClick={() => this.handleMode(m)}
-                    >
-                      {m.label}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </React.Fragment>
-            )}
           </React.Fragment>
         )}
       </Toolbar>
@@ -749,9 +753,9 @@ class MuiHeader extends React.Component {
     const { classes } = this.props;
     return (
       <AppBar position="fixed" className={classes.root}>
-        {this.renderUser()}
         {this.renderNavigation()}
-        {this.renderTitle()}
+        {/* {this.renderTitle()} */}
+        {this.renderUser()}
         {this.renderForm()}
         {this.renderNotice()}
       </AppBar>

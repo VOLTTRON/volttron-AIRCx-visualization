@@ -54,8 +54,7 @@
     "prettier": "^1.16.1",
     "trash-cli": "^3.0.0"
   },
-  "proxy": "http://localhost:3001",
-  "repository": "https://stash.pnnl.gov/scm/uwtechint/parking.git",
+  "proxy": "https://localhost:3001",
   "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>",
   "license": "SEE LICENSE IN LICENSE"
 }

@@ -9,6 +9,7 @@ const route = {
   exact: true,
   component: Root,
   icon: DonutLargeIcon,
+  user: true,
   admin: false,
   indent: false,
   hidden: false,
