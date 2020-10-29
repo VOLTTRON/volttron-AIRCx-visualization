@@ -119,7 +119,7 @@ const createScatterUpdate = (data, request, result) => {
       .map((d, i) => {
         const k = keys[i];
         if (!/pressure/gi.test(k)) {
-          const multiplier = conversion.includes(k) ? 10.0 : 1.0;
+          const multiplier = conversion.includes(k) ? 100.0 : 1.0;
           return {
             x: d.map((v) => v[0]),
             y: d.map((v) => v[1] * multiplier),
@@ -139,7 +139,7 @@ const createScatterUpdate = (data, request, result) => {
       .map((d, i) => {
         const k = keys[i];
         if (/pressure/gi.test(k)) {
-          const multiplier = conversion.includes(k) ? 10.0 : 1.0;
+          const multiplier = conversion.includes(k) ? 100.0 : 1.0;
           return {
             x: d.map((v) => v[0]),
             y: d.map((v) => v[1] * multiplier),

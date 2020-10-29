@@ -103,7 +103,7 @@ class Chart extends React.Component {
             margin: {
               autoexpand: false,
               t: 20,
-              r: 60,
+              r: 90,
               b: 64,
               l: 20,
             },
@@ -189,7 +189,7 @@ class Chart extends React.Component {
             margin: {
               autoexpand: false,
               t: 20,
-              r: 60,
+              r: 50,
               b: 104,
               l: 20,
             },
@@ -232,12 +232,21 @@ class Chart extends React.Component {
       <div className={classes.chartContent}>
         <div className={classes.chartFlex}>
           <div className={classes.chartYAxis}>
-            <Typography className={classes.yHeader} variant="h5">
-              <strong>Temperature ({"\xB0"}F)</strong>
+            <Typography className={classes.yHeaderPrimary} variant="h5">
+              <strong>Temperature ({"\xB0"}F) or %</strong>
             </Typography>
           </div>
-          {type === "primary" && this.renderScatter()}
           {type === "secondary" && this.renderBox()}
+          {type === "primary" && (
+            <React.Fragment>
+              {this.renderScatter()}
+              <div className={classes.chartYAxis}>
+                <Typography className={classes.yHeaderSecondary} variant="h5">
+                  <strong>Inches (inAq)</strong>
+                </Typography>
+              </div>
+            </React.Fragment>
+          )}
           <div className={classes.chartXAxis}>
             <Typography className={classes.xHeader} variant="h5">
               <strong>Time</strong>

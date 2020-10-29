@@ -22,7 +22,7 @@ const styles = (theme) => ({
   flex: {
     display: "flex",
     flexWrap: "wrap",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "center",
     padding: "20px",
     marginLeft: "20px",
@@ -73,17 +73,26 @@ const styles = (theme) => ({
     width: "90px",
     textAlign: "right",
     display: "inline-block",
-    marginTop: "88px",
+    marginBottom: "94px",
     "& h5": {
       left: "15px",
     },
   },
-  yHeader: {
+  yHeaderPrimary: {
     color: gray,
-    display: "inline-block",
     position: "absolute",
+    transformOrigin: "0 0",
     transform: "rotate(-90deg)",
-    bottom: "50%",
+    bottom: "25%",
+    left: "0",
+  },
+  yHeaderSecondary: {
+    color: gray,
+    position: "absolute",
+    transformOrigin: "0 0",
+    transform: "rotate(-90deg)",
+    bottom: "35%",
+    right: "-125px",
   },
   days: { position: "relative" },
   day: { color: gray, fontSize: ".875rem", height: "21px" },
@@ -177,9 +186,6 @@ const styles = (theme) => ({
   },
   chartYAxis: {
     width: "40px",
-    "& h5": {
-      left: "-80px",
-    },
   },
   chartFlex: {
     display: "flex",
