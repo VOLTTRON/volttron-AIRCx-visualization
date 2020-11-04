@@ -1,4 +1,5 @@
 import { DashboardOutlined as DashboardIcon } from "@material-ui/icons";
+import { parseBoolean } from "utils/utils";
 import Root from "./Root";
 
 const route = {
@@ -9,7 +10,7 @@ const route = {
   exact: true,
   component: Root,
   icon: DashboardIcon,
-  user: true,
+  user: parseBoolean(process.env.REACT_APP_LOGIN),
   admin: false,
   indent: false,
   hidden: false,
