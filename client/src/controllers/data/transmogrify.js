@@ -88,6 +88,12 @@ const colors = [
   "mediumpurple",
 ];
 
+const scale = (input, fromMax, fromMin, toMax, toMin) => {
+  const temp =
+    toMin + ((input - fromMin) * (toMax - toMin)) / (fromMax - fromMin);
+  return temp;
+};
+
 const createScatterUpdate = (data, request, result) => {
   const { labels } = result;
   const { topic } = request ? request : {};
@@ -109,20 +115,47 @@ const createScatterUpdate = (data, request, result) => {
         line: { shape: "spline", color: colors[i], size: 3, width: 3 },
       };
     }),
-    values.map((d, i) => {
-      const k = keys[i];
-      const multiplier = conversion.includes(k) ? 10.0 : 1.0;
-      return {
-        x: d.map((v) => v[0]),
-        y: d.map((v) => v[1] * multiplier),
-        legendgroup: labels[i].acronym,
-        showlegend: false,
-        name: labels[i].label,
-        type: "scatter",
-        mode: "lines",
-        line: { shape: "spline", color: colors[i], size: 3, width: 3 },
-      };
-    })
+    values
+      .map((d, i) => {
+        const k = keys[i];
+        if (!/pressure/gi.test(k)) {
+          const multiplier = conversion.includes(k) ? 100.0 : 1.0;
+          return {
+            x: d.map((v) => v[0]),
+            y: d.map((v) => v[1] * multiplier),
+            legendgroup: labels[i].acronym,
+            showlegend: false,
+            name: labels[i].label,
+            type: "scatter",
+            mode: "lines",
+            line: { shape: "spline", color: colors[i], size: 3, width: 3 },
+            hovertemplate: "%{y:.2f}",
+          };
+        }
+        return null;
+      })
+      .filter((v) => v !== null),
+    values
+      .map((d, i) => {
+        const k = keys[i];
+        if (/pressure/gi.test(k)) {
+          const multiplier = conversion.includes(k) ? 100.0 : 1.0;
+          return {
+            x: d.map((v) => v[0]),
+            y: d.map((v) => v[1] * multiplier),
+            legendgroup: labels[i].acronym,
+            showlegend: false,
+            name: labels[i].label,
+            type: "scatter",
+            mode: "lines",
+            yaxis: "y2",
+            line: { shape: "spline", color: colors[i], size: 3, width: 3 },
+            hovertemplate: "%{y:.2f}",
+          };
+        }
+        return null;
+      })
+      .filter((v) => v !== null)
   );
   return { scatter };
 };
@@ -263,29 +296,44 @@ export const transmogrifyDetailedUtil = (
   };
   const offset = keys.detailed.length;
   const values = _.concat(
-    _.concat(...Object.values(detailed)).map((v) => v[1]),
+    _.concat(
+      ...Object.entries(detailed)
+        .filter(([k, v]) => !/pressure/gi.test(k))
+        .map(([k, v]) => v.map((y) => y[1]))
+    ),
     _.concat(
       ...Object.values(subdevices).map((v) => _.concat(...Object.values(v)))
     ).map((v) => v[1])
   );
+  const pvalues = _.concat(
+    _.concat(
+      ...Object.entries(detailed)
+        .filter(([k, v]) => /pressure/gi.test(k))
+        .map(([k, v]) => v.map((y) => y[1]))
+    )
+  );
+  const show = !_.isEmpty(values);
+  const pshow = !_.isEmpty(pvalues);
+  const min = 0; //(show ? _.min(values) : 0);
+  const max = (show ? _.max(values) : 0) + 5;
+  const pmin = 0; //(pshow ? _.min(pvalues) : 0);
+  const pmax = (pshow ? _.max(pvalues) : 0) + 1;
+  const padding = (max - min) / 30;
   const labels = _.concat(keys.detailed, keys.subdevices).map((l, i) => {
     const y =
       i < keys.detailed.length ? _.get(detailed[l].slice(-1).pop(), "1", 0) : 0;
     const v = i < keys.detailed.length ? detailed[l].length > 0 : false;
+    const a = /pressure/gi.test(l) ? scale(y, pmax, pmin, max, min) : y;
     return {
       i: i,
       x: end,
-      y: y,
+      y: a,
       label: l.replace(/([A-Z]+)/g, " $1").trim(),
       acronym: l.replace(/[a-z]+/g, "").trim(),
       abbr: l.trim().slice(0, 1),
       valid: v,
     };
   });
-  const show = !_.isEmpty(values);
-  const min = (show ? _.min(values) : 0) - 10;
-  const max = (show ? _.max(values) : 0) + 10;
-  const padding = (max - min) / 30;
   const ys = createPadding(
     labels.map((v) => v.y),
     min,
@@ -303,6 +351,9 @@ export const transmogrifyDetailedUtil = (
     colors,
     offset,
     show,
+    pshow,
+    pmin,
+    pmax,
   };
   switch (type) {
     case "primary":

@@ -95,7 +95,7 @@ The server configuration consists of a primary configuration file and a director
 - PARSE_DATA: Set this to true to parse string data returned from topics.
 - DEFAULT_TIMEZONE: Specify the default timezone (with DST) to use for converting timestamps. This can also be specified within the configuration files by setting the value for timezone.
 - DEFAULT_UTC_OFFSET: Can be used instead of specifying a default timezone. This can also be specified within the configuration files by setting the value for utc_offset.
-- POINT_MAPPING_CONVERSION_REGEX: Regular expression used to identify point mapping key or value that should be converted for clarity within visualizations. This currently multipies the associated values by 10.
+- POINT_MAPPING_CONVERSION_REGEX: Regular expression used to identify point mapping key or value that should be converted for clarity within visualizations. This currently multipies the associated values by 100.
 
 The AIRCx configuration files should be placed in the `/server/data/validation` folder. The files can have any name and folder organization. However, the files must be valid JSON and can't contain any comments. If configuration files are missing for existing analysis sources then detailed data will not be available within the visualization detailed popup line chart. There are free JSON validators available such as [https://jsonlint.com/](https://jsonlint.com/).
 
@@ -118,22 +118,23 @@ All rights reserved.
     permission to any person or entity lawfully obtaining a copy of this
     software and associated documentation files (hereinafter "the Software")
     to redistribute and use the Software in source and binary forms, with or
-    without modification.  Such person or entity may use, copy, modify, merge,
+    without modification. Such person or entity may use, copy, modify, merge,
     publish, distribute, sublicense, and/or sell copies of the Software, and
     may permit others to do so, subject to the following conditions:
 
-    -   Redistributions of source code must retain the above copyright notice,
-        this list of conditions and the following disclaimers.
+    - Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimers.
 
     -          Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in the
-        documentation and/or other materials provided with the distribution.
+
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
 
     -          Other than as used herein, neither the name Battelle Memorial Institute
-        or Battelle may be used in any form whatsoever without the express
-        written consent of Battelle.
+      or Battelle may be used in any form whatsoever without the express
+      written consent of Battelle.
 
-2. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+2.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
     ARE DISCLAIMED. IN NO EVENT SHALL BATTELLE OR CONTRIBUTORS BE LIABLE FOR

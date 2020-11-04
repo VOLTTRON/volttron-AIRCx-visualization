@@ -112,7 +112,15 @@ class MuiLogin extends Component {
   };
 
   handleNewAccount = () => {
-    // TODO handle new account
+    const { email, name } = this.state;
+    const to = process.env.REACT_APP_ADMIN_EMAIL;
+    const subject = "?subject=AIRCx%20Account%20Request";
+    const body = `
+            &body=
+            Full%20Name:%20${name}%0A
+            Email%20Address:%20${email}
+            `;
+    window.location.href = `mailto:${to}${subject}${body}`;
   };
 
   handleChange = (key) => (event) => {
@@ -132,7 +140,7 @@ class MuiLogin extends Component {
     } else if (this.state.value === 1) {
       return [
         {
-          label: "Create New Account",
+          label: "Request New Account",
           disabled: !this.validateField(),
           onClick: this.handleNewAccount,
           type: "primary",

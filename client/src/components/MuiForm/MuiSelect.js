@@ -94,7 +94,6 @@ const handleRenderValue = (props) => (value) => {
       </div>
     );
   } else {
-    console.log(props);
     return (
       <div className={classes.value}>
         <Typography>{renderValue ? renderValue(value) : value}</Typography>
