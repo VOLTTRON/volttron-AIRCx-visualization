@@ -76,7 +76,7 @@ class MuiDateRangePicker extends React.Component {
     const months = [
       {
         name: temp.format("MMM"),
-        label: temp.format("MMM YYYY"),
+        label: temp.format("MMMM YYYY"),
         icon: `${temp.month() + 1}`,
         month: temp.month(),
         year: temp.year(),
@@ -99,8 +99,11 @@ class MuiDateRangePicker extends React.Component {
     const weeks = {
       [`${months[0].year}-${months[0].month}`]: [
         {
-          name: `${temp.format("MMM D")} to ${last.format(
-            temp.month() === last.month() ? "D" : "MMM D"
+          name: `${temp.format("MMM Do")} to ${last.format(
+            temp.month() === last.month() ? "Do" : "MMM Do"
+          )}`,
+          label: `${temp.format("MMM Do")} to ${last.format(
+            temp.month() === last.month() ? "Do" : "MMM Do"
           )}`,
           icon: 1,
           start: {
@@ -122,7 +125,7 @@ class MuiDateRangePicker extends React.Component {
       [`${months[0].year}-${months[0].month}`]: [
         {
           name: undefined,
-          label: `${temp.date()}`,
+          label: temp.format("Do"),
           icon: `${temp.date()}`,
           day: temp.date(),
           month: temp.month(),
@@ -139,7 +142,7 @@ class MuiDateRangePicker extends React.Component {
       if (newMonth) {
         months.push({
           name: temp.format("MMM"),
-          label: temp.format("MMM YYYY"),
+          label: temp.format("MMMM YYYY"),
           icon: `${temp.month() + 1}`,
           month: temp.month(),
           year: temp.year(),
@@ -166,11 +169,11 @@ class MuiDateRangePicker extends React.Component {
           end.clone().endOf("day")
         );
         weeks[key].push({
-          name: `${first.format("MMM D")} to ${last.format(
-            first.month() === last.month() ? "D" : "MMM D"
+          name: `${first.format("MMM Do")} to ${last.format(
+            first.month() === last.month() ? "Do" : "MMM Do"
           )}`,
-          label: `${first.format("MMM D")} to ${last.format(
-            first.month() === last.month() ? "D" : "MMM D"
+          label: `${first.format("MMM Do")} to ${last.format(
+            first.month() === last.month() ? "Do" : "MMM Do"
           )}`,
           icon: weeks[key].length + 1,
           start: {
@@ -189,7 +192,7 @@ class MuiDateRangePicker extends React.Component {
       }
       days[key].push({
         name: undefined,
-        label: `${temp.date()}`,
+        label: temp.format("Do"),
         icon: `${temp.date()}`,
         day: temp.date(),
         month: temp.month(),

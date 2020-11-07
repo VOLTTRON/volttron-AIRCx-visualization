@@ -141,7 +141,6 @@ class MuiStepper extends React.Component {
           value={step}
           onChange={(e, v) => handleStepChange(_.get(e, "target.value", v))()}
           renderValue={(v) => {
-            console.log(v);
             return _.get(steps, [v, "label"], v);
           }}
         >
