@@ -57,7 +57,6 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import filters from "constants/filters";
 import {
   black,
   error,
@@ -67,9 +66,12 @@ import {
   verified,
   warning,
 } from "constants/palette";
+
 import _ from "lodash";
-import moment from "moment";
+import { acronymize } from "utils/utils";
 import { createPadding } from "utils/layout";
+import filters from "constants/filters";
+import moment from "moment";
 
 const colors = [
   error,
@@ -118,7 +120,7 @@ const createScatterUpdate = (data, request, result) => {
     values
       .map((d, i) => {
         const k = keys[i];
-        if (!/pressure/gi.test(k)) {
+        if (!new RegExp(process.env.REACT_APP_PRESSURE_REGEX, "gi").test(k)) {
           const multiplier = conversion.includes(k) ? 100.0 : 1.0;
           return {
             x: d.map((v) => v[0]),
@@ -138,7 +140,7 @@ const createScatterUpdate = (data, request, result) => {
     values
       .map((d, i) => {
         const k = keys[i];
-        if (/pressure/gi.test(k)) {
+        if (new RegExp(process.env.REACT_APP_PRESSURE_REGEX, "gi").test(k)) {
           const multiplier = conversion.includes(k) ? 100.0 : 1.0;
           return {
             x: d.map((v) => v[0]),
@@ -298,7 +300,10 @@ export const transmogrifyDetailedUtil = (
   const values = _.concat(
     _.concat(
       ...Object.entries(detailed)
-        .filter(([k, v]) => !/pressure/gi.test(k))
+        .filter(
+          ([k, v]) =>
+            !new RegExp(process.env.REACT_APP_PRESSURE_REGEX, "gi").test(k)
+        )
         .map(([k, v]) => v.map((y) => y[1]))
     ),
     _.concat(
@@ -308,7 +313,9 @@ export const transmogrifyDetailedUtil = (
   const pvalues = _.concat(
     _.concat(
       ...Object.entries(detailed)
-        .filter(([k, v]) => /pressure/gi.test(k))
+        .filter(([k, v]) =>
+          new RegExp(process.env.REACT_APP_PRESSURE_REGEX, "gi").test(k)
+        )
         .map(([k, v]) => v.map((y) => y[1]))
     )
   );
@@ -319,17 +326,26 @@ export const transmogrifyDetailedUtil = (
   const pmin = 0; //(pshow ? _.min(pvalues) : 0);
   const pmax = (pshow ? _.max(pvalues) : 0) + 1;
   const padding = (max - min) / 30;
+  const acronyms = [];
   const labels = _.concat(keys.detailed, keys.subdevices).map((l, i) => {
     const y =
       i < keys.detailed.length ? _.get(detailed[l].slice(-1).pop(), "1", 0) : 0;
     const v = i < keys.detailed.length ? detailed[l].length > 0 : false;
-    const a = /pressure/gi.test(l) ? scale(y, pmax, pmin, max, min) : y;
+    const a = new RegExp(process.env.REACT_APP_PRESSURE_REGEX, "gi").test(l)
+      ? scale(y, pmax, pmin, max, min)
+      : y;
+    let acronym = acronymize(l).slice(0, 4);
+    let count = 1;
+    while (acronyms.includes(acronym)) {
+      acronym = `${acronymize(l).slice(0, 4)}${count++}`;
+    }
+    acronyms.push(acronym);
     return {
       i: i,
       x: end,
       y: a,
-      label: l.replace(/([A-Z]+)/g, " $1").trim(),
-      acronym: l.replace(/[a-z]+/g, "").trim(),
+      label: l.replace(/([a-z])([A-Z]+)/g, "$1 $2").trim(),
+      acronym: acronym,
       abbr: l.trim().slice(0, 1),
       valid: v,
     };

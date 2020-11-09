@@ -1,5 +1,7 @@
 # Automatic Identification of Retro-commissioning Measures (AIRCx)
 
+## Version 1.3.4
+
 ---
 
 ## Quick Start Guide
@@ -61,6 +63,7 @@ Install or update all of the dependencies for the server.
 ```bash
 cd ../server
 yarn install
+yarn reset
 ```
 
 ### Configuration
@@ -70,6 +73,9 @@ The client configuration must be edited before building and deploying. The prima
 - REACT_APP_TITLE: The displayed title of the application.
 - REACT_APP_API_URL: The relative path of the server API.
 - REACT_APP_NOTICE: Set to true to display a government notice to users visiting the application.
+- REACT_APP_LOGIN: Set to true to display a login and use authentication for server requests. The server REQUIRE_AUTHENTICATION key must match this option.
+- REACT_APP_ADMIN_EMAIL: The email for requesting a new account or access to the site.
+- REACT_APP_PRESSURE_REGEX: The regular expression to use for identifying when a data point should be plotted on the pressure axis.
 
 If the client is not going to be deployed to a base URL (E.g. https://pnl.gov/aircx instead of https://pnl.gov) then the `homepage` attribute in `/client/package.json` will need to be set accordingly.
 
@@ -96,8 +102,27 @@ The server configuration consists of a primary configuration file and a director
 - DEFAULT_TIMEZONE: Specify the default timezone (with DST) to use for converting timestamps. This can also be specified within the configuration files by setting the value for timezone.
 - DEFAULT_UTC_OFFSET: Can be used instead of specifying a default timezone. This can also be specified within the configuration files by setting the value for utc_offset.
 - POINT_MAPPING_CONVERSION_REGEX: Regular expression used to identify point mapping key or value that should be converted for clarity within visualizations. This currently multipies the associated values by 100.
+- REQUIRE_AUTHENTICATION: Set to true in order to require authentication for access to all endpoints. This requires at least one user to be set up. The client REACT_APP_LOGIN key must match this option.
 
 The AIRCx configuration files should be placed in the `/server/data/validation` folder. The files can have any name and folder organization. However, the files must be valid JSON and can't contain any comments. If configuration files are missing for existing analysis sources then detailed data will not be available within the visualization detailed popup line chart. There are free JSON validators available such as [https://jsonlint.com/](https://jsonlint.com/).
+
+### Authentication
+
+In order to utilize authentication at least one user must be created and the database needs to be setup. By default the server uses a file based SQLite database. Users can not be added directly because the password is hashed before storing. In order to create users add them to the `/data/users.js` file. This file can either be deleted and then used to incrementally add users or retained and all users can be wiped and recreated as a batch.
+
+Deletes existing user database, creates user tables, and creates specified users.
+
+```bash
+cd ../server
+yarn reset
+```
+
+Imports all of the specified users. This command will fail if attempting to import an existing user.
+
+```bash
+cd ../server
+yarn seed-all
+```
 
 ### Running
 
