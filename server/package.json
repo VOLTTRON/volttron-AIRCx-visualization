@@ -1,6 +1,6 @@
 {
   "name": "aircx-backend",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Automatic Identification of Retro-commissioning Measures",
   "main": "index.js",
   "scripts": {
