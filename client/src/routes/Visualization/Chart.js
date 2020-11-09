@@ -47,16 +47,17 @@
 // operated by
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
-import { Typography } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import { white } from "constants/palette";
-import _ from "lodash";
-import moment from "moment";
+
+import Plot from "react-plotly.js";
 import PropTypes from "prop-types";
 import React from "react";
-import Plot from "react-plotly.js";
+import { Typography } from "@material-ui/core";
+import _ from "lodash";
 import { connect } from "react-redux";
+import moment from "moment";
 import styles from "./styles";
+import { white } from "constants/palette";
+import { withStyles } from "@material-ui/core/styles";
 
 class Chart extends React.Component {
   handleHover = (event) => {
@@ -167,7 +168,7 @@ class Chart extends React.Component {
           }}
           data={scatter}
         />
-        {!show && (
+        {!show && !pshow && (
           <Typography className={classes.noData} variant="h5">
             <strong>No Data Available</strong>
           </Typography>
@@ -178,7 +179,7 @@ class Chart extends React.Component {
 
   renderBox() {
     const { classes, width, height, data } = this.props;
-    const { min, max, box, show } = data;
+    const { min, max, box, show, pshow } = data;
     return (
       <div className={classes.chartPlot} onMouseLeave={this.handleHover}>
         <Plot
@@ -217,7 +218,7 @@ class Chart extends React.Component {
           }}
           data={box}
         />
-        {!show && (
+        {!show && !pshow && (
           <Typography className={classes.noData} variant="h5">
             <strong>No Data Available</strong>
           </Typography>
