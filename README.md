@@ -1,4 +1,6 @@
-# Automatic Identification of Retro-commissioning Measures (AIRCx) Results Visualization
+# Automatic Identification of Retro-commissioning Measures (AIRCx)
+
+## Version 1.3.4
 
 ---
 
@@ -61,6 +63,7 @@ Install or update all of the dependencies for the server.
 ```bash
 cd ../server
 yarn install
+yarn reset
 ```
 
 ### Configuration
@@ -70,6 +73,9 @@ The client configuration must be edited before building and deploying. The prima
 - REACT_APP_TITLE: The displayed title of the application.
 - REACT_APP_API_URL: The relative path of the server API.
 - REACT_APP_NOTICE: Set to true to display a government notice to users visiting the application.
+- REACT_APP_LOGIN: Set to true to display a login and use authentication for server requests. The server REQUIRE_AUTHENTICATION key must match this option.
+- REACT_APP_ADMIN_EMAIL: The email for requesting a new account or access to the site. Clear this option to not allow account request.
+- REACT_APP_PRESSURE_REGEX: The regular expression to use for identifying when a data point should be plotted on the pressure axis.
 
 If the client is not going to be deployed to a base URL (E.g. https://pnl.gov/aircx instead of https://pnl.gov) then the `homepage` attribute in `/client/package.json` will need to be set accordingly.
 
@@ -78,13 +84,13 @@ The server configuration consists of a primary configuration file and a director
 - SERVER_PORT: The server port.
 - SERVER_ADDRESS: The server domain address.
 - HTTPS: Set to true in order to host using SSL.
-- PASSWORD_SALT: Not currently used because login and user accounts are not required.
+- PASSWORD_SALT: Must be specified if login, authentication, and user accounts are enabled.
 - SERVER_KEY: The SSL key which must be generated for the host machine. The supplied one is not secure and should only be used for testing.
 - SERVER_CERT: The SSL cert which must be generated for the host mahine. The supplied one is not secure and should only be used for testing.
-- PUBLIC_KEY: Not currently used because login and user accounts are not required.
-- PRIVATE_KEY: Not currently used because login and user accounts are not required.
-- LOG_CONSOLE: The logging level that should be displayed in the console.
-- LOG_FILE: The logging level that should be written to the log file `/server/server.log`.
+- PUBLIC_KEY: Must be specified if login, authentication, and user accounts are enabled.
+- PRIVATE_KEY: Must be specified if login, authentication, and user accounts are enabled.
+- LOG_CONSOLE: The logging level that should be displayed in the console. Logging levels: debug, info, warn, or error
+- LOG_FILE: The logging level that should be written to the log file `/server/server.log`. Logging levels: debug, info, warn, or error
 - HISTORIAN_ADDRESS: The base URL which is hosting the historian REST service.
 - HISTORIAN_USERNAME: The username to use when logging into the historian REST service.
 - HISTORIAN_PASSWORD: The password to use when logging into the historian REST service.
@@ -95,9 +101,36 @@ The server configuration consists of a primary configuration file and a director
 - PARSE_DATA: Set this to true to parse string data returned from topics.
 - DEFAULT_TIMEZONE: Specify the default timezone (with DST) to use for converting timestamps. This can also be specified within the configuration files by setting the value for timezone.
 - DEFAULT_UTC_OFFSET: Can be used instead of specifying a default timezone. This can also be specified within the configuration files by setting the value for utc_offset.
-- POINT_MAPPING_CONVERSION_REGEX: Regular expression used to identify point mapping key or value that should be converted for clarity within visualizations. This currently multipies the associated values by 10.
+- POINT_MAPPING_CONVERSION_REGEX: Regular expression used to identify point mapping key or value that should be converted for clarity within visualizations. This currently multipies the associated values by 100.
+- REQUIRE_AUTHENTICATION: Set to true in order to require authentication for access to all endpoints. This requires at least one user to be set up. The client REACT_APP_LOGIN key must match this option.
 
 The AIRCx configuration files should be placed in the `/server/data/validation` folder. The files can have any name and folder organization. However, the files must be valid JSON and can't contain any comments. If configuration files are missing for existing analysis sources then detailed data will not be available within the visualization detailed popup line chart. There are free JSON validators available such as [https://jsonlint.com/](https://jsonlint.com/).
+
+### Logging
+
+Logging to the console and rolling file can be configured independently. Setting the server configuration LOG_CONSOLE will enable logging to the console. Likewise the server configuration LOG_FILE will enable logging to a file. The file logging will be written to the log file `/server/server.log`. Logging levels can be set to one of the following: debug, info, warn, or error. Server logging, when set to info, will log all of the REST endpoint calls and response codes. These also include authentication/login attempts.
+
+### Authentication
+
+In order to utilize authentication at least one user must be created and the database needs to be setup. By default the server uses a file based SQLite database. Users can not be added directly because the password is hashed before storing. In order to create users add them to the `/data/users.js` file. This file can either be deleted and then used to incrementally add users or retained and all users can be wiped and recreated as a batch.
+
+The client configuration option REACT_APP_LOGIN must be set to true. The server configuration option REQUIRE_AUTHENTICATION must also be set to true. The server configuration PASSWORD_SALT should point to a randomly generated key file. This is used to hash passwords before storing them in the database. The server configurations for PUBLIC_KEY and PRIVATE_KEY should also point to a randomly generated public and private encryption key pair. These files can be generated using a utility like PuTTYgen. These are used to encrypt and decrypt the authentication tokens.
+
+Specifying the client configuration REACT_APP_ADMIN_EMAIL will allow anyone that visits the site to request an account. This will open the user's email application with the required information filled out. Clearing this option will disable this functionality.
+
+Deletes existing user database, creates user tables, and creates specified users.
+
+```bash
+cd ../server
+yarn reset
+```
+
+Imports all of the specified users. This command will fail if attempting to import a user that already exists in the database.
+
+```bash
+cd ../server
+yarn seed-all
+```
 
 ### Running
 
@@ -118,22 +151,23 @@ All rights reserved.
     permission to any person or entity lawfully obtaining a copy of this
     software and associated documentation files (hereinafter "the Software")
     to redistribute and use the Software in source and binary forms, with or
-    without modification.  Such person or entity may use, copy, modify, merge,
+    without modification. Such person or entity may use, copy, modify, merge,
     publish, distribute, sublicense, and/or sell copies of the Software, and
     may permit others to do so, subject to the following conditions:
 
-    -   Redistributions of source code must retain the above copyright notice,
-        this list of conditions and the following disclaimers.
+    - Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimers.
 
     -          Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in the
-        documentation and/or other materials provided with the distribution.
+
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
 
     -          Other than as used herein, neither the name Battelle Memorial Institute
-        or Battelle may be used in any form whatsoever without the express
-        written consent of Battelle.
+      or Battelle may be used in any form whatsoever without the express
+      written consent of Battelle.
 
-2. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+2.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
     ARE DISCLAIMED. IN NO EVENT SHALL BATTELLE OR CONTRIBUTORS BE LIABLE FOR
