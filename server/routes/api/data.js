@@ -64,8 +64,7 @@ const moment = require("moment-timezone");
 const validation = require("../../data/validation");
 const util = require("../../utils/util");
 const _ = require("lodash");
-const { loggers } = require("winston");
-const logger = loggers.get("default");
+const { logger } = require("../../logging");
 require("dotenv").config();
 
 const pattern_diagnostics = /^(?:(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;

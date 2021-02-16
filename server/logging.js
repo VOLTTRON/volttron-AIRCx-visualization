@@ -57,44 +57,33 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-const fs = require("fs");
-const path = require("path");
-const Sequelize = require("sequelize");
-const basename = path.basename(__filename);
-const { logger } = require("../logging");
+const winston = require("winston");
 require("dotenv").config();
-logger.info(`Node Environment: ${process.env.NODE_ENV}`);
-const env = process.env.NODE_ENV || "development";
-const config = require(path.join(process.cwd(), "config/config.js"))[env];
 
-const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  config
-);
+const options = {
+  level: process.env.LOG_GLOBAL,
+  transports: [
+    new winston.transports.Console({ level: process.env.LOG_CONSOLE }),
+    new winston.transports.File({
+      filename: "server.log",
+      level: process.env.LOG_FILE,
+    }),
+  ],
+  format: winston.format.combine(
+    winston.format.json(),
+    winston.format.timestamp(),
+    winston.format.prettyPrint()
+  ),
+  meta: false, // optional: control whether you want to log the meta data about the request (default to true)
+  msg: "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+  expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+  colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+  ignoreRoute: function(req, res) {
+    return false;
+  }, // optional: allows to skip some log messages based on request and/or response
+};
 
-const db = {};
-fs.readdirSync(path.join(process.cwd(), "models/database"))
-  .filter((file) => {
-    return (
-      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
-    );
-  })
-  .forEach((file) => {
-    logger.info(`Importing database model: ${file}`);
-    const model = require(path.join(
-      path.join(process.cwd(), "models/database"),
-      file
-    ))(sequelize, Sequelize.DataTypes);
-    logger.info(`Imported database model: ${file}`);
-    if (!model.name) {
-      logger.warn(`Unable to import database model: ${file}`);
-    }
-    logger.info(model.name);
-    db[model.name] = model;
-  });
+const logger = winston.createLogger(options);
 
-db.sequelize = sequelize;
-
-module.exports = db;
+module.exports.options = options;
+module.exports.logger = logger;
