@@ -66,8 +66,7 @@ const guard = require("express-jwt-permissions")({
   requestProperty: "user",
   permissionsProperty: "scope",
 });
-const { loggers } = require("winston");
-const logger = loggers.get("default");
+const { logger } = require("../../logging");
 
 // login
 router.post("/login", auth.optional, (req, res, next) => {
@@ -153,7 +152,7 @@ router.delete("/", auth.required, guard.check("user"), (req, res, next) => {
 });
 
 // get user
-router.get("/", auth.required, (req, res, next) => {
+router.post("/", auth.required, (req, res, next) => {
   const { id } = req.user;
   User.findAll({
     where: { id: id },

@@ -62,8 +62,7 @@
 const fs = require("fs");
 const path = require("path");
 const _ = require("lodash");
-const { loggers } = require("winston");
-const logger = loggers.get("default");
+const { logger } = require("../../logging");
 const basename = path.basename(__filename);
 
 async function* getFiles(dir) {

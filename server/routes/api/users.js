@@ -60,8 +60,7 @@
 const router = require("express").Router();
 const auth = require("../auth");
 const User = require("../../models").User;
-const { loggers } = require("winston");
-const logger = loggers.get("default");
+const { logger } = require("../../logging");
 const guard = require("express-jwt-permissions")({
   requestProperty: "user",
   permissionsProperty: "scope",
