@@ -68,7 +68,7 @@ const { loggers } = require("winston");
 const logger = loggers.get("default");
 require("dotenv").config();
 
-const pattern_diagnostics = /^(?:(?:record)\/(EconomizerAIRCx|AirsideAIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
+const pattern_diagnostics = /^(?:(?:record)\/(Economizer_?AIRCx|Airside_?AIRCx)\/)([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+)/i;
 const pattern_detailed = /^(?:[a-zA-Z0-9 _-]+\/){3}(?:([a-zA-Z0-9 _-]+)|([a-zA-Z0-9 _-]+)\/([a-zA-Z0-9 _-]+))$/i;
 const pattern_clean_data = /[\"']*{(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)(?:[\"'](low|normal|high)[\"']:\s?([\d.\-]+)(?:,\s)?)}[\"']*/i;
 const conversion = new RegExp(process.env.POINT_MAPPING_CONVERSION_REGEX);
