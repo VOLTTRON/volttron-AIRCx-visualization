@@ -172,6 +172,13 @@ class MuiHeader extends React.Component {
     this.setState(createFormUpdate(_.merge(this.state, form), sources));
   }
 
+  checkDate = (form) => {
+    const start = moment(form.start);
+    const end = moment(form.end);
+    const date = moment(form.date);
+    form.date = date < start ? start.format() : date > end ? end.format() : date.format();
+  }
+
   handleUpdate = (key) => () => {
     const form = _.merge(
       {},
@@ -205,6 +212,7 @@ class MuiHeader extends React.Component {
       case "group":
       case "filter":
       case "sensitivity":
+        this.checkDate(form);
         this.props.setDataForm(form);
         break;
       case "start":
@@ -224,6 +232,7 @@ class MuiHeader extends React.Component {
         this.setState({ changed: true });
       // eslint-disable-next-line
       case "update":
+        this.checkDate(form);
         this.props.setDataForm(form);
         break;
       default:
