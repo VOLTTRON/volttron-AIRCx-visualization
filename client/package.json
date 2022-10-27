@@ -104,7 +104,7 @@
     "redux-starter-kit": "^0.5.1",
     "shx": "^0.3.2"
   },
-  "proxy": "https://localhost:7898",
+  "proxy": "http://localhost:8087",
   "main": "index.js",
   "homepage": "/",
   "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>",

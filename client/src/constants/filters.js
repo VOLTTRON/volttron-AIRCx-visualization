@@ -57,18 +57,10 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import { cdf, pmf, quantile } from "@stdlib/stats/base/dists/binomial";
+import { cdf, quantile } from "@stdlib/stats/base/dists/binomial";
 import _ from "lodash";
-import {
-  all,
-  dark,
-  faults,
-  inconclusive,
-  lighter,
-  likely,
-  primary,
-  unitOff,
-} from "./palette";
+import { all, dark, faults, inconclusive, lighter, likely, primary, unitOff } from "./palette";
+import sensitivities from "./sensitivities";
 
 const noData = {
   name: "no-data",
@@ -100,8 +92,7 @@ const fault = {
   abbr: "Fault",
   color: faults,
   isType: (v) => _.get(getType(v), "name") === "faults",
-  show: (f) =>
-    _.includes(["faults", "no-data", "outside-range"], _.get(f, "name")),
+  show: (f) => _.includes(["faults", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const incon = {
@@ -112,8 +103,7 @@ const incon = {
   abbr: "Incon",
   color: inconclusive,
   isType: (v) => _.get(getType(v), "name") === "inconclusive",
-  show: (f) =>
-    _.includes(["inconclusive", "no-data", "outside-range"], _.get(f, "name")),
+  show: (f) => _.includes(["inconclusive", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const off = {
@@ -124,8 +114,7 @@ const off = {
   abbr: "Unit Off",
   color: unitOff,
   isType: (v) => _.get(getType(v), "name") === "unit-off",
-  show: (f) =>
-    _.includes(["unit-off", "no-data", "outside-range"], _.get(f, "name")),
+  show: (f) => _.includes(["unit-off", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const okay = {
@@ -136,8 +125,7 @@ const okay = {
   abbr: "Okay",
   color: dark,
   isType: (v) => _.get(getType(v), "name") === "okay",
-  show: (f) =>
-    _.includes(["okay", "no-data", "outside-range"], _.get(f, "name")),
+  show: (f) => _.includes(["okay", "no-data", "outside-range"], _.get(f, "name")),
 };
 
 const values = [
@@ -155,11 +143,7 @@ const values = [
     abbr: "Likely",
     color: likely,
     isType: (v) => _.includes(["faults", "okay"], _.get(getType(v), "name")),
-    show: (f) =>
-      _.includes(
-        ["faults", "inconclusive", "okay", "outside-range"],
-        _.get(f, "name")
-      ),
+    show: (f) => _.includes(["faults", "inconclusive", "okay", "outside-range"], _.get(f, "name")),
   },
   {
     name: "all",
@@ -170,17 +154,7 @@ const values = [
     color: all,
     isType: (v) => getType(v) !== null,
     show: (f) =>
-      _.includes(
-        [
-          "faults",
-          "inconclusive",
-          "okay",
-          "unit-off",
-          "no-data",
-          "outside-range",
-        ],
-        _.get(f, "name")
-      ),
+      _.includes(["faults", "inconclusive", "okay", "unit-off", "no-data", "outside-range"], _.get(f, "name")),
   },
 ];
 
@@ -229,8 +203,7 @@ const parse = function(value) {
   );
 };
 
-const getCount = (v) =>
-  Array.isArray(v) ? v.length : _.isString(v) ? parseInt(v) : v;
+const getCount = (v) => (Array.isArray(v) ? v.length : _.isString(v) ? parseInt(v) : v);
 
 const interval = (a, n, p) => {
   const q1 = (1.0 - a) / 2;
@@ -240,15 +213,26 @@ const interval = (a, n, p) => {
   return [l, u];
 };
 
-const aggregate = (errors, passed) => {
+const aggregate = (errors, passed, sensitivity = "normal") => {
+  const s = _.get(sensitivities.parse(sensitivity), "name", "normal");
   const min = 5;
   const p = 0.5;
   const a = 0.95;
   const x = getCount(errors);
   const n = x + getCount(passed);
   const c = cdf(x, n, p);
-  const i = interval(a, n, p)[0];
-  const y = pmf(i, n, p);
+  const i = (() => {
+    switch (s) {
+      case "high":
+        return interval(a, n, p)[0];
+      case "low":
+        return interval(a, n, p)[1];
+      case "normal":
+      default:
+        return n / 2;
+    }
+  })();
+  const y = cdf(i, n, p);
   if (n > min) {
     if (y <= c) {
       return fault;
