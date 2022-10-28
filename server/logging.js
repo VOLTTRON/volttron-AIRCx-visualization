@@ -58,7 +58,9 @@
 // under Contract DE-AC05-76RL01830
 
 const winston = require("winston");
-require("dotenv").config();
+require("dotenv-flow").config({
+  silent: true,
+});
 
 const options = {
   level: process.env.LOG_GLOBAL,

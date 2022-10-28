@@ -61,7 +61,9 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const { logger } = require("../logging");
-require("dotenv").config();
+require("dotenv-flow").config({
+  silent: true,
+});
 
 /**
  * Securely hash the supplied password.

@@ -62,7 +62,9 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const { logger } = require("../logging");
-require("dotenv").config();
+require("dotenv-flow").config({
+  silent: true,
+});
 logger.info(`Node Environment: ${process.env.NODE_ENV}`);
 const env = process.env.NODE_ENV || "development";
 const config = require(path.join(process.cwd(), "config/config.js"))[env];

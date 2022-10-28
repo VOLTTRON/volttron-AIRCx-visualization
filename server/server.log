@@ -1,0 +1,10 @@
+{
+  message: 'Request failed with status code 404',
+  level: 'error',
+  timestamp: '2022-10-27T14:39:10.591Z'
+}
+{
+  message: 'connect ECONNREFUSED 127.0.0.1:8443',
+  level: 'error',
+  timestamp: '2022-10-28T13:13:43.839Z'
+}

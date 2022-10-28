@@ -69,7 +69,9 @@
     "test:ci": "react-scripts test --ci --coverage --reporters=default --reporters=jest-junit --watchAll=false",
     "eslint:ci": "eslint -f checkstyle src > eslint.xml",
     "prettier": "prettier --loglevel=debug --write \"src/**/*.{js,json,css,md,ts,html}\"",
-    "deploy": "shx rm -rf ../server/public && shx cp -r build ../server/public"
+    "deploy": "shx rm -rf ../server/public && shx cp -r build ../server/public",
+    "bundle": "7z.exe a ../server.zip ../server -xr!*.log -x!server/cache -xr!*.sqlite -xr!*.local",
+    "package": "yarn build && yarn deploy && yarn bundle"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -104,7 +106,7 @@
     "redux-starter-kit": "^0.5.1",
     "shx": "^0.3.2"
   },
-  "proxy": "http://localhost:8087",
+  "proxy": "http://localhost:7898",
   "main": "index.js",
   "homepage": "/",
   "author": "Amelia Bleeker <amelia.bleeker@pnnl.gov>",

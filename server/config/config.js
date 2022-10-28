@@ -59,7 +59,9 @@
 
 const util = require("../utils/util");
 const { logger } = require("../logging");
-require("dotenv").config();
+require("dotenv-flow").config({
+  silent: true,
+});
 
 module.exports = {
   development: {

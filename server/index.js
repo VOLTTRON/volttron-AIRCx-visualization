@@ -72,7 +72,9 @@ const models = require("./models");
 const path = require("path");
 const util = require("./utils/util");
 const { logger, options } = require("./logging");
-require("dotenv").config();
+require("dotenv-flow").config({
+  silent: true,
+});
 
 const publicKey = fs.readFileSync(
   path.join(process.cwd(), process.env.PUBLIC_KEY)
