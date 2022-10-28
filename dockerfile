@@ -8,6 +8,7 @@ RUN yarn deploy
 WORKDIR /app/server
 RUN rm .env
 RUN cp .env.docker .env
+RUN cp .env.docker.local .env.production.local; exit 0
 RUN yarn install
 RUN yarn add mysql2
 EXPOSE 80
