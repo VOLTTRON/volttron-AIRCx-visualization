@@ -141,11 +141,7 @@ class Dashboard extends React.Component {
     const { classes, current } = this.props;
     return (
       <div className={classes.container}>
-        <MuiDateRangePicker
-          variant="compact"
-          start={current.start}
-          end={current.end}
-        />
+        <MuiDateRangePicker variant="compact" start={current.start} end={current.end} />
       </div>
     );
   }
@@ -178,46 +174,28 @@ class Dashboard extends React.Component {
     switch (group) {
       case "month":
         _.range(1, time.daysInMonth() + 1).forEach((day) => {
-          values = _.concat(
-            values,
-            ...Object.values(_.get(item, [time.year(), time.month(), day], {}))
-          );
+          values = _.concat(values, ...Object.values(_.get(item, [time.year(), time.month(), day], {})));
         });
         break;
       case "week":
         _.range(0, 6).forEach((day) => {
           const temp = time.clone().day(day);
-          values = _.concat(
-            values,
-            ...Object.values(
-              _.get(item, [temp.year(), temp.month(), temp.date()], {})
-            )
-          );
+          values = _.concat(values, ...Object.values(_.get(item, [temp.year(), temp.month(), temp.date()], {})));
         });
         break;
       case "day":
-        values = _.concat(
-          values,
-          ...Object.values(
-            _.get(item, [time.year(), time.month(), time.date()], {})
-          )
-        );
+        values = _.concat(values, ...Object.values(_.get(item, [time.year(), time.month(), time.date()], {})));
         break;
       default:
     }
     const result = filters.aggregate(
       values.filter((v) => fault.isType(_.get(v, sensitivity))).length,
-      values.filter((v) => okay.isType(_.get(v, sensitivity))).length
+      values.filter((v) => okay.isType(_.get(v, sensitivity))).length,
+      sensitivity
     );
     const vertical = this.getSize() === 12;
     return (
-      <Paper
-        className={clsx(
-          classes.paper,
-          vertical ? classes.vertical : classes.horizontal
-        )}
-        elevation={3}
-      >
+      <Paper className={clsx(classes.paper, vertical ? classes.vertical : classes.horizontal)} elevation={3}>
         <Typography
           className={vertical ? classes.labelVertical : classes.labelHorizontal}
           variant="h6"
@@ -231,9 +209,7 @@ class Dashboard extends React.Component {
           elevation={1}
         >
           <Typography
-            className={
-              vertical ? classes.resultVertical : classes.resultHorizontal
-            }
+            className={vertical ? classes.resultVertical : classes.resultHorizontal}
             variant="h6"
             align="center"
           >
@@ -271,11 +247,7 @@ class Dashboard extends React.Component {
     } else if (incomplete) {
       return (
         <div className={classes.container} style={{ flexWrap: "wrap" }}>
-          <Typography
-            variant="h4"
-            className={classes.message}
-            style={{ width: "100%" }}
-          >
+          <Typography variant="h4" className={classes.message} style={{ width: "100%" }}>
             <strong>Under Construction</strong>
           </Typography>
           <MuiLink to="/detailed">
@@ -290,13 +262,7 @@ class Dashboard extends React.Component {
       <div>
         {this.renderDatePicker()}
         <div className={classes.content}>
-          <Grid
-            container
-            justify="space-evenly"
-            alignItems="center"
-            alignContent="center"
-            spacing={4}
-          >
+          <Grid container justify="space-evenly" alignItems="center" alignContent="center" spacing={4}>
             {this.renderCards()}
           </Grid>
         </div>
@@ -314,7 +280,4 @@ const mapStateToProps = (state) => ({
 
 const mapActionToProps = {};
 
-export default connect(
-  mapStateToProps,
-  mapActionToProps
-)(withWidth()(withStyles(styles)(Dashboard)));
+export default connect(mapStateToProps, mapActionToProps)(withWidth()(withStyles(styles)(Dashboard)));

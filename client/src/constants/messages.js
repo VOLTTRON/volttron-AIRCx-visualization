@@ -133,64 +133,6 @@ export const messages = {
     "44.2":
       "Inconsistent or missing data; therefore, potential opportunity for operational improvements cannot be detected at this time.",
   },
- Economizer_AIRCx: {
-    "-1.2": "Not enough data for aggregation.",
-    "-1.0": "No Diagnosis.",
-    "-99.3":
-      "Supply fan of the air-handling/rooftop unit is off; therefore, potential faults with the unit cannot be detected at this time.",
-    "-89.2":
-      "The outdoor-air and return-air temperatures are too close; therefore, a conclusive diagnostic result is not possible.",
-    "-79.2": "The outdoor-air temperature value is outside the normal limits.",
-    "-69.2": "The return-air temperature value is outside the normal limits.",
-    "-59.2": "The mixed-air temperature value is outside the normal limits.",
-    "-49.2":
-      "A temperature sensor problem is detected; therefore, no other diagnostics are possible because all other diagnostics rely on accurate temperature sensing.",
-    "0.0": "No temperature problem with temperature sensors is detected.",
-    "0.1":
-      "The outdoor-air and mixed-air temperature sensor readings are not consistent when the outdoor-air damper is fully open.",
-    "1.1":
-      "The mixed-air temperature value is less than both the outdoor-air and return-air temperatures; therefore, there is a temperature sensor problem.",
-    "2.1":
-      "The mixed-air temperature value is greater than both the outdoor-air and return-air temperatures; therefore, there is a temperature sensor problem.",
-    "3.2":
-      "Inconsistent or missing data; therefore, potential opportunity for operational improvements cannot be detected at this time.",
-    "10.0": "The economizer is functioning as expected.",
-    "11.1":
-      "The conditions are favorable for economizing but the outdoor-air damper is not fully open and the mechanical cooling is active.",
-    "12.1":
-      "The outdoor-air damper is commanded to be fully open; however, the outdoor-air fraction is significantly lower than 100%.",
-    "13.2":
-      "Inconsistent or missing data; therefore, potential opportunity for operational improvements cannot be detected at this time.",
-    "14.0":
-      "The conditions are not favorable for running this diagnostic because cooling is not active.",
-    "15.0":
-      "The conditions are not favorable for running this diagnostic because conditions are not favorable for economizing.",
-    "20.0": "The economizer is functioning as expected.",
-    "21.1":
-      "The outdoor-air damper should be at the minimum position to meet the ventilation requirement, but it is significantly above that value.",
-    "23.2":
-      "Inconsistent or missing data; therefore, potential opportunity for operational improvements cannot be detected at this time.",
-    "25.0": "The conditions are not favorable for running this diagnostic.",
-    "30.0": "The air-handling/rooftop unit is operating as expected.",
-    "31.2":
-      "No conclusions can be drawn because outdoor-air fraction calculation is not reliable during this time period.",
-    "32.1":
-      "The outdoor-air damper should be at the minimum position to meet the ventilation needs, but it is significantly above that value.",
-    "33.1":
-      "The air-handling/rooftop unit is bringing in excess outdoor air; this will increase heating/cooling costs.",
-    "34.1":
-      "The outdoor-air damper should be at the minimum position to meet the ventilation needs, but it is significantly above that value.  The air-handling/rooftop unit is bringing in excess outdoor air; this will increase heating/cooling costs.",
-    "35.2":
-      "Inconsistent or missing data; therefore, potential opportunity for operational improvements cannot be detected at this time.",
-    "36.0": "The conditions are not favorable for running this diagnostic.",
-    "40.0": "The air-handling unit/rooftop unit is operating as expected.",
-    "41.2":
-      "No conclusions can be drawn because outdoor-air fraction calculation is not reliable during this time period.",
-    "43.1":
-      "The air-handling/rooftop unit is not providing adequate ventilation air based on the outdoor-air fraction.",
-    "44.2":
-      "Inconsistent or missing data; therefore, potential opportunity for operational improvements cannot be detected at this time.",
-  },
   AirsideAIRCx: {
     "-1.2": "Not enough data for aggregation.",
     "-1.0": "No Diagnosis",

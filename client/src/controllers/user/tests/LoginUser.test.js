@@ -57,10 +57,7 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-import { reset } from "controllers/action";
-import { SERVICE_URL } from "controllers/api";
-import { BUSY_GLOBAL } from "controllers/busy/action";
-import configureStore from "controllers/store";
+import { SERVICE_ENDPOINT, SERVICE_ENDPOINT_LOGIN } from "controllers/user/api";
 import {
   loginUser,
   loginUserBusy,
@@ -68,11 +65,16 @@ import {
   loginUserSuccess,
   selectLoginUserRequest,
 } from "controllers/user/action";
-import { SERVICE_ENDPOINT, SERVICE_ENDPOINT_LOGIN } from "controllers/user/api";
-import mock from "controllers/user/mock";
-import { loginSaga } from "controllers/user/saga";
-import { fetchMock } from "fetch-mock";
+
+import { BUSY_GLOBAL } from "controllers/busy/action";
+import { SERVICE_URL } from "controllers/api";
+import configureStore from "controllers/store";
 import { expectSaga } from "redux-saga-test-plan";
+import { fetchMock } from "fetch-mock";
+import { loginSaga } from "controllers/user/saga";
+import mock from "controllers/user/mock";
+import { reset } from "controllers/action";
+
 const data = mock[SERVICE_ENDPOINT_LOGIN];
 
 const reduxStore = configureStore({});
@@ -94,7 +96,7 @@ describe("user.loginUser()", () => {
     fetchMock.post(`${SERVICE_URL}/${SERVICE_ENDPOINT}/login`, {
       token: result,
     });
-    fetchMock.get(`${SERVICE_URL}/${SERVICE_ENDPOINT}`, 200);
+    fetchMock.post(`${SERVICE_URL}/${SERVICE_ENDPOINT}`, 200);
     return expectSaga(loginSaga, loginUser(payload))
       .put(loginUserBusy(BUSY_GLOBAL))
       .put(loginUserError())

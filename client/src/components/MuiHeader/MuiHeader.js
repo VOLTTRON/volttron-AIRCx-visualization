@@ -58,6 +58,12 @@
 // under Contract DE-AC05-76RL01830
 
 import {
+  AccountCircle as AccountCircleIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  Remove,
+  Today as TodayIcon,
+} from "@material-ui/icons";
+import {
   AppBar,
   Menu,
   MenuItem,
@@ -67,21 +73,8 @@ import {
   Typography,
   withWidth,
 } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import {
-  AccountCircle as AccountCircleIcon,
-  KeyboardArrowDown as KeyboardArrowDownIcon,
-  Remove,
-  Today as TodayIcon,
-} from "@material-ui/icons";
-import clsx from "clsx";
 import { MuiButton, MuiDatePicker, MuiIconButton, MuiSelect } from "components";
-import MuiLink from "components/MuiNavigation/MuiLink";
-import filters from "constants/filters";
-import groups from "constants/groups";
 import { black, primary, white } from "constants/palette";
-import sensitivities from "constants/sensitivities";
-import { selectMode, setMode } from "controllers/common/action";
 import {
   fetchDiagnostics,
   fetchSources,
@@ -98,14 +91,22 @@ import {
   selectLoginUserRequest,
   selectUser,
 } from "controllers/user/action";
-import _ from "lodash";
-import moment from "moment";
-import React from "react";
-import { connect } from "react-redux";
-import { routes } from "routes";
-import mixin from "utils/mixin";
+import { selectMode, setMode } from "controllers/common/action";
+
 import { ConditionalWrapper } from "utils/utils";
+import MuiLink from "components/MuiNavigation/MuiLink";
+import React from "react";
+import _ from "lodash";
+import clsx from "clsx";
+import { connect } from "react-redux";
+import filters from "constants/filters";
+import groups from "constants/groups";
+import mixin from "utils/mixin";
+import moment from "moment";
+import { routes } from "routes";
+import sensitivities from "constants/sensitivities";
 import styles from "./styles";
+import { withStyles } from "@material-ui/core/styles";
 
 const createFormUpdate = (state, sources) => {
   const items = sources ? _.merge({}, ...Object.values(sources)) : {};
@@ -171,6 +172,13 @@ class MuiHeader extends React.Component {
     this.setState(createFormUpdate(_.merge(this.state, form), sources));
   }
 
+  checkDate = (form) => {
+    const start = moment(form.start);
+    const end = moment(form.end);
+    const date = moment(form.date);
+    form.date = date < start ? start.format() : date > end ? end.format() : date.format();
+  }
+
   handleUpdate = (key) => () => {
     const form = _.merge(
       {},
@@ -204,6 +212,7 @@ class MuiHeader extends React.Component {
       case "group":
       case "filter":
       case "sensitivity":
+        this.checkDate(form);
         this.props.setDataForm(form);
         break;
       case "start":
@@ -223,6 +232,7 @@ class MuiHeader extends React.Component {
         this.setState({ changed: true });
       // eslint-disable-next-line
       case "update":
+        this.checkDate(form);
         this.props.setDataForm(form);
         break;
       default:

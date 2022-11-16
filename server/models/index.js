@@ -57,26 +57,24 @@
 // BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-"use strict";
-
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
+const { logger } = require("../logging");
+require("dotenv-flow").config({
+  silent: true,
+});
+logger.info(`Node Environment: ${process.env.NODE_ENV}`);
 const env = process.env.NODE_ENV || "development";
 const config = require(path.join(process.cwd(), "config/config.js"))[env];
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
-}
+const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  config
+);
 
 const db = {};
 fs.readdirSync(path.join(process.cwd(), "models/database"))
@@ -86,17 +84,18 @@ fs.readdirSync(path.join(process.cwd(), "models/database"))
     );
   })
   .forEach((file) => {
-    const model = sequelize["import"](
-      path.join(path.join(process.cwd(), "models/database"), file)
-    );
+    logger.info(`Importing database model: ${file}`);
+    const model = require(path.join(
+      path.join(process.cwd(), "models/database"),
+      file
+    ))(sequelize, Sequelize.DataTypes);
+    logger.info(`Imported database model: ${file}`);
+    if (!model.name) {
+      logger.warn(`Unable to import database model: ${file}`);
+    }
+    logger.info(model.name);
     db[model.name] = model;
   });
-
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
 
 db.sequelize = sequelize;
 
